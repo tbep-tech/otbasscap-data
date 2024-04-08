@@ -17,6 +17,13 @@ Search query:
 
 Water quality data from Hillsborough County Environmental Protection Commission(https://epcbocc.sharepoint.com/sites/Share/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FShare%2FShared%20Documents%2FOutbound%2FERM%2FWQM%5FReports&p=true&ga=1). Raw data files stored on Google Drive were processed by ./R/dat_proc.R.
 
+## ./data/sg.RData
+Seagrass transect data for Tampa Bay, obtained from the Tampa Bay Estuary Program via the `tbeptools` API:
+
+  * `sg_dat`: transect data (returned by `tbeptools::read_transect()`)
+  * `sg_lines`: transect locations (returned by `tbeptools::trnlns`)
+  * `sg_pts`: transect points (returned by `tbeptools::trnpts`)
+
 ## ./data-raw/normalization.xlsx
 
 Excel file visualizes hydrologic normalization of nitrogen loads to Old Tampa Bay, for Task 1 Draft Report (3/29/2024):

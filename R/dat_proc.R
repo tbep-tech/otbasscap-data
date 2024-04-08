@@ -2,6 +2,7 @@ rm(list=ls(all=TRUE))
 
 library(googledrive)
 library(here)
+library(tbeptools)
 
 drive_deauth()
 
@@ -33,4 +34,12 @@ drive_deauth()
   winwq <- read.table( fl2, sep = "|", header = TRUE, fill = TRUE, skip = 8 )
   save(winwq, file = here('data/winwq.RData'))
   file.remove(fl2)
+  
+  
+# Read TBEP seagrass transect data and export as RData
+  
+  sg_lines <- tbeptools::trnlns   # transect lines
+  sg_pts <- tbeptools::trnpts    # transect points
+  sg_dat <- tbeptools::read_transect()
+  save( list = c('sg_pts','sg_lines','sg_dat'), file = here('data/sg.RData') )
   
