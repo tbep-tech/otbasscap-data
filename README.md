@@ -15,7 +15,7 @@ Search query:
 
 ## ./data/epcwq.RData
 
-Water quality data from Hillsborough County Environmental Protection Commission(https://epcbocc.sharepoint.com/sites/Share/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FShare%2FShared%20Documents%2FOutbound%2FERM%2FWQM%5FReports&p=true&ga=1). Raw data files stored on Google Drive were processed by ./R/dat_proc.R.
+Water quality data from Hillsborough County Environmental Protection Commission (https://epcbocc.sharepoint.com/sites/Share/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FShare%2FShared%20Documents%2FOutbound%2FERM%2FWQM%5FReports&p=true&ga=1). Raw data files stored on Google Drive were processed by ./R/dat_proc.R.
 
 ## ./data/sg.RData
 Seagrass transect data for Tampa Bay, obtained from the Tampa Bay Estuary Program via the `tbeptools` API:
@@ -23,6 +23,16 @@ Seagrass transect data for Tampa Bay, obtained from the Tampa Bay Estuary Progra
   * `sg_dat`: transect data (returned by `tbeptools::read_transect()`)
   * `sg_lines`: transect locations (returned by `tbeptools::trnlns`)
   * `sg_pts`: transect points (returned by `tbeptools::trnpts`)
+
+## ./data-raw/DataDownload_2999342_row.csv
+
+Water quality data for Old Tampa Bay monitoring strata, obtained from Pinellas County Water Atlas (https://pinellas.wateratlas.usf.edu/datadownload).
+
+Search query:
+  * Data Type: Surface water quality
+  * Water Atlas: Pinellas County Water Atlas
+  * Date Range: 2000-01-01 to 2024-04-08
+  * Parameter: BOD, Biochemical oxygen demand; Chlorophyll (a+b+c); Chlorophyll a (probe relative fluorescence); Chlorophyll a, uncorrected for pheophytin; Chlorophyll a, corrected for pheophytin; Chlorophyll b; Chlorophyll c; Chlorophyll/Pheophytin ratio; Dissolved oxygen (DO); Dissolved oxygen saturation; Nitrogen, inorganic; Nitrogen, ammonia as N; Nitrogen, ammonia as N; Nitrogen, ammonia as N; Nitrogen, ammonia (NH3) as NH3; Nitrogen, ammonia (NH3) as NH3; Nitrogen, ammonia (NH3) + ammonium (NH4); Nitrogen, ammonium (NH4) as N; Nitrogen, ammonia (NH3) + ammonium (NH4); Nitrogen ion (N); Nitrogen, Nitrite (NO2) as N; Nitrogen, Nitrite (NO2) as N; Nitrogen, Nitrite (NO2) as NO2; Nitrogen, Nitrite (NO2) as NO2; Nitrogen, Nitrite (NO2) as N; Nitrogen, Nitrate (NO3) as N; Nitrogen, Nitrate (NO3) as N; Nitrogen, Nitrate (NO3) as N; Nitrogen, Nitrate (NO3) as NO3; Nitrogen, Nitrate (NO3) as NO3; Nitrogen, Nitrate (NO3) as N; Nitrogen, organic; Nitrogen, organic; Nitrogen, Nitrite (NO2) + Nitrate (NO3) as N; Nitrogen, Nitrite (NO2) + Nitrate (NO3) as N; Salinity; Salinity; Temperature, water; Temperature, water; Nitrogen, Kjeldahl; Nitrogen, Kjeldahl; Nitrogen, mixed forms (NH3)+(NH4)+organic+(NO2)+(NO3); Nitrogen; Nitrogen; Total Suspended Solids (TSS); Turbidity; Turbidity; Turbidity; Velocity - stream.
 
 ## ./data-raw/normalization.xlsx
 
