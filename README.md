@@ -73,6 +73,19 @@ Columns:
   * `tss_load`: Total suspended solids (tons)
   * `bod_load`: Biological oxygen demand (tons)
 
+## ./data-raw/fwcpyro20112023.csv
+
+Monthly *Pyrodinium bahamense* sampling in Old Tampa Bay, 2011-2023. From https://myfwc.com/research/redtide/monitoring/database/, C. Lopez.
+
+Columns: 
+  * `yr`: Year, 2011-2023
+  * `date`: Date of sampling, YYYY-MM-DD
+  * `Latitude`: Latitude of sampling location, CRS 4326
+  * `Longitude`: Longitude of sampling location, CRS 4326
+  * `pyro`: Pyrodinium cell count, cells/L, `NA` is sampled but not present/detected
+  * `doy`: Day of year, 1-365
+  * `pyrocat`: Bloom intensity category from cells/L, <= 1e4 No bloom, > 1e4 & <= 1e5 Low, > 1e5 & <= 1e6 Medium, > 1e6 High
+  
 ## ./R/dat_proc.R
 
 Queries raw EPC and WIN data from Google Drive and exports RData to ./data/
