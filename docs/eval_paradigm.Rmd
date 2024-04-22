@@ -53,11 +53,13 @@ Water quality and external loading data were assembled by the `./data_proc.R` sc
 We begin by loading packages (see [References](#ref)).
 
 ```{r message=FALSE, warning=FALSE}
-  library(lubridate)
-  library(plyr)
-  library(dplyr)
-  library(tidyr)
-  library(mgcv)
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+library(lubridate)
+library(plyr)
+library(dplyr)
+library(tidyr)
+library(mgcv)
+library(here)
 ```
 
 ## Pinellas County water quality data {#data_pcwq}
@@ -74,7 +76,7 @@ The code below loads the raw data from file (`../data-raw/DataDownload_2999342_r
 
 ```{r}
   # load data
-    pcwq1 <- read.csv( "../data-raw/DataDownload_2999342_row.csv" )[,1:21]
+    pcwq1 <- read.csv( here("data-raw/DataDownload_2999342_row.csv" ))[,1:21]
   # dates
     pcwq1$Date <- pcwq1$SampleDate |> as.Date("%m/%d/%Y")
   # qualifier codes
@@ -126,7 +128,7 @@ The code below loads the EPC water quality data from file (`./data/epcwq.RData`)
 
 ```{r}
   # load data
-    load( "../data/epcwq.RData" )
+    load( here("data/epcwq.RData" ))
   # dates
     epcwq1 <- epcwq |> as.data.frame()
     epcwq1$date <- epcwq1$SampleTime |> as.Date("%Y-%m-%d")
@@ -207,7 +209,7 @@ The code below loads the Tampa Bay Estuary Program's monthly external loading es
 
 ```{r}
   # load data
-  loads <- read.csv( "../data-raw/TB_loads_monthly.csv" )
+  loads <- read.csv( here("data-raw/TB_loads_monthly.csv" ))
   # subset TN data for OTB segment
   loads <- loads[ which( loads$bay_segment=="Old Tampa Bay"), c('year','month','tn_load') ]
   # date column
