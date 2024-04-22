@@ -39,7 +39,7 @@ editor_options:
 
 The current management paradigm for Old Tampa Bay (OTB) is holds that (1) reducing _external nitrogen loads_ will reduce chlorophyll a concentrations in the OTB water column, (2) lower _chlorophyll a concentrations_ will improve water clarity (e.g., Secchi depth), and (3) improved _water clarity_ will stimulate greater _seagrass growth/recovery_. The management paradigm is based on earlier studies that reported significant correlations between each subsequent pair of covariates (e.g., Morrison et al. 1996; Greening & Janicki 2016). This document explores statistical relationships between these pairs at various OTB sub-segments using monthly averaged data at various time lags (zero lag, one-month lag, two-month lag between explanatory variable and response). Analyses were performed in R version 4.3.1 (R Core Team 2023).
 
-The results indicate that linear correlations measured during earlier periods of study largely continued to hold between approximately 2000 and 2021. However, we also find evidence (GAM results) suggesting that these relationships have varied over time at some OTB sub-segments, with intriguing differences across sub-segments. We conclude that correlation analyses and simple regression models do not reliably capture the potentially synergistic effects of multiple stressors influencing water quality and seagrass abundance.
+The results indicate that linear correlations measured during earlier periods of study continued to hold between approximately 2000 and 2023. However, we also find evidence (GAM results) suggesting that these relationships have varied over time at some OTB sub-segments, with intriguing differences across sub-segments. We conclude that correlation analyses and simple regression models do not reliably capture the potentially synergistic effects of multiple stressors influencing water quality and seagrass abundance.
 
   
 [top](#top)
@@ -122,7 +122,7 @@ head( pcwq2 )
 
 ## Environmental Protection Commission of Hillsborough County (EPC) water quality data {#data_epc}
 
-The code below loads the EPC water quality data from file (`epcwq.RData`), pivots the dataframe from wide to long format, performs QC checks, aggregates the data to a monthly timeframe (monthly means), and creates a new `epcwq2` dataframe for analysis.
+The code below loads the EPC water quality data from file (`./data/epcwq.RData`), pivots the dataframe from wide to long format, performs QC checks, aggregates the data to a monthly timeframe (monthly means), and creates a new `epcwq2` dataframe for analysis.
 
 ```{r}
   # load data
@@ -203,7 +203,7 @@ head( epcwq2 )
 
 ## Tampa Bay Estuary Program nitrogen load estimates {#data_loads}
 
-The code below loads the Tampa Bay Estuary Program's monthly external loading estimates for Tampa Bay (`../data-raw/TB_loads_monthly.csv`), sums over TN load sources to OTB (e.g., AD, NPS, DPS, etc.) to compute total monthly TN loads, standardizes column names, and creates a new `loads` dataframe for analysis.
+The code below loads the Tampa Bay Estuary Program's monthly external loading estimates for Tampa Bay (`../data-raw/TB_loads_monthly.csv`), computes total monthly TN loads by summing over TN load sources to OTB (e.g., AD, NPS, DPS, etc.), standardizes column names, and creates a new `loads` dataframe for analysis.
 
 ```{r}
   # load data
@@ -354,7 +354,7 @@ The `delay` argument allows the user to specify a non-negative integer delay bet
 
 This section presents results of linear models that regress water-column chlorophyll a concentrations on TN loads across different OTB sub-segments.
 
-The plots below show relationships between TN loads and chlorophyll-a concentrations within Pinellas County strata E1--E5 (rows) at delays of 0--2 months (columns). During the same month (first column), all strata show significant positive correlations, with a maximum R2 value of 0.32. However, the data typically exhibit substantial scatter (unexplained variance) around the regression lines. The correlations measured at zero delay (first column) do not necessarily hold at delays of one month (second column) or two months (third column).
+The plots below show relationships between TN loads and chlorophyll-a concentrations within Pinellas County strata E1--E5 (rows) at delays of 0--2 months (columns). During the same month (first column), all strata show significant positive correlations, with a maximum R2 value of 0.32. The data typically exhibit substantial scatter (unexplained variance) around the regression lines. The correlations measured at zero delay (first column) do not necessarily hold at delays of one month (second column) or two months (third column).
 
 ```{r fig.width = 15, fig.height = 25 }
   par(mfrow=c(5,3))
@@ -376,7 +376,7 @@ The plots below show relationships between TN loads and chlorophyll-a concentrat
   
 ```
 
-The plots below show relationships between external TN loads and chlorophyll-a concentrations within the three OTB sub-segments compartmentalized by the Courtney Campbell, Howard Frankland, and Gandy Blvd causeways/bridges, using water quality data collected by EPC at fixed monitoring locations between 2000 and 2021. The three OTB compartments span the three rows, and the three columns pertain to delays of zero, one, and two months. All three OTB compartments show significant positive correlations at each delay, with a maximum R2 value of 0.38. However, in each case the data exhibit substantial scatter around the regression line.
+The plots below show relationships between external TN loads and chlorophyll-a concentrations within the three OTB sub-segments compartmentalized by the Courtney Campbell, Howard Frankland, and Gandy Blvd causeways/bridges, using water quality data collected by EPC at fixed monitoring locations between 2000 and 2021. The three OTB compartments span the three rows, and the three columns pertain to delays of zero, one, and two months. All three OTB compartments show significant positive correlations at each delay, with a maximum R2 value of 0.38. In each case the data exhibit substantial scatter around the regression line.
 
 ```{r fig.width = 15, fig.height = 15 }
   par(mfrow=c(3,3))
@@ -424,7 +424,7 @@ The plots below show relationships between external TN loads and chlorophyll-a c
 
 ## Chlorophyll and light {#lm_chl}
 
-The plots below show relationships between chlorophyll-a concentrations and Secchi depths within the three OTB sub-segments compartmentalized by the Courtney Campbell, Howard Frankland, and Gandy Blvd causeways/bridges, using data collected by EPC at fixed monitoring locations between 2000 and 2021. Following Greening & Janicki (2016), the variables are log-transformed prior to analysis. All three OTB compartments show significant negative correlations at delays of zero and one month (first and second columns), with a maximum R2 value of 0.39. The magnitudes of the slopes and the R2 values both decrease between `delay=0` and `delay=1`. And in each case, the data exhibit substantial scatter around the regression line, indicating that any given chlorophyll concentration is typically associated with a large range of Secchi values. At a delay of two months (third column), none of the OTB compartments shows a significant correlation.
+The plots below show relationships between chlorophyll-a concentrations and Secchi depths within the three OTB sub-segments compartmentalized by the Courtney Campbell, Howard Frankland, and Gandy Blvd causeways/bridges, using data collected by EPC at fixed monitoring locations between 2000 and 2023. Following Greening & Janicki (2016), the variables are log-transformed prior to analysis. All three OTB compartments show significant negative correlations at delays of zero and one month (first and second columns), with a maximum R2 value of 0.39. The magnitudes of the slopes and the R2 values both decrease between `delay=0` and `delay=1`. And in each case, the data exhibit substantial scatter around the regression line, indicating that any given chlorophyll concentration is typically associated with a large range of Secchi values. At a delay of two months (third column), none of the OTB compartments shows a significant correlation.
 
 ```{r fig.width = 15, fig.height = 15 }
   par(mfrow=c(3,3))
@@ -698,7 +698,7 @@ Starting with the `epc2` dataframe that we assembled for the linear model, we ag
  summary( gam7 )
 ```
 
-The plots below suggest that the association between Secchi depth and chlorophyll concentration (`value.x`) has changed substantially over time (`decdate`) at this sub-segment. Redder areas in the heatmap indicate time periods when increased chlorophyll concentrations were more strongly associated with reduced water clarity. Although the heatmap indicates gaps in some high-chlorophyll areas of the input space, the temporal pattern in these results noticeably resembles those of the previous model (`gam6`). Nonetheless, comparing the outputs of the `gam6` and `gam7` models is not straightforward as the estimated intercepts differ in magnitude between models (see `summary(...)` outputs), as do the scales of the `te()` axes of the coefficient surface plots. Further interpretation and comparison of these results can be pursued at a later phase of the project.
+The plots below suggest that the association between Secchi depth and chlorophyll concentration (`value.x`) has changed substantially over time (`decdate`) at this sub-segment. Redder areas in the heatmap indicate time periods when increased chlorophyll concentrations were more strongly associated with reduced water clarity. Although the heatmap indicates gaps in some high-chlorophyll areas of the input space, the temporal pattern in these results noticeably resembles those of the previous model (`gam6`). Nonetheless, comparing the outputs of the `gam6` and `gam7` models is not straightforward as the estimated intercepts differ in magnitude between models (see `summary(...)` outputs), as do the scales of the axes of the coefficient surface plots. Further interpretation and comparison of these results can be pursued at a later phase of the project.
 
 ```{r fig.width = 12, fig.height = 6}
   # plot smooth
