@@ -1,5 +1,11 @@
 # otbasscap-data
 
+## Summary HTML docs
+
+* Initial summary of existing paradigm [link](https://tbep-tech.github.io/otbasscap-data/eval_paradigm.html)
+
+----------------------
+
 ## ./data/winwq.RData
 
 Water quality data retrieved from FDEP WIN database (https://prodenv.dep.state.fl.us/DearWin/public/welcomeGeneralPublic). Raw data files stored on Google Drive were processed by ./R/dat_proc.R.
