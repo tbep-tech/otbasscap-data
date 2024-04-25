@@ -22,8 +22,8 @@ editor_options:
 
 [Linear Models](#lm)
   
-  * [Nitrogen loads and chlorophyll, with 3-month cumulative loads](#lm_3N)
-  * [Nitrogen loads and chlorophyll, with delayed loads](#lm_N)
+  * [Nitrogen loads and chlorophyll (3-month cumulative loads)](#lm_3N)
+  * [Nitrogen loads and chlorophyll (concurrent and delayed loads)](#lm_N)
   * [Chlorophyll and light](#lm_chl)
 
 [Generalized Additive Models (GAMs)](#gam)
@@ -38,7 +38,7 @@ editor_options:
 
 # Overview {#overview}
 
-The current management paradigm for Old Tampa Bay (OTB) is holds that (1) reducing _external nitrogen loads_ will reduce chlorophyll a concentrations in the OTB water column, (2) reducing _chlorophyll a concentrations_ will improve water clarity, and (3) improved _water clarity_ will stimulate _seagrass growth/recovery_. The management paradigm is based on earlier studies that reported significant correlations between each subsequent pair of covariates, considering data from across Tampa Bay as a whole and/or from Tampa Bay segments including OTB (e.g., Janicki & Wade 1996; Morrison et al. 1996; Greening & Janicki 2016).
+The current management paradigm for Old Tampa Bay (OTB) holds that (1) reducing _external nitrogen loads_ will reduce chlorophyll a concentrations in the OTB water column, (2) reducing _chlorophyll a concentrations_ will improve water clarity, and (3) improved _water clarity_ will stimulate _seagrass growth/recovery_. The management paradigm is based on earlier studies that reported significant correlations between each subsequent pair of covariates, considering data from across Tampa Bay as a whole and/or from Tampa Bay segments including OTB (e.g., Janicki & Wade 1996; Morrison et al. 1996; Greening & Janicki 2016).
 
 This document explores statistical relationships between TN loads and chlorophyll-a concentrations and between chlorophyll-a concentrations and Secchi depth at various OTB sub-segments using monthly averaged data between approximately 2000 and 2023 (periods of record vary by data source and variable). The analyses were implemented in R version 4.3.1 (R Core Team 2023).
 
@@ -250,7 +250,7 @@ head( loads )
 
 Janicki & Wade (1996) developed a linear regression model relating monthly average chlorophyll-a concentrations to cumulative TN loads over a three-month period (the concurrent month and two previous months). The model used data from across Tampa Bay during 1985--1991 and stratified the data by the month of the year and by bay segment, and it produced an R2 value of 0.73. Subsequently, Greening et al. (2014) developed a similar regression model for the 1985–2011 period and observed an R2 value of 0.66.
 
-## Nitrogen loads and chlorophyll, with 3-month cumulative loads {#lm_3N}
+## Nitrogen loads and chlorophyll (3-month cumulative loads) {#lm_3N}
 
 We apply a similar approach as Janciki & Wade (1996) to explore relationships between monthly average chlorophyll-a concentrations and TN loads at three OTB sub-segments during the 2000-2021 period. For simplicity, the models below do not stratify by the month of the year, in contrast to the model of Janicki & Wade (1996).
 
@@ -419,7 +419,7 @@ par(mfrow=c(2,2))
 \
 
 
-## Nitrogen loads and chlorophyll, with delayed loads {#lm_N}
+## Nitrogen loads and chlorophyl (concurrent and delayed loads) {#lm_N}
 
 This section further explores relationships between chlorophyll-a and TN loads by considering monthly TN loading values at delays of zero through two months across various OTB sub-segments, including the EPC sub-segments and the Pinellas County strata.
 
