@@ -56,7 +56,7 @@ The results of generalized additive models (GAMs) indicated that the TN-chloroph
 
 # Data Processing {#data}
 
-Water quality and external loading data were assembled by the `./data_proc.R` script. This section processes these data to support the subsequent analyses, including a few basic QA/QC checks.
+Water quality and external loading data were assembled by the `../R/data_proc.R` script. This section processes these data to support the subsequent analyses, including a few basic QA/QC checks.
 
 We begin by loading packages (see [References](#ref)).
 
@@ -132,7 +132,7 @@ head( pcwq2 )
 
 ## Environmental Protection Commission of Hillsborough County (EPC) water quality data {#data_epc}
 
-This section loads the EPC water quality data from file (`./data/epcwq.RData`), pivots the dataframe from wide to long format, performs QC checks, aggregates the data to a monthly timeframe (monthly means), and creates a new `epcwq2` dataframe for analysis. As indicated in output below, a substantial number of Secchi records indicate that reported Secchi depth equals the total depth (i.e., the Secchi depth was visible at bottom); in these cases, the Secchi depth is not necessarily a reliable proxy for water clarity (e.g., in shallow areas).
+This section loads the EPC water quality data from file (`../data/epcwq.RData`), pivots the dataframe from wide to long format, performs QC checks, aggregates the data to a monthly timeframe (monthly means), and creates a new `epcwq2` dataframe for analysis. As indicated in output below, a substantial number of Secchi records indicate that reported Secchi depth equals the total depth (i.e., the Secchi depth was visible at bottom); in these cases, the Secchi depth is not necessarily a reliable proxy for water clarity (e.g., in shallow areas).
 
 ```{r}
   # load data
