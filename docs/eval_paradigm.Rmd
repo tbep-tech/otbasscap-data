@@ -67,7 +67,6 @@ library(plyr)
 library(dplyr)
 library(tidyr)
 library(mgcv)
-library(here)
 ```
 
 ## Pinellas County water quality data {#data_pcwq}
@@ -84,7 +83,7 @@ The code below loads the raw data from file (`../data-raw/DataDownload_2999342_r
 
 ```{r}
   # load data
-    pcwq1 <- read.csv( here("data-raw/DataDownload_2999342_row.csv" ))[,1:21]
+    pcwq1 <- read.csv( "../data-raw/DataDownload_2999342_row.csv" )[,1:21]
   # dates
     pcwq1$Date <- pcwq1$SampleDate |> as.Date("%m/%d/%Y")
   # qualifier codes
@@ -136,7 +135,7 @@ This section loads the EPC water quality data from file (`../data/epcwq.RData`),
 
 ```{r}
   # load data
-    load( here("data/epcwq.RData" ))
+    load( "../data/epcwq.RData" )
   # dates
     epcwq1 <- epcwq |> as.data.frame()
     epcwq1$date <- epcwq1$SampleTime |> as.Date("%Y-%m-%d")
@@ -220,7 +219,7 @@ This section loads the Tampa Bay Estuary Program's monthly external loading esti
 
 ```{r}
   # load data
-  loads <- read.csv( here("data-raw/TB_loads_monthly.csv" ))
+  loads <- read.csv( "../data-raw/TB_loads_monthly.csv" )
   # subset TN data for OTB segment
   loads <- loads[ which( loads$bay_segment=="Old Tampa Bay"), c('year','month','tn_load') ]
   # date column
@@ -388,6 +387,10 @@ Below, we fit linear models for chlorophyll as a function of cumulative 3-month 
               )
   }  # // end TN_chl_plot() function
 
+# remove incomplete cases in the data
+epc1 <- epc1[ complete.cases(epc1), ]
+epc2 <- epc2[ complete.cases(epc2), ]
+epc3 <- epc3[ complete.cases(epc3), ]
 
 # models
 ncmod1 <- gam( chla ~ TN_load_3mo, data = epc1 )
@@ -401,7 +404,7 @@ TN_chl_plot( epc2, ncmod2, "Chla bw HF-CC vs. 3mo TN load (OTB)" )
 TN_chl_plot( epc3, ncmod3, "Chla bw GB-HF vs. 3mo TN load (OTB)" )
 ```
 
-The diagnostics for each of the above OTB models indicate that the assumption of homoskedastic, Gaussian residuals is questionable.
+The diagnostics for each of the above OTB models indicate that the assumption of homoskedastic, Gaussian residuals is not met.
 ```{r fig.width=7, fig.height=7}
 par(mfrow=c(2,2))
   # North of CC
