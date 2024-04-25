@@ -1,7 +1,7 @@
 ---
 title: "Evaluation of Current Management Paradigm for Old Tampa Bay, Florida"
 author: "Miles Medina, PhD, ECCO Scientific"
-date: "April 22, 2024"
+date: "April 29, 2024"
 output:
   html_document:
     theme: sandstone
@@ -12,7 +12,7 @@ editor_options:
 
 # Contents {#top}
 
-[Introduction](#intro)
+[Overview](#overview)
 
 [Data Processing](#data)
     
@@ -22,7 +22,8 @@ editor_options:
 
 [Linear Models](#lm)
   
-  * [Nitrogen and chlorophyll](#lm_N)
+  * [Nitrogen loads and chlorophyll, with 3-month cumulative loads](#lm_3N)
+  * [Nitrogen loads and chlorophyll, with delayed loads](#lm_N)
   * [Chlorophyll and light](#lm_chl)
 
 [Generalized Additive Models (GAMs)](#gam)
@@ -35,11 +36,18 @@ editor_options:
 \
 
 
-# Introduction {#intro}
+# Overview {#overview}
 
-The current management paradigm for Old Tampa Bay (OTB) is holds that (1) reducing _external nitrogen loads_ will reduce chlorophyll a concentrations in the OTB water column, (2) lower _chlorophyll a concentrations_ will improve water clarity (e.g., Secchi depth), and (3) improved _water clarity_ will stimulate greater _seagrass growth/recovery_. The management paradigm is based on earlier studies that reported significant correlations between each subsequent pair of covariates (e.g., Morrison et al. 1996; Greening & Janicki 2016). This document explores statistical relationships between these pairs at various OTB sub-segments using monthly averaged data at various time lags (zero lag, one-month lag, two-month lag between explanatory variable and response). Analyses were performed in R version 4.3.1 (R Core Team 2023).
+The current management paradigm for Old Tampa Bay (OTB) is holds that (1) reducing _external nitrogen loads_ will reduce chlorophyll a concentrations in the OTB water column, (2) reducing _chlorophyll a concentrations_ will improve water clarity, and (3) improved _water clarity_ will stimulate _seagrass growth/recovery_. The management paradigm is based on earlier studies that reported significant correlations between each subsequent pair of covariates, considering data from across Tampa Bay as a whole and/or from Tampa Bay segments including OTB (e.g., Janicki & Wade 1996; Morrison et al. 1996; Greening & Janicki 2016).
 
-The results indicate that linear correlations measured during earlier periods of study continued to hold between approximately 2000 and 2023. However, we also find evidence (GAM results) suggesting that these relationships have varied over time at some OTB sub-segments, with intriguing differences across sub-segments. We conclude that correlation analyses and simple regression models do not reliably capture the potentially synergistic effects of multiple stressors influencing water quality and seagrass abundance.
+This document explores statistical relationships between TN loads and chlorophyll-a concentrations and between chlorophyll-a concentrations and Secchi depth at various OTB sub-segments using monthly averaged data between approximately 2000 and 2023 (periods of record vary by data source and variable). The analyses were implemented in R version 4.3.1 (R Core Team 2023).
+
+The results of linear models indicate correlations at each OTB sub-segment:
+
+  * Across OTB sub-segments, chlorophyll-a concentrations were correlated with cumulative 3-month TN loads (e.g., chlorophyll in a given month and the sum of TN loads during the same month and the two prior months). However, model diagnostics indicated that the assumption of homoskedastic, Gaussian residuals was not met.
+  * Using log10-transformed monthly averaged values for TN loads, chlorophyll-a concentrations, and Secchi depths, we observed significant correlations between loads and chlorophyll and between chlorophyll and Secchi depth, across OTB sub-segments (during the same month). At most sub-segments, these correlations held at delays of one month and two months.
+  
+The results of generalized additive models (GAMs) indicated that the TN-chlorophyll and chlorophyll-Secchi relationships varied substantially over time at some OTB sub-segments. We conclude that correlation analyses and simple regression models do not reliably capture the potentially synergistic effects of multiple stressors influencing water quality and seagrass abundance over time.
 
   
 [top](#top)
@@ -122,7 +130,7 @@ head( pcwq2 )
 
 ## Environmental Protection Commission of Hillsborough County (EPC) water quality data {#data_epc}
 
-The code below loads the EPC water quality data from file (`./data/epcwq.RData`), pivots the dataframe from wide to long format, performs QC checks, aggregates the data to a monthly timeframe (monthly means), and creates a new `epcwq2` dataframe for analysis.
+This section loads the EPC water quality data from file (`./data/epcwq.RData`), pivots the dataframe from wide to long format, performs QC checks, aggregates the data to a monthly timeframe (monthly means), and creates a new `epcwq2` dataframe for analysis. As indicated in output below, a substantial number of Secchi records indicate that reported Secchi depth equals the total depth (i.e., the Secchi depth was visible at bottom); in these cases, the Secchi depth is not necessarily a reliable proxy for water clarity (e.g., in shallow areas).
 
 ```{r}
   # load data
@@ -178,6 +186,9 @@ The code below loads the EPC water quality data from file (`./data/epcwq.RData`)
     # apply function to locate fatal records
     rm.fatal.idx <- apply( matrix(epcwq2$QA,ncol=1), 1, find.fatal ) |> which()
     epcwq2 <- epcwq2[ -rm.fatal.idx ]
+    # acknowledge Secchi records visible on bottom
+    epcwq2[ which( epcwq2$param=="Secchi" & epcwq2$QA==">"), ] |> nrow() # number of VOB Secchi records
+    epcwq2[ which( epcwq2$param=="Secchi"), ] |> nrow()  # total number of Secchi records
   # coerce depth to numeric
     epcwq2$SampleDepth <- epcwq2$SampleDepth |> as.numeric()
   # check for duplicates (confirm FALSE)
@@ -203,7 +214,7 @@ head( epcwq2 )
 
 ## Tampa Bay Estuary Program nitrogen load estimates {#data_loads}
 
-The code below loads the Tampa Bay Estuary Program's monthly external loading estimates for Tampa Bay (`../data-raw/TB_loads_monthly.csv`), computes total monthly TN loads by summing over TN load sources to OTB (e.g., AD, NPS, DPS, etc.), standardizes column names, and creates a new `loads` dataframe for analysis.
+This section loads the Tampa Bay Estuary Program's monthly external loading estimates for Tampa Bay (`../data-raw/TB_loads_monthly.csv`), computes total monthly TN loads by summing over TN load sources to OTB (e.g., AD, NPS, DPS, etc.), standardizes column names, and creates a new `loads` dataframe for analysis.
 
 ```{r}
   # load data
@@ -237,9 +248,180 @@ head( loads )
 
 # Linear Models {#lm}
 
+Janicki & Wade (1996) developed a linear regression model relating monthly average chlorophyll-a concentrations to cumulative TN loads over a three-month period (the concurrent month and two previous months). The model used data from across Tampa Bay during 1986--1991 and stratified the data by the month of the year and by bay segment, and it produced an R2 value of 0.73. 
+
+## Nitrogen loads and chlorophyll, with 3-month cumulative loads {#lm_3N}
+
+We apply a similar approach as Janciki & Wade (1996) to explore relationships between monthly average chlorophyll-a concentrations and TN loads at three OTB sub-segments during the 2000-2021 period. For simplicity, the models below do not stratify by the month of the year, in contrast to the model of Janicki & Wade (1996).
+
+We begin by assembling the TN load and chlorophyll-a data from the three OTB sub-segments compartmentalized by the Courtney Campbell, Howard Frankland, and Gandy Blvd causeways/bridges, using water quality data collected by EPC at fixed monitoring locations between 2000 and 2021. The three resulting datasets -- `epc1`, `epc2`, and `epc3` -- are arranged in wide format and include the columns `date`, `chla`, `TN_load` (monthly load values), and `TN_load_3mo` (cumulative 3-month loads).
+
+```{r}
+# Subset and join load and chl-a data for OTB sub-segments
+  # Sub-segment north of Courtney Campbell
+  epc1 <- epcwq2[ which( epcwq2$site %in% c(46,47,60,61,62,64) ), ]  # subset EPC data by station
+  epc1 <- epc1[which(epc1$param=="Chla"),] |> group_by(date) |>  # aggregate chl data to monthly means
+            summarise(value=mean(value)) |> as.data.frame()
+  epc1 <- left_join( epc1, loads[,c('date','value')], by='date' )  # value.x is chl; value.y is load
+  colnames(epc1) <- c("date","chla","TN_load")
+  # Sub-segment between Courtney Campbell and Frankland
+  epc2 <- epcwq2[ which( epcwq2$site %in% c(40,41,42,63,65,66) ), ]
+  epc2 <- epc2[which(epc2$param=="Chla"),] |> group_by(date) |> 
+          summarise(value=mean(value)) |> as.data.frame()
+  epc2 <- left_join( epc2, loads[,c('date','value')], by='date' ) 
+  colnames(epc2) <- c("date","chla","TN_load")
+  # Sub-segment between Frankland and Gandy
+  epc3 <- epcwq2[ which( epcwq2$site %in% c(38,50,51,67) ), ]
+  epc3 <- epc3[which(epc3$param=="Chla"),] |> group_by(date) |> 
+        summarise(value=mean(value)) |> as.data.frame()
+  epc3 <- left_join( epc3, loads[,c('date','value')], by='date' )
+  colnames(epc3) <- c("date","chla","TN_load")
+  
+# Compute 3-month TN loads
+  # Define function to sum load values over a specified window (`win`)
+  # The function assumes there are no NAs 
+  sum3mo <- function( x, win = 3 ){
+    out <- rep(NA,length=(win-1))
+    for( i in win:length(x) ){
+      out[i] <- sum( x[i:(i-win+1)] )
+    }
+    return( out )
+  }
+  # Add a 3-month TN load column to each dataset
+  epc1$TN_load_3mo <- sum3mo( epc1$TN_load )
+  epc2$TN_load_3mo <- sum3mo( epc2$TN_load )
+  epc3$TN_load_3mo <- sum3mo( epc3$TN_load )
+  
+```
+
+The monthly sub-segment chlorophyll-a data and segment-wide TN load data are visualized below.
+```{r fig.width = 12, fig.height = 8}
+par( mfrow=c(2,2) )
+plot( chla ~ date, data = epc1, pch = 16, col = rgb(0,0.4,0.8,0.7),
+      ylim = c(0,80), ylab = "Chlorophyll-a (ug/l)", xlab = "", las = 1,
+      main = "Chlorophyll-a, OTB north of Courtney Campbell" )
+  lines( chla ~ date, data = epc1, col = rgb(0,0.4,0.8,0.4) )
+  abline( v = seq.Date(as.Date("2000-01-01"),as.Date("2024-01-01"),'year'),
+          col = rgb(0,0,0,0.2) )
+  abline( h = axTicks(2), col = rgb(0,0,0,0.2) )
+plot( chla ~ date, data = epc2, pch = 16, col = rgb(0,0.4,0.8,0.7),
+      ylim = c(0,80), ylab = "Chlorophyll-a (ug/l)", xlab = "", las = 1,
+      main = "Chlorophyll-a, OTB between Frankland & Courtney Campbell" )
+  lines( chla ~ date, data = epc2, col = rgb(0,0.4,0.8,0.4) )
+  abline( v = seq.Date(as.Date("2000-01-01"),as.Date("2024-01-01"),'year'),
+          col = rgb(0,0,0,0.2) )
+  abline( h = axTicks(2), col = rgb(0,0,0,0.2) )
+plot( chla ~ date, data = epc3, pch = 16, col = rgb(0,0.4,0.8,0.7),
+      ylim = c(0,80), ylab = "Chlorophyll-a (ug/l)", xlab = "", las = 1,
+      main = "Chlorophyll-a, OTB between Gandy & Frankland" )
+  lines( chla ~ date, data = epc3, col = rgb(0,0.4,0.8,0.4) )
+  abline( v = seq.Date(as.Date("2000-01-01"),as.Date("2024-01-01"),'year'),
+          col = rgb(0,0,0,0.2) )
+  abline( h = axTicks(2), col = rgb(0,0,0,0.2) )
+plot( TN_load ~ date, data = epc3, pch = 16, col = rgb(0.2,0.2,0.2,0.7),
+      ylab = "TN load (tons)", xlab = "", las = 1,
+      main = "Monthly TN load, Old Tampa Bay" )
+  lines( TN_load ~ date, data = epc3, col = rgb(0.2,0.2,0.2,0.4) )
+  abline( v = seq.Date(as.Date("2000-01-01"),as.Date("2024-01-01"),'year'),
+          col = rgb(0,0,0,0.2) )
+  abline( h = axTicks(2), col = rgb(0,0,0,0.2) )
+```
+
+Below, we fit linear models for chlorophyll as a function of cumulative 3-month TN loads at each sub-segment and visualize the results. The `TN_chl_plot()` function takes the data (`dat`) and model (`mod`) as input and produces a scatterplot of the data with the regression line. The models show significant relationships (P<0.001) and R2 values of 0.32, 0.37, and 0.46. However, these R2 values are not directly comparable to the R2=0.73 of the Janicki & Wade (1996) model, because the models differ in spatial scale (OTB sub-segments vs. Tampa Bay as a whole). Further, the residuals of each model do not appear to be homoskedastic nor Gaussian (diagnostic visualizations follow); experimentation with alternative model specifications that include a month-of-year term did not improve the model diagnostics.
+
+```{r fig.width = 12, fig.height=4}
+# Define plotting function for data and model
+  TN_chl_plot <- function( dat, mod, lab.main ){
+     # 95% CI
+     pred.seq <- seq( min( dat$TN_load_3mo, na.rm=TRUE ),
+                      max( dat$TN_load_3mo, na.rm=TRUE ), length.out=100 )
+     pred <- predict.gam( mod,
+                          newdata = data.frame( TN_load_3mo = pred.seq ),
+                          se.fit=TRUE )
+     
+     # P value
+      pval <- summary(mod)$p.table[2,4]
+      pcol1 <- rgb(1,0,0,0.4)
+      pcol2 <- rgb(1,0,0,0.15)
+      if( pval < 0.001 ){
+        pstring <- "P < 0.001"
+      } else if( pval < 0.01 ){
+        pstring <- "P < 0.01"
+      } else if( pval < 0.05 ){
+        pstring <- "P < 0.05"
+      } else {
+        pstring <- "P > 0.05"
+        pcol1 <- rgb(0.2,0.3,0.9,0.4)
+        pcol2 <- rgb(0,0.1,0.6,0.15)
+      }
+      
+      # scatterplot data
+      plot( chla ~ TN_load_3mo, data = dat,
+            col = rgb(0,0,0,0.6), cex = 1.4,
+            main = paste( lab.main,"\n",
+                          min(dat$date), " - ", max(dat$date) ),
+            cex.main = 1.6, cex.lab = 1.4,
+            xlim = range( c(0,dat$TN_load_3mo,pred.seq), na.rm=TRUE ),
+            ylim = range( c(0,dat$chla,pred$fit-pred$se.fit*1.96,
+                            pred$fit+pred$se.fit*1.96)*1.2 ),
+            xlab = "3-month TN load (tons)", cex.axis = 1.4,
+            ylab = "Chlorophyll-a (ug/l)", las = 1
+      )
+      abline( v = axTicks(1), col = rgb(0,0,0,0.2) )
+      abline( h = axTicks(2), col = rgb(0,0,0,0.2) )
+      abline( v = 0, col = rgb(0,0,0,0.5) )
+      abline( h = 0, col = rgb(0,0,0,0.5) )
+      
+      # plot model fit
+      lines( pred$fit ~ pred.seq, col = pcol1, lwd = 2, lty = 2 )
+      polygon( x = c( pred.seq, rev(pred.seq) ),
+               y = c( (pred$fit+pred$se.fit*1.96), rev((pred$fit-pred$se.fit*1.96)) ),
+               col = pcol2, border = rgb(0,0,0,0) )
+      # write model R2 and pval
+      legend( 'top', horiz = TRUE, bty = 'n',
+              border = rgb(0,0,0,0), cex = 1.4,
+              legend = paste0( "N = ", nrow(dat), "   ",
+                               "R2 = ", round(summary(mod)$r.sq,3),
+                               "   ", pstring )
+              )
+  }  # // end TN_chl_plot() function
+
+
+# models
+ncmod1 <- gam( chla ~ TN_load_3mo, data = epc1 )
+ncmod2 <- gam( chla ~ TN_load_3mo, data = epc2 )
+ncmod3 <- gam( chla ~ TN_load_3mo, data = epc3 )
+
+# plots
+par( mfrow=c(1,3) )
+TN_chl_plot( epc1, ncmod1, "Chla north of CC vs. 3mo TN load (OTB)" )
+TN_chl_plot( epc2, ncmod2, "Chla bw HF-CC vs. 3mo TN load (OTB)" )
+TN_chl_plot( epc3, ncmod3, "Chla bw GB-HF vs. 3mo TN load (OTB)" )
+```
+
+The diagnostics for each of the above OTB models indicate that the assumption of homoskedastic, Gaussian residuals is questionable.
+```{r fig.width=7, fig.height=7}
+par(mfrow=c(2,2))
+  # North of CC
+  gam.check(ncmod1,rep=1000)
+  # Between CC and HF
+  gam.check(ncmod2,rep=1000)
+  # Between HF and GB
+  gam.check(ncmod3,rep=1000)
+```
+
+[top](#top)
+
+\
+
+
+## Nitrogen loads and chlorophyll, with delayed loads {#lm_N}
+
+This section further explores relationships between chlorophyll-a and TN loads by considering monthly TN loading values at delays of zero through two months across various OTB sub-segments, including the EPC sub-segments and the Pinellas County strata.
+
 The code chunk below defines the `OTB_corr()` function, which computes and visualizes a linear fit between a specified explanatory variable _x_ and response variable _y_, after joining the datasets by date; the input data may come from two different dataframes. The function's arguments are described in comments in the first few lines of the code chunk.
 
-The `delay` argument allows the user to specify a non-negative integer delay between the explanatory and response variables; by default, `delay=0`. The `log` argument (logical) allows the user to specify whether to log10-transform _x_ and _y_ prior to the regression. The function outputs an x-y scatterplot that displays the linear fit with a 95% confidence band, as well as R2 and P-value estimates. The color of the regression line indicates whether the estimated slope is statistically significant (red) or not significant (gray) at alpha = 0.05. The function returns the input data and the model object.
+The `delay` argument allows the user to specify a non-negative integer time delay between the explanatory and response variables. By default, the `delay=0` setting pairs response values with concurrent explanatory values (e.g., TN loads and chlorophyll concentrations during the same month); setting `delay` to a positive values lags the explanatory variable by the specified number of time periods. The `log` argument (logical) allows the user to specify whether to log10-transform _x_ and _y_ prior to the regression. The function outputs an x-y scatterplot that displays the linear fit with a 95% confidence band, as well as R2 and P-value estimates. The color of the regression line indicates whether the estimated slope is statistically significant (red) or not significant (gray) at alpha = 0.05. The function returns the input data and the model object.
 
 ```{r}
   # define regression/plot function
@@ -345,38 +527,7 @@ The `delay` argument allows the user to specify a non-negative integer delay bet
   }  # // end OTB_corr()
 ```
 
-[top](#top)
-
-\
-
-
-## Nitrogen loads and chlorophyll {#lm_N}
-
-This section presents results of linear models that regress water-column chlorophyll a concentrations on TN loads across different OTB sub-segments.
-
-The plots below show relationships between TN loads and chlorophyll-a concentrations within Pinellas County strata E1--E5 (rows) at delays of 0--2 months (columns). During the same month (first column), all strata show significant positive correlations, with a maximum R2 value of 0.32. The data typically exhibit substantial scatter (unexplained variance) around the regression lines. The correlations measured at zero delay (first column) do not necessarily hold at delays of one month (second column) or two months (third column).
-
-```{r fig.width = 15, fig.height = 25 }
-  par(mfrow=c(5,3))
-  E1_load_Chla_0 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E1', delay = 0 )
-  E1_load_Chla_1 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E1', delay = 1 )
-  E1_load_Chla_2 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E1', delay = 2 )
-  E2_load_Chla_0 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E2', delay = 0 )
-  E2_load_Chla_1 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E2', delay = 1 )
-  E2_load_Chla_2 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E2', delay = 2 )
-  E3_load_Chla_0 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E3', delay = 0 )
-  E3_load_Chla_1 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E3', delay = 1 )
-  E3_load_Chla_2 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E3', delay = 2 )
-  E4_load_Chla_0 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E4', delay = 0 )
-  E4_load_Chla_1 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E4', delay = 1 )
-  E4_load_Chla_2 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E4', delay = 2 )
-  E5_load_Chla_0 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E5', delay = 0 )
-  E5_load_Chla_1 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E5', delay = 1 )
-  E5_load_Chla_2 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E5', delay = 2 )
-  
-```
-
-The plots below show relationships between external TN loads and chlorophyll-a concentrations within the three OTB sub-segments compartmentalized by the Courtney Campbell, Howard Frankland, and Gandy Blvd causeways/bridges, using water quality data collected by EPC at fixed monitoring locations between 2000 and 2021. The three OTB compartments span the three rows, and the three columns pertain to delays of zero, one, and two months. All three OTB compartments show significant positive correlations at each delay, with a maximum R2 value of 0.38. In each case the data exhibit substantial scatter around the regression line.
+The plots below show relationships between log10-transformed external TN loads and chlorophyll-a concentrations within the three OTB sub-segments compartmentalized by the Courtney Campbell, Howard Frankland, and Gandy Blvd causeways/bridges, using water quality data collected by EPC at fixed monitoring locations between 2000 and 2021. The three OTB compartments span the three rows, and the three columns pertain to delays of zero, one, and two months. All three OTB compartments show significant positive correlations at each delay, with a maximum R2 value of 0.36. In each case the data exhibit substantial scatter (unexplained variance) around the regression line. Although not visualized below, the diagnostics for each model indicate that the residuals are homoskedastic and approximately Gaussian.
 
 ```{r fig.width = 15, fig.height = 15 }
   par(mfrow=c(3,3))
@@ -384,37 +535,73 @@ The plots below show relationships between external TN loads and chlorophyll-a c
   epc1 <- epcwq2[ which( epcwq2$site %in% c(46,47,60,61,62,64) ), ]
   epc1$site <- "North CC"
   # models
-  epc1_load_Chla_0 <- OTB_corr( x = loads, y = epc1, 'TN load', 'Chla',
-                                'OTB watershed', 'North CC', delay = 0 )
+  epc1_load_Chla_0 <- OTB_corr( x = loads, y = epc1, 'TN load', 'Chla', 
+                                'OTB watershed', 'North CC', log = TRUE, delay = 0 )
   epc1_load_Chla_1 <- OTB_corr( x = loads, y = epc1, 'TN load', 'Chla',
-                                'OTB watershed', 'North CC', delay = 1 )
+                                'OTB watershed', 'North CC', log = TRUE, delay = 1 )
   epc1_load_Chla_2 <- OTB_corr( x = loads, y = epc1, 'TN load', 'Chla',
-                                'OTB watershed', 'North CC', delay = 2 )
+                                'OTB watershed', 'North CC', log = TRUE, delay = 2 )
   
   # assemble and re-label data for locations between Frankland & Campbell
   epc2 <- epcwq2[ which( epcwq2$site %in% c(40,41,42,63,65,66) ), ]
   epc2$site <- "HF-CC"
   # models
   epc2_load_Chla_0 <- OTB_corr( x = loads, y = epc2, 'TN load', 'Chla',
-                                'OTB watershed', 'HF-CC', delay = 0 )
+                                'OTB watershed', 'HF-CC', log = TRUE, delay = 0 )
   epc2_load_Chla_1 <- OTB_corr( x = loads, y = epc2, 'TN load', 'Chla',
-                                'OTB watershed', 'HF-CC', delay = 1 )
+                                'OTB watershed', 'HF-CC', log = TRUE, delay = 1 )
   epc2_load_Chla_2 <- OTB_corr( x = loads, y = epc2, 'TN load', 'Chla',
-                                'OTB watershed', 'HF-CC', delay = 2 )
+                                'OTB watershed', 'HF-CC', log = TRUE, delay = 2 )
   
   # assemble and re-label data for locations between Gandy & Frankland
   epc3 <- epcwq2[ which( epcwq2$site %in% c(38,50,51,67) ), ]
   epc3$site <- "GB-HF"
   # models
   epc3_load_Chla_0 <- OTB_corr( x = loads, y = epc3, 'TN load', 'Chla',
-                                'OTB watershed', 'GB-HF', delay = 0 )
+                                'OTB watershed', 'GB-HF', log = TRUE, delay = 0 )
   epc3_load_Chla_1 <- OTB_corr( x = loads, y = epc3, 'TN load', 'Chla',
-                                'OTB watershed', 'GB-HF', delay = 1 )
+                                'OTB watershed', 'GB-HF', log = TRUE, delay = 1 )
   epc3_load_Chla_2 <- OTB_corr( x = loads, y = epc3, 'TN load', 'Chla',
-                                'OTB watershed', 'GB-HF', delay = 2 )
+                                'OTB watershed', 'GB-HF', log = TRUE, delay = 2 )
 
 ```
 
+The plots below show relationships between log10-transformed TN loads and chlorophyll-a concentrations within Pinellas County strata E1--E5 (rows) at delays of 0--2 months (columns). During the same month (first column), all strata show significant positive correlations, with a maximum R2 value of 0.26. The data typically exhibit substantial scatter (unexplained variance) around the regression lines. Across all strata, with the exception of E1, significant relationships are also observed at delays of one month (second column) and two months (third column), although the R2 values are substantially lower. Although not visualized below, the diagnostics for each model indicate that the residuals are homoskedastic and approximately Gaussian.
+
+```{r fig.width = 15, fig.height = 25 }
+  par(mfrow=c(5,3))
+  E1_load_Chla_0 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E1',
+                              log = TRUE, delay = 0 )
+  E1_load_Chla_1 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E1',
+                              log = TRUE, delay = 1 )
+  E1_load_Chla_2 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E1',
+                              log = TRUE, delay = 2 )
+  E2_load_Chla_0 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E2',
+                              log = TRUE, delay = 0 )
+  E2_load_Chla_1 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E2',
+                              log = TRUE, delay = 1 )
+  E2_load_Chla_2 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E2',
+                              log = TRUE, delay = 2 )
+  E3_load_Chla_0 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E3',
+                              log = TRUE, delay = 0 )
+  E3_load_Chla_1 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E3',
+                              log = TRUE, delay = 1 )
+  E3_load_Chla_2 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E3',
+                              log = TRUE, delay = 2 )
+  E4_load_Chla_0 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E4',
+                              log = TRUE, delay = 0 )
+  E4_load_Chla_1 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E4',
+                              log = TRUE, delay = 1 )
+  E4_load_Chla_2 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E4',
+                              log = TRUE, delay = 2 )
+  E5_load_Chla_0 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E5',
+                              log = TRUE, delay = 0 )
+  E5_load_Chla_1 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E5',
+                              log = TRUE, delay = 1 )
+  E5_load_Chla_2 <- OTB_corr( x = loads, y = pcwq2, 'TN load', 'Chla', 'OTB watershed', 'E5',
+                              log = TRUE, delay = 2 )
+  
+```
 
 
 [top](#top)
@@ -424,7 +611,9 @@ The plots below show relationships between external TN loads and chlorophyll-a c
 
 ## Chlorophyll and light {#lm_chl}
 
-The plots below show relationships between chlorophyll-a concentrations and Secchi depths within the three OTB sub-segments compartmentalized by the Courtney Campbell, Howard Frankland, and Gandy Blvd causeways/bridges, using data collected by EPC at fixed monitoring locations between 2000 and 2023. Following Greening & Janicki (2016), the variables are log-transformed prior to analysis. All three OTB compartments show significant negative correlations at delays of zero and one month (first and second columns), with a maximum R2 value of 0.39. The magnitudes of the slopes and the R2 values both decrease between `delay=0` and `delay=1`. And in each case, the data exhibit substantial scatter around the regression line, indicating that any given chlorophyll concentration is typically associated with a large range of Secchi values. At a delay of two months (third column), none of the OTB compartments shows a significant correlation.
+This section explores relationships between log10-transformed chlorophyll-a concentrations and Secchi depths within the three OTB sub-segments compartmentalized by the Courtney Campbell, Howard Frankland, and Gandy Blvd causeways/bridges, using data collected by EPC at fixed monitoring locations between 2000 and 2023. Following Greening & Janicki (2016), the variables are log-transformed prior to analysis. When interpreting these results, it is important to consider that the Secchi data contain a substantial number of records in which the Secchi depth equals the total depth (i.e., the Secchi disk was visible at bottom). In these cases, the reported Secchi depth is not necessarily a reliable proxy of water clarity (e.g., in shallow areas), and the presence of these records may bias the regression results.
+
+All three OTB compartments show significant negative correlations at delays of zero and one month (first and second columns), with a maximum R2 value of 0.39. The magnitudes of the slopes and the R2 values both decrease between `delay=0` and `delay=1`. And in each case, the data exhibit substantial scatter around the regression line, indicating that any given chlorophyll concentration is typically associated with a large range of Secchi values. At a delay of two months (third column), none of the OTB compartments shows a significant correlation. Although not visualized below, the diagnostics for each model indicate that the residuals are homoskedastic and approximately Gaussian.
 
 ```{r fig.width = 15, fig.height = 15 }
   par(mfrow=c(3,3))
@@ -446,11 +635,11 @@ The plots below show relationships between chlorophyll-a concentrations and Secc
                                 'HF-CC', log = TRUE, delay = 2 )
   
   # models
-  epc3_light_Chla_0 <- OTB_corr( x = epc3, y = epc3, 'Chla', 'Secchi',
+  epc3_Chla_Secchi_0 <- OTB_corr( x = epc3, y = epc3, 'Chla', 'Secchi',
                                 'GB-HF', log = TRUE, delay = 0 )
-  epc3_light_Chla_1 <- OTB_corr( x = epc3, y = epc3, 'Chla', 'Secchi',
+  epc3_Chla_Secchi_1 <- OTB_corr( x = epc3, y = epc3, 'Chla', 'Secchi',
                                 'GB-HF', log = TRUE, delay = 1 )
-  epc3_light_Chla_2 <- OTB_corr( x = epc3, y = epc3, 'Chla', 'Secchi',
+  epc3_Chla_Secchi_2 <- OTB_corr( x = epc3, y = epc3, 'Chla', 'Secchi',
                                 'GB-HF', log = TRUE, delay = 2 )
 
 ```
@@ -460,7 +649,7 @@ The plots below show relationships between chlorophyll-a concentrations and Secc
 \
 
 
-# Generalized Additive Models (GAMs)
+# Generalized Additive Models (GAMs) {#gam}
 
 Next, we explore whether nitrogen-chlorophyll and chlorophyll-Secchi relationships have changed over time across OTB sub-segments. The results indicate changes over time at some sub-segments.
 
@@ -750,6 +939,8 @@ The plots below suggest that the association between Secchi depth and chlorophyl
 Literature:
 
 Greening H & Janicki A (2006). Toward reversal of eutrophic conditions in a subtropical Estuary: Water quality and seagrass response to nitrogen loading reductions in Tampa Bay, Florida, USA. Environmental Management 38: 163-178. [http://doi.org/10.1007/s00267-005-0079-4](http://doi.org/10.1007/s00267-005-0079-4).
+
+Janicki A & Wade D (1996). Estimating critical external nitrogen loads for the Tampa Bay Estuary: An empirically based approach to setting management targets, Final Report. 
 
 Morrison G, Janicki A, Wade D, Martin J & Vargo G (1996). Estimated nitrogen fluxes and nitrogen-chlorophyll relationships in Tampa Bay, 1985-1994. Tampa Bay Area Study Group Project Reports: 128.
 [https://digitalcommons.usf.edu/basgp_report/128](https://digitalcommons.usf.edu/basgp_report/128).
