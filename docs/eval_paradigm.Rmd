@@ -15,9 +15,9 @@ editor_options:
 [Overview](#overview)
 
 [Data Processing](#data)
-    
-  * [Pinellas County water quality data](#data_pcwq)
+
   * [Environmental Protection Commission of Hillsborough County (EPC) water quality data](#data_epc)
+  * [Pinellas County water quality data](#data_pcwq)
   * [Tampa Bay Estuary Program nitrogen load estimates](#data_loads)
 
 [Linear Models](#lm)
@@ -68,65 +68,6 @@ library(dplyr)
 library(tidyr)
 library(mgcv)
 ```
-
-## Pinellas County water quality data {#data_pcwq}
-
-Pinellas County collects water quality data at five strata along the western boundary of OTB:
-
-  + E1: Safety Harbor / Mobbly Bay
-  + E2: Largo Inlet
-  + E3: Feather Sound
-  + E4: Gateway
-  + E5: Weedon Island
-  
-The code below loads the raw data from file (`../data-raw/DataDownload_2999342_row.csv`), performs QC checks, standardizes column names, aggregates the data to a monthly timeframe (monthly means), and creates a new `pcwq2` dataframe for analysis.
-
-```{r}
-  # load data
-    pcwq1 <- read.csv( "../data-raw/DataDownload_2999342_row.csv" )[,1:21]
-  # dates
-    pcwq1$Date <- pcwq1$SampleDate |> as.Date("%m/%d/%Y")
-  # qualifier codes
-    # specify codes
-    fatal.codes <- c("*","?","A","B","G","H","J","K",
-                     "L","N","O","Q","T","V","Y","Z")
-    # define function to locate fatal records
-    find.fatal <- function( QUALIFIER, FATAL=fatal.codes ){  # QUALIFER arg is a string
-      input.code <- QUALIFIER |> strsplit(split='') |>
-                      unlist() |> toupper()  # parse string into single characters
-      fatal <- input.code %in% FATAL |> any()  # check if any characters match FATAL
-      return( fatal )  # return TRUE or FALSE
-    }  # // end find.fatal()
-    # apply function to locate fatal records
-    rm.fatal.idx <- apply( matrix(pcwq1$QACode,ncol=1), 1, find.fatal ) |> which()
-    pcwq1 <- pcwq1[ -rm.fatal.idx ]
-    # parameter names
-    param.names.old <- pcwq1$Parameter |> unique() |> sort()
-    param.names.new <- c( "BOD", "Chla", "ChlaC", "Chlb", "Chlc", "DO", "DO_Sat",
-                          "NOx", "Salinity", "TempW", "TKN", "TN", "TSS", "Turbidity" )
-    pcwq1$Analyte <- mapvalues( pcwq1$Parameter, param.names.old, param.names.new )
-    # result units
-    pcwq1$Unit <- lapply( pcwq1$Parameter, function(x) strsplit(x,"_")[[1]][2] ) |> unlist()
-    # check for duplicates (confirm FALSE)
-    pcwq1 |> duplicated() |> any()
-    # subset and rename columns
-    pcwq2 <- pcwq1[, c("Date","Analyte","Result_Value","Unit","StationID") ]
-    colnames( pcwq2 ) <- c("date","param", "value", "unit", "site" )
-    # aggregate data to monthly timeframe
-    pcwq2 <- pcwq2 |> group_by(date,param,site,unit) |> summarise(value=mean(value)) |> as.data.frame()
-    pcwq2$date <- pcwq2$date |> floor_date('month')
-
-```
-
-The dataset contains `r nrow(pcwq2) |> prettyNum(big.mark=",")` rows.
-
-```{r}
-head( pcwq2 )
-```
-
-[top](#top)
-
-\
 
 
 ## Environmental Protection Commission of Hillsborough County (EPC) water quality data {#data_epc}
@@ -212,6 +153,64 @@ head( epcwq2 )
 
 \
 
+## Pinellas County water quality data {#data_pcwq}
+
+Pinellas County collects water quality data at five strata along the western boundary of OTB:
+
+  + E1: Safety Harbor / Mobbly Bay
+  + E2: Largo Inlet
+  + E3: Feather Sound
+  + E4: Gateway
+  + E5: Weedon Island
+  
+The code below loads the raw data from file (`../data-raw/DataDownload_2999342_row.csv`), performs QC checks, standardizes column names, aggregates the data to a monthly timeframe (monthly means), and creates a new `pcwq2` dataframe for analysis.
+
+```{r}
+  # load data
+    pcwq1 <- read.csv( "../data-raw/DataDownload_2999342_row.csv" )[,1:21]
+  # dates
+    pcwq1$Date <- pcwq1$SampleDate |> as.Date("%m/%d/%Y")
+  # qualifier codes
+    # specify codes
+    fatal.codes <- c("*","?","A","B","G","H","J","K",
+                     "L","N","O","Q","T","V","Y","Z")
+    # define function to locate fatal records
+    find.fatal <- function( QUALIFIER, FATAL=fatal.codes ){  # QUALIFER arg is a string
+      input.code <- QUALIFIER |> strsplit(split='') |>
+                      unlist() |> toupper()  # parse string into single characters
+      fatal <- input.code %in% FATAL |> any()  # check if any characters match FATAL
+      return( fatal )  # return TRUE or FALSE
+    }  # // end find.fatal()
+    # apply function to locate fatal records
+    rm.fatal.idx <- apply( matrix(pcwq1$QACode,ncol=1), 1, find.fatal ) |> which()
+    pcwq1 <- pcwq1[ -rm.fatal.idx ]
+    # parameter names
+    param.names.old <- pcwq1$Parameter |> unique() |> sort()
+    param.names.new <- c( "BOD", "Chla", "ChlaC", "Chlb", "Chlc", "DO", "DO_Sat",
+                          "NOx", "Salinity", "TempW", "TKN", "TN", "TSS", "Turbidity" )
+    pcwq1$Analyte <- mapvalues( pcwq1$Parameter, param.names.old, param.names.new )
+    # result units
+    pcwq1$Unit <- lapply( pcwq1$Parameter, function(x) strsplit(x,"_")[[1]][2] ) |> unlist()
+    # check for duplicates (confirm FALSE)
+    pcwq1 |> duplicated() |> any()
+    # subset and rename columns
+    pcwq2 <- pcwq1[, c("Date","Analyte","Result_Value","Unit","StationID") ]
+    colnames( pcwq2 ) <- c("date","param", "value", "unit", "site" )
+    # aggregate data to monthly timeframe
+    pcwq2 <- pcwq2 |> group_by(date,param,site,unit) |> summarise(value=mean(value)) |> as.data.frame()
+    pcwq2$date <- pcwq2$date |> floor_date('month')
+
+```
+
+The dataset contains `r nrow(pcwq2) |> prettyNum(big.mark=",")` rows.
+
+```{r}
+head( pcwq2 )
+```
+
+[top](#top)
+
+\
 
 ## Tampa Bay Estuary Program nitrogen load estimates {#data_loads}
 
@@ -662,11 +661,113 @@ Next, we explore whether nitrogen-chlorophyll and chlorophyll-Secchi relationshi
 
 ## Nitrogen and chlorophyll {#gam_N}
 
-This section explores whether relationships between TN loads and chlorophyll concentrations at Pinellas County strata within OTB have changed over time.
+This section explores whether relationships between TN loads and chlorophyll concentrations have changed over time within the sub-segments divided by bridges/causeways and within Pinellas County strata (E1--E5).
+
+
+### North of Courtney Campbell
+
+We assemble the EPC data and specify a GAM that estimates the chlorophyll-a concentration using smooth terms for the decimal date (`decdate`), TN load (`value.x`), and their tensor product interaction. Model diagnostics indicate that the residuals are approximately Gaussian (QQ plot) and that the model had sufficient basis dimensions (k).
+
+```{r fig.width = 12, fig.height = 12}
+  # join TN load data to chlorophyll data
+  epc1 <- epcwq2[ which( epcwq2$site %in% c(46,47,60,61,62,64) ), ]  # subset EPC data by station
+  epc1 <- epc1[which(epc1$param=="Chla"),] |> group_by(date) |>  # aggregate chl data to monthly means
+            summarise(value=mean(value)) |> as.data.frame()
+  gamdat_epc1 <- inner_join( x = epc1, y = loads, by = 'date' )
+  nrow(gamdat_epc1)
+  # decimal date
+  gamdat_epc1$decdate <- gamdat_epc1$date |> decimal_date()
+  # fit gam
+  gam_epc1 <- gam(  log10(value.y) ~ te( decdate, value.x, k=11 ), data = gamdat_epc1 )
+  # model diagnostics
+  par(mfrow=c(2,2))
+  gam.check( gam_epc1, rep = 1000 )
+  summary( gam_epc1 )
+```
+
+The plots below visualize the estimated `te()` coefficient surface and suggest that the association between chlorophyll concentrations and TN load (`value.x`) has increased over time (`decdate`) within the sub-segment. In the heatmap image, colors range from red (relatively low magnitude) to yellow (higher magnitude). White patches indicate gaps in the input space.
+
+```{r fig.width = 12, fig.height = 6}
+  # plot smooth
+  par(mfrow=c(1,2))
+  plot.gam( gam_epc1, scheme = 1 )
+  plot.gam( gam_epc1, scheme = 2 )
+```
+
+[top](#top)
+\
+
+### Between Howard Frankland and Courtney Campbell
+
+The model shows good diagnostics.
+
+```{r fig.width = 12, fig.height = 12}
+  # join TN load data to chlorophyll data
+  epc2 <- epcwq2[ which( epcwq2$site %in% c(40,41,42,63,65,66) ), ]
+  epc2 <- epc2[which(epc2$param=="Chla"),] |> group_by(date) |> 
+            summarise(value=mean(value)) |> as.data.frame()
+  gamdat_epc2 <- inner_join( x = epc2, y = loads, by = 'date' )
+  nrow(gamdat_epc2)
+  # decimal date
+  gamdat_epc2$decdate <- gamdat_epc2$date |> decimal_date()
+  # fit gam
+  gam_epc2 <- gam(  log10(value.y) ~ te( decdate, value.x, k=11 ), data = gamdat_epc2 )
+  # model diagnostics
+  par(mfrow=c(2,2))
+  gam.check( gam_epc2, rep = 1000 )
+  summary( gam_epc2 )
+
+```
+
+The plots below suggest that the association between chlorophyll concentrations and TN load (`value.x`) has changed over time (`decdate`) within the sub-segment. In the heatmap image, colors range from red (relatively low magnitude) to yellow (higher magnitude). Comparisons across models (sub-segments) are not straightforward because each model's `te()` coefficient values are relative to the estimated intercept.
+
+```{r fig.width = 12, fig.height = 6}
+  # plot smooth
+  par(mfrow=c(1,2))
+  plot.gam( gam_epc2, scheme = 1 )
+  plot.gam( gam_epc2, scheme = 2 )
+```
+
+[top](#top)
+\
+
+### Between Gandy Blvd and Howard Frankland
+
+The model shows good diagnostics.
+
+```{r fig.width = 12, fig.height = 12}
+ # join TN load data to chlorophyll data
+  epc3 <- epcwq2[ which( epcwq2$site %in% c(38,50,51,67) ), ]
+  epc3 <- epc3[which(epc3$param=="Chla"),] |> group_by(date) |> 
+            summarise(value=mean(value)) |> as.data.frame()
+  gamdat_epc3 <- inner_join( x = epc3, y = loads, by = 'date' )
+  nrow(gamdat_epc3)
+  # decimal date
+  gamdat_epc3$decdate <- gamdat_epc3$date |> decimal_date()
+  # fit gam
+  gam_epc3 <- gam(  log10(value.y) ~ te( decdate, value.x, k=11 ), data = gamdat_epc3 )
+  # model diagnostics
+  par(mfrow=c(2,2))
+  gam.check( gam_epc3, rep = 1000 )
+  summary( gam_epc3 )
+```
+
+The plots below suggest that the association between chlorophyll concentrations and TN load (`value.x`) has changed over time (`decdate`) within the sub-segment. In the heatmap image, colors range from red (relatively low magnitude) to yellow (higher magnitude). Comparisons across models (sub-segments) are not straightforward because each model's `te()` coefficient values are relative to the estimated intercept.
+
+```{r fig.width = 12, fig.height = 6}
+  # plot smooth
+  par(mfrow=c(1,2))
+  plot.gam( gam_epc3, scheme = 1 )
+  plot.gam( gam_epc3, scheme = 2 )
+```
+
+[top](#top)
+\
+
 
 ### E1 (Safety Harbor / Mobbly Bay)
 
-For stratum E1 (Safety Harbor / Mobbly Bay), we assemble the input data and specify a GAM that estimates the chlorophyll-a concentration using smooth terms for the decimal date (`decdate`), TN load (`value.x`), and their tensor product interaction. Model diagnostics indicate that the residuals are approximately Gaussian (QQ plot) and that the model had sufficient basis dimensions (k).
+The model shows good diagnostics.
 
 ```{r fig.width = 12, fig.height = 12}
   # join TN load data to chlorophyll data
@@ -685,7 +786,7 @@ For stratum E1 (Safety Harbor / Mobbly Bay), we assemble the input data and spec
   summary( gam1 )
 ```
 
-The plots below visualize the estimated `te()` coefficient surface and suggest that the association between chlorophyll concentrations and TN load (`value.x`) has not substantially changed over time (`decdate`). In the heatmap image, colors range from red (relatively low magnitude) to yellow (higher magnitude). White patches indicate gaps in the input space.
+The plots below visualize the estimated `te()` coefficient surface and suggest that the association between chlorophyll concentrations and TN load (`value.x`) has not substantially changed over time (`decdate`). In the heatmap image, colors range from red (relatively low magnitude) to yellow (higher magnitude). White patches indicate gaps in the input space. Comparisons across models (sub-segments) are not straightforward because each model's `te()` coefficient values are relative to the estimated intercept.
 
 ```{r fig.width = 12, fig.height = 6}
   # plot smooth
@@ -699,7 +800,7 @@ The plots below visualize the estimated `te()` coefficient surface and suggest t
 
 ### E2 (Largo Inlet)
 
-The model for stratum E2 (Largo Inlet) shows good diagnostics.
+The model shows good diagnostics.
 
 ```{r fig.width = 12, fig.height = 12}
   # join TN load data to chlorophyll data
@@ -718,7 +819,7 @@ The model for stratum E2 (Largo Inlet) shows good diagnostics.
   summary( gam2 )
 ```
 
-The plots below suggest that the association between chlorophyll concentrations and TN load (`value.x`) has changed substantially over time (`decdate`) at Largo Inlet, with TN loads (`value.x`) most strongly associated with chlorophyll concentrations between about 2010 and 2015.
+The plots below suggest that the association between chlorophyll concentrations and TN load (`value.x`) has changed substantially over time (`decdate`) at Largo Inlet, with TN loads (`value.x`) most strongly associated with chlorophyll concentrations between about 2010 and 2015. Comparisons across models (sub-segments) are not straightforward because each model's `te()` coefficient values are relative to the estimated intercept.
 
 ```{r fig.width = 12, fig.height = 6}
   # plot smooth
@@ -732,7 +833,7 @@ The plots below suggest that the association between chlorophyll concentrations 
 
 ### E3 (Feather Sound)
 
-The model for stratum E3 (Feather Sound) shows good diagnostics.
+The model shows good diagnostics.
 
 ```{r fig.width = 12, fig.height = 12}
   # join TN load data to chlorophyll data
@@ -751,7 +852,7 @@ The model for stratum E3 (Feather Sound) shows good diagnostics.
   summary( gam3 )
 ```
 
-The plots below suggest that the association between chlorophyll concentrations and TN load (`value.x`) has not changed substantially over time (`decdate`) at Feather Sound.
+The plots below suggest that the association between chlorophyll concentrations and TN load (`value.x`) has not changed substantially over time (`decdate`) at Feather Sound. Comparisons across models (sub-segments) are not straightforward because each model's `te()` coefficient values are relative to the estimated intercept.
 
 ```{r fig.width = 12, fig.height = 6}
   # plot smooth
@@ -765,7 +866,7 @@ The plots below suggest that the association between chlorophyll concentrations 
 
 ### E4 (Gateway)
 
-The model for stratum E4 (Gateway) shows good diagnostics.
+The model shows good diagnostics.
 
 ```{r fig.width = 12, fig.height = 12}
   # join TN load data to chlorophyll data
@@ -784,7 +885,7 @@ The model for stratum E4 (Gateway) shows good diagnostics.
   summary( gam4 )
 ```
 
-The plots below suggest that the association between chlorophyll concentrations and TN load (`value.x`) has not changed substantially over time (`decdate`) at Gateway.
+The plots below suggest that the association between chlorophyll concentrations and TN load (`value.x`) has not changed substantially over time (`decdate`) at Gateway. Comparisons across models (sub-segments) are not straightforward because each model's `te()` coefficient values are relative to the estimated intercept.
 
 ```{r fig.width = 12, fig.height = 6}
   # plot smooth
@@ -798,7 +899,7 @@ The plots below suggest that the association between chlorophyll concentrations 
 
 ### E5 (Weedon Island)
 
-The model for stratum E5 (Weedon Island) shows good diagnostics.
+The model shows good diagnostics.
 
 ```{r fig.width = 12, fig.height = 12}
   # join TN load data to chlorophyll data
@@ -817,7 +918,7 @@ The model for stratum E5 (Weedon Island) shows good diagnostics.
   summary( gam5 )
 ```
 
-The plots below suggests a possible bifurcation in the association between chlorophyll concentrations and TN load (`value.x`) at Weedon Island over time (`decdate`), for moderate to high levels of TN load.
+The plots below suggests a possible bifurcation in the association between chlorophyll concentrations and TN load (`value.x`) at Weedon Island over time (`decdate`), for moderate to high levels of TN load. Comparisons across models (sub-segments) are not straightforward because each model's `te()` coefficient values are relative to the estimated intercept.
 
 ```{r fig.width = 12, fig.height = 6}
   # plot smooth
@@ -838,10 +939,11 @@ This section explores whether relationships between chlorophyll concentrations a
 
 ### North of Courtney Campbell
 
-Starting with the `epc1` dataframe that we assembled for the linear model, we aggregate the data into monthly averages across EPC monitoring sites north of the Courtney Campbell causeway. The model shows good diagnostics.
+We assemble the EPC data and fit a GAM to model the chlorophyll-Secchi relationship over time. The model shows good diagnostics.
 
 ```{r fig.width = 12, fig.height = 12}
   # join TN load data to chlorophyll data
+  epc1 <- epcwq2[ which( epcwq2$site %in% c(46,47,60,61,62,64) ), ]  # subset EPC data by station
   epc1.chl <- epc1[ which( epc1$param=="Chla" ), ]
   epc1.chl <- epc1.chl |> group_by(date) |> summarize(value=mean(value)) |> as.data.frame()
   epc1.sec <- epc1[ which( epc1$param=="Secchi" ), ]
@@ -870,12 +972,13 @@ The plots below visualize the estimated `te()` coefficient surface and suggest t
 [top](#top)
 \
 
-### Between the Frankland Bridge and Courtney Campbell
+### Between Howard Frankland and Courtney Campbell
 
-Starting with the `epc2` dataframe that we assembled for the linear model, we aggregate the data into monthly averages across EPC monitoring sites between the Frankland bridge and the Courtney Campbell causeway. The model shows good diagnostics.
+The model shows good diagnostics.
 
 ```{r fig.width = 12, fig.height = 12}
  # join TN load data to chlorophyll data
+  epc2 <- epcwq2[ which( epcwq2$site %in% c(40,41,42,63,65,66) ), ]
  epc2.chl <- epc2[ which( epc2$param=="Chla" ), ]
  epc2.chl <- epc2.chl |> group_by(date) |> summarize(value=mean(value)) |> as.data.frame()
  epc2.sec <- epc2[ which( epc2$param=="Secchi" ), ]
@@ -892,7 +995,7 @@ Starting with the `epc2` dataframe that we assembled for the linear model, we ag
  summary( gam7 )
 ```
 
-The plots below suggest that the association between Secchi depth and chlorophyll concentration (`value.x`) has changed substantially over time (`decdate`) at this sub-segment. Redder areas in the heatmap indicate time periods when increased chlorophyll concentrations were more strongly associated with reduced water clarity. Although the heatmap indicates gaps in some high-chlorophyll areas of the input space, the temporal pattern in these results noticeably resembles those of the previous model (`gam6`). Nonetheless, comparing the outputs of the `gam6` and `gam7` models is not straightforward as the estimated intercepts differ in magnitude between models (see `summary(...)` outputs), as do the scales of the axes of the coefficient surface plots. Further interpretation and comparison of these results can be pursued at a later phase of the project.
+The plots below suggest that the association between Secchi depth and chlorophyll concentration (`value.x`) has changed substantially over time (`decdate`) at this sub-segment. Redder areas in the heatmap indicate time periods when increased chlorophyll concentrations were more strongly associated with reduced water clarity. Although the heatmap indicates gaps in some high-chlorophyll areas of the input space, the temporal pattern in these results noticeably resembles those of the previous model (`gam6`). Comparisons across models (sub-segments) are not straightforward because each model's `te()` coefficient values are relative to the estimated intercept..
 
 ```{r fig.width = 12, fig.height = 6}
   # plot smooth
@@ -904,12 +1007,13 @@ The plots below suggest that the association between Secchi depth and chlorophyl
 [top](#top)
 \
 
-### Between Gandy Blvd and the Frankland Bridge
+### Between Gandy Blvd and Howard Frankland
 
-Starting with the `epc3` dataframe that we assembled for the linear model, we aggregate the data into monthly averages across EPC monitoring sites between Gandy Blvd and the Frankland Bridge. The model shows good diagnostics.
+The model shows good diagnostics.
 
 ```{r fig.width = 12, fig.height = 12}
   # join TN load data to chlorophyll data
+  epc3 <- epcwq2[ which( epcwq2$site %in% c(38,50,51,67) ), ]
   epc3.chl <- epc3[ which( epc3$param=="Chla" ), ]
   epc3.chl <- epc3.chl |> group_by(date) |> summarize(value=mean(value)) |> as.data.frame()
   epc3.sec <- epc3[ which( epc3$param=="Secchi" ), ]
@@ -926,7 +1030,7 @@ Starting with the `epc3` dataframe that we assembled for the linear model, we ag
   summary( gam8 )
 ```
 
-The plots below suggest that the association between Secchi depth and chlorophyll concentration (`value.x`) has changed substantially over time (`decdate`) at this sub-segment. Comparisons of these results with those of previous models (`gam6` and `gam7`) are not straightforward and can be pursued during a later phase of the project.
+The plots below suggest that the association between Secchi depth and chlorophyll concentration (`value.x`) has changed substantially over time (`decdate`) at this sub-segment. Comparisons across models (sub-segments) are not straightforward because each model's `te()` coefficient values are relative to the estimated intercept.
  
 ```{r fig.width = 12, fig.height = 6}
   # plot smooth
