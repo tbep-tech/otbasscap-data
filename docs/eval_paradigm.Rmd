@@ -249,7 +249,7 @@ head( loads )
 
 # Linear Models {#lm}
 
-Janicki & Wade (1996) developed a linear regression model relating monthly average chlorophyll-a concentrations to cumulative TN loads over a three-month period (the concurrent month and two previous months). The model used data from across Tampa Bay during 1986--1991 and stratified the data by the month of the year and by bay segment, and it produced an R2 value of 0.73. 
+Janicki & Wade (1996) developed a linear regression model relating monthly average chlorophyll-a concentrations to cumulative TN loads over a three-month period (the concurrent month and two previous months). The model used data from across Tampa Bay during 1985--1991 and stratified the data by the month of the year and by bay segment, and it produced an R2 value of 0.73. Subsequently, Greening et al. (2014) developed a similar regression model for the 1985–2011 period and observed an R2 value of 0.66.
 
 ## Nitrogen loads and chlorophyll, with 3-month cumulative loads {#lm_3N}
 
@@ -944,6 +944,8 @@ The plots below suggest that the association between Secchi depth and chlorophyl
 Literature:
 
 Greening H & Janicki A (2006). Toward reversal of eutrophic conditions in a subtropical Estuary: Water quality and seagrass response to nitrogen loading reductions in Tampa Bay, Florida, USA. Environmental Management 38: 163-178. [http://doi.org/10.1007/s00267-005-0079-4](http://doi.org/10.1007/s00267-005-0079-4).
+
+Greening H, Janicki A, Sherwood ET, Pribble R & Johansson, JOR (2014). Ecosystem responses to long-term nutrient management in an urban estuary: Tampa Bay, Florida, USA. Estuarine, Coastal and Shelf Science http://dx.doi.org/10.1016/j.ecss.2014.10.003
 
 Janicki A & Wade D (1996). Estimating critical external nitrogen loads for the Tampa Bay Estuary: An empirically based approach to setting management targets, Final Report. 
 
