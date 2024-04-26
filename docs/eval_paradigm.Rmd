@@ -655,13 +655,13 @@ All three OTB compartments show significant negative correlations at delays of z
 
 # Generalized Additive Models (GAMs) {#gam}
 
-Next, we explore whether nitrogen-chlorophyll and chlorophyll-Secchi relationships have changed over time across OTB sub-segments. The results indicate changes over time at some sub-segments.
+Next, we explore whether nitrogen-chlorophyll and chlorophyll-Secchi relationships have changed over time across OTB sub-segments.
 
 \
 
 ## Nitrogen and chlorophyll {#gam_N}
 
-This section explores whether relationships between TN loads and chlorophyll concentrations have changed over time within the sub-segments divided by bridges/causeways and within Pinellas County strata (E1--E5).
+This section explores whether relationships between monthly averaged chlorophyll concentrations and concurrent TN loads have changed over time within the three sub-segments divided by bridges/causeways (using EPC data) and within the five Pinellas County strata (E1--E5).
 
 
 ### North of Courtney Campbell
@@ -719,7 +719,7 @@ The model shows good diagnostics.
 
 ```
 
-The plots below suggest that the association between chlorophyll concentrations and TN load (`value.x`) has changed over time (`decdate`) within the sub-segment. In the heatmap image, colors range from red (relatively low magnitude) to yellow (higher magnitude). Comparisons across models (sub-segments) are not straightforward because each model's `te()` coefficient values are relative to the estimated intercept.
+The plots below suggest that the association between chlorophyll concentrations and TN load (`value.x`) has increased over time (`decdate`) within the sub-segment. In the heatmap image, colors range from red (relatively low magnitude) to yellow (higher magnitude). Comparisons across sub-segments require consideration of the `te()` coefficient surfaces as well as each model's estimated intercept.
 
 ```{r fig.width = 12, fig.height = 6}
   # plot smooth
@@ -752,7 +752,7 @@ The model shows good diagnostics.
   summary( gam_epc3 )
 ```
 
-The plots below suggest that the association between chlorophyll concentrations and TN load (`value.x`) has changed over time (`decdate`) within the sub-segment. In the heatmap image, colors range from red (relatively low magnitude) to yellow (higher magnitude). Comparisons across models (sub-segments) are not straightforward because each model's `te()` coefficient values are relative to the estimated intercept.
+The plots below suggest that the association between chlorophyll concentrations and TN load (`value.x`) has generally increased over time (`decdate`) within the sub-segment, but the dynamics here are a bit more complex than in the two previous sub-segments. In the heatmap image, colors range from red (relatively low magnitude) to yellow (higher magnitude). Comparisons across sub-segments require consideration of the `te()` coefficient surfaces as well as each model's estimated intercept.
 
 ```{r fig.width = 12, fig.height = 6}
   # plot smooth
@@ -786,7 +786,7 @@ The model shows good diagnostics.
   summary( gam1 )
 ```
 
-The plots below visualize the estimated `te()` coefficient surface and suggest that the association between chlorophyll concentrations and TN load (`value.x`) has not substantially changed over time (`decdate`). In the heatmap image, colors range from red (relatively low magnitude) to yellow (higher magnitude). White patches indicate gaps in the input space. Comparisons across models (sub-segments) are not straightforward because each model's `te()` coefficient values are relative to the estimated intercept.
+The plots below visualize the estimated `te()` coefficient surface and suggest that the association between chlorophyll concentrations and TN load (`value.x`) has not substantially changed over time (`decdate`). In the heatmap image, colors range from red (relatively low magnitude) to yellow (higher magnitude). White patches indicate gaps in the input space. Comparisons across sub-segments require consideration of the `te()` coefficient surfaces as well as each model's estimated intercept.
 
 ```{r fig.width = 12, fig.height = 6}
   # plot smooth
@@ -819,7 +819,7 @@ The model shows good diagnostics.
   summary( gam2 )
 ```
 
-The plots below suggest that the association between chlorophyll concentrations and TN load (`value.x`) has changed substantially over time (`decdate`) at Largo Inlet, with TN loads (`value.x`) most strongly associated with chlorophyll concentrations between about 2010 and 2015. Comparisons across models (sub-segments) are not straightforward because each model's `te()` coefficient values are relative to the estimated intercept.
+The plots below suggest that the association between chlorophyll concentrations and TN load (`value.x`) has changed substantially over time (`decdate`) at Largo Inlet, with TN loads (`value.x`) most strongly associated with chlorophyll concentrations between about 2010 and 2015. Comparisons across sub-segments require consideration of the `te()` coefficient surfaces as well as each model's estimated intercept.
 
 ```{r fig.width = 12, fig.height = 6}
   # plot smooth
@@ -852,7 +852,7 @@ The model shows good diagnostics.
   summary( gam3 )
 ```
 
-The plots below suggest that the association between chlorophyll concentrations and TN load (`value.x`) has not changed substantially over time (`decdate`) at Feather Sound. Comparisons across models (sub-segments) are not straightforward because each model's `te()` coefficient values are relative to the estimated intercept.
+The plots below suggest that the association between chlorophyll concentrations and TN load (`value.x`) has not changed substantially over time (`decdate`) at Feather Sound. Comparisons across sub-segments require consideration of the `te()` coefficient surfaces as well as each model's estimated intercept.
 
 ```{r fig.width = 12, fig.height = 6}
   # plot smooth
@@ -885,7 +885,7 @@ The model shows good diagnostics.
   summary( gam4 )
 ```
 
-The plots below suggest that the association between chlorophyll concentrations and TN load (`value.x`) has not changed substantially over time (`decdate`) at Gateway. Comparisons across models (sub-segments) are not straightforward because each model's `te()` coefficient values are relative to the estimated intercept.
+The plots below suggest that the association between chlorophyll concentrations and TN load (`value.x`) has not changed substantially over time (`decdate`) at this sub-segment. Comparisons across sub-segments require consideration of the `te()` coefficient surfaces as well as each model's estimated intercept.
 
 ```{r fig.width = 12, fig.height = 6}
   # plot smooth
@@ -918,7 +918,7 @@ The model shows good diagnostics.
   summary( gam5 )
 ```
 
-The plots below suggests a possible bifurcation in the association between chlorophyll concentrations and TN load (`value.x`) at Weedon Island over time (`decdate`), for moderate to high levels of TN load. Comparisons across models (sub-segments) are not straightforward because each model's `te()` coefficient values are relative to the estimated intercept.
+The plots below suggests a possible bifurcation in the association between chlorophyll concentrations and TN load (`value.x`) at Weedon Island over time (`decdate`), for moderate to high levels of TN load. Comparisons across sub-segments require consideration of the `te()` coefficient surfaces as well as each model's estimated intercept.
 
 ```{r fig.width = 12, fig.height = 6}
   # plot smooth
@@ -933,7 +933,7 @@ The plots below suggests a possible bifurcation in the association between chlor
 
 ## Chlorophyll and light {#gam_chl}
 
-This section explores whether relationships between chlorophyll concentrations and Secchi depth have changed over time across three OTB sub-segments compartmentalized by the Courtney Campbell, Howard Frankland, and Gandy Blvd causeways/bridges (EPC water quality data).
+This section explores whether relationships between chlorophyll concentrations and Secchi depth have changed over time across the three OTB sub-segments divided by bridges/causeways.
 
 \
 
@@ -960,7 +960,7 @@ We assemble the EPC data and fit a GAM to model the chlorophyll-Secchi relations
   summary( gam6 )
 ```
 
-The plots below visualize the estimated `te()` coefficient surface and suggest that the association between Secchi depth and chlorophyll concentration (`value.x`) has changed substantially over time (`decdate`). Redder areas in the heatmap indicate time periods when increased chlorophyll concentrations were more strongly associated with reduced water clarity.
+The plots below visualize the estimated `te()` coefficient surface and suggest that the association between Secchi depth and chlorophyll concentration (`value.x`) has changed substantially over time (`decdate`). Redder areas (between approximately 2000--2005 and 2010--2015) in the heatmap indicate time periods when increased chlorophyll concentrations were more strongly associated with reduced water clarity.
 
 ```{r fig.width = 12, fig.height = 6}
   # plot smooth
@@ -995,7 +995,7 @@ The model shows good diagnostics.
  summary( gam7 )
 ```
 
-The plots below suggest that the association between Secchi depth and chlorophyll concentration (`value.x`) has changed substantially over time (`decdate`) at this sub-segment. Redder areas in the heatmap indicate time periods when increased chlorophyll concentrations were more strongly associated with reduced water clarity. Although the heatmap indicates gaps in some high-chlorophyll areas of the input space, the temporal pattern in these results noticeably resembles those of the previous model (`gam6`). Comparisons across models (sub-segments) are not straightforward because each model's `te()` coefficient values are relative to the estimated intercept..
+The plots below suggest that the association between Secchi depth and chlorophyll concentration (`value.x`) has changed substantially over time (`decdate`) at this sub-segment. Redder areas in the heatmap indicate time periods when increased chlorophyll concentrations were more strongly associated with reduced water clarity. Although the heatmap indicates gaps in some high-chlorophyll areas of the input space, the temporal pattern in these results noticeably resembles those of the previous model (`gam6`). Nonetheless, quantitative comparisons across sub-segments require consideration of the `te()` coefficient surfaces as well as each model's estimated intercept.
 
 ```{r fig.width = 12, fig.height = 6}
   # plot smooth
@@ -1030,7 +1030,7 @@ The model shows good diagnostics.
   summary( gam8 )
 ```
 
-The plots below suggest that the association between Secchi depth and chlorophyll concentration (`value.x`) has changed substantially over time (`decdate`) at this sub-segment. Comparisons across models (sub-segments) are not straightforward because each model's `te()` coefficient values are relative to the estimated intercept.
+The plots below suggest that the association between Secchi depth and chlorophyll concentration has changed substantially over time at this sub-segment. Comparisons across sub-segments require consideration of the `te()` coefficient surfaces as well as each model's estimated intercept.
  
 ```{r fig.width = 12, fig.height = 6}
   # plot smooth
@@ -1045,7 +1045,7 @@ The plots below suggest that the association between Secchi depth and chlorophyl
 
 # References {#ref}
 
-Literature:
+Consulting reports and peer-reviewed studies:
 
 Greening H & Janicki A (2006). Toward reversal of eutrophic conditions in a subtropical Estuary: Water quality and seagrass response to nitrogen loading reductions in Tampa Bay, Florida, USA. Environmental Management 38: 163-178. [http://doi.org/10.1007/s00267-005-0079-4](http://doi.org/10.1007/s00267-005-0079-4).
 
