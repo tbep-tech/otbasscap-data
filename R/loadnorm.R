@@ -30,7 +30,7 @@ points( tn_load ~ year, data = otbdat,  # actual load
 
 mtext( "TN load (tons)", side = 2, line = 3.5, cex = 1.3 )  # ylab
 mtext( "TN load rate (tons per million m3)", side = 4, line = 3.5, cex = 1.3 )  # y2 lab
-axis( 4, at = seq(0,1000,200), labels = seq(0,2,0.4),     # y2
+axis( 4, at = seq(0,1000,200), labels = seq(0,2.2,length.out=6),     # y2
       cex.lab = 1.3, cex.axis = 1.3, las = 1)
 
 abline( h = 486, col = rgb(0,0,0,0.5), lty = 2, lwd = 3 )  # TMDL
