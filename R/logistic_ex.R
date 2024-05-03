@@ -57,8 +57,8 @@ p <- ggplot(toplo, aes(x = value, y = prd, fill = Turbidity, color = Turbidity, 
   theme_minimal() +
   theme(legend.position = 'top') +
   labs(
-    x = 'TN load', 
-    y = 'Probability of exceeding 9.3 µg/L',
+    x = 'Monthly TN load', 
+    y = 'Probability of attaining 9.3 µg/L',
     caption = 'Hypothetical example of how to use model to set TN load targets'
   ) 
 
