@@ -91,7 +91,11 @@ Columns:
   * `pyro`: Pyrodinium cell count, cells/L, `NA` is sampled but not present/detected
   * `doy`: Day of year, 1-365
   * `pyrocat`: Bloom intensity category from cells/L, <= 1e4 No bloom, > 1e4 & <= 1e5 Low, > 1e5 & <= 1e6 Medium, > 1e6 High
-  
+
+## ./data/otbsub.RData
+
+Approximate boundaries for six sub-segments in OTB. Attribute column `subseg` defines the sub-segment name in cardinal directions, eg., NW: northwest, etc. CRS WGS 84.
+
 ## ./R/dat_proc.R
 
 Queries raw EPC and WIN data from Google Drive and exports RData to ./data/
