@@ -13,8 +13,8 @@ tomod <- epcwq2 |>
   ) |>
   pivot_wider(names_from = param, values_from = value) |>
   inner_join(loads, by = 'date') |> 
-  mutate(chlamet = ifelse(Chla > 9.3, 0, 1))
-tomod <- tomod[ complete.cases(tomod), ]
+  mutate(chlamet = ifelse(Chla > 9.3, 0, 1)) |> 
+  drop_na()
 
 # create glm of prop of chlorophyll exceeding 9.3 given loads and turbidity
 mod <- glm(chlamet ~ value + Turbidity, data = tomod, family = 'binomial')
