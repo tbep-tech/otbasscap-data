@@ -127,7 +127,7 @@ This section loads the EPC water quality data from file (`../data/epcwq.RData`),
     }  # // end find.fatal()
     # apply function to locate fatal records
     rm.fatal.idx <- apply( matrix(epcwq2$QA,ncol=1), 1, find.fatal ) |> which()
-    epcwq2 <- epcwq2[ -rm.fatal.idx ]
+    epcwq2 <- epcwq2[ -rm.fatal.idx, ]
     # acknowledge Secchi records visible on bottom
     epcwq2[ which( epcwq2$param=="Secchi" & epcwq2$QA==">"), ] |> nrow() # number of VOB Secchi records
     epcwq2[ which( epcwq2$param=="Secchi"), ] |> nrow()  # total number of Secchi records
@@ -184,7 +184,7 @@ The code below loads the raw data from file (`../data-raw/DataDownload_2999342_r
     }  # // end find.fatal()
     # apply function to locate fatal records
     rm.fatal.idx <- apply( matrix(pcwq1$QACode,ncol=1), 1, find.fatal ) |> which()
-    pcwq1 <- pcwq1[ -rm.fatal.idx ]
+    pcwq1 <- pcwq1[ -rm.fatal.idx, ]
     # parameter names
     param.names.old <- pcwq1$Parameter |> unique() |> sort()
     param.names.new <- c( "BOD", "Chla", "ChlaC", "Chlb", "Chlc", "DO", "DO_Sat",
@@ -572,7 +572,7 @@ The plots below show relationships between log10-transformed external TN loads a
 
 ```
 
-The plots below show relationships between log10-transformed TN loads and chlorophyll-a concentrations within Pinellas County strata E1--E5 (rows) at delays of 0--2 months (columns). During the same month (first column), all strata show significant positive correlations, with a maximum R2 value of 0.26. The data typically exhibit substantial scatter (unexplained variance) around the regression lines. Across all strata, with the exception of E1, significant relationships are also observed at delays of one month (second column) and two months (third column), although the R2 values are substantially lower. Although not visualized below, the diagnostics for each model indicate that the residuals are homoskedastic and approximately Gaussian.
+The plots below show relationships between log10-transformed TN loads and chlorophyll-a concentrations within Pinellas County strata E1--E5 (rows) at delays of 0--2 months (columns). During the same month (first column), all strata show significant positive correlations, with a maximum R2 value of 0.27. The data typically exhibit substantial scatter (unexplained variance) around the regression lines. Across all strata, with the exception of E1, significant relationships are also observed at delays of one month (second column) and two months (third column), although the R2 values are substantially lower. Although not visualized below, the diagnostics for each model indicate that the residuals are homoskedastic and approximately Gaussian.
 
 ```{r fig.width = 15, fig.height = 25 }
   par(mfrow=c(5,3))
@@ -619,7 +619,7 @@ The plots below show relationships between log10-transformed TN loads and chloro
 
 This section explores relationships between log10-transformed chlorophyll-a concentrations and Secchi depths within the three OTB sub-segments compartmentalized by the Courtney Campbell, Howard Frankland, and Gandy Blvd causeways/bridges, using data collected by EPC at fixed monitoring locations between 2000 and 2023. Following Greening & Janicki (2016), the variables are log-transformed prior to analysis. When interpreting these results, it is important to consider that the Secchi data contain a substantial number of records in which the Secchi depth equals the total depth (i.e., the Secchi disk was visible at bottom). In these cases, the reported Secchi depth is not necessarily a reliable proxy of water clarity (e.g., in shallow areas), and the presence of these records may bias the regression results.
 
-All three OTB compartments show significant negative correlations at delays of zero and one month (first and second columns), with a maximum R2 value of 0.39. The magnitudes of the slopes and the R2 values both decrease between `delay=0` and `delay=1`. And in each case, the data exhibit substantial scatter around the regression line, indicating that any given chlorophyll concentration is typically associated with a large range of Secchi values. At a delay of two months (third column), none of the OTB compartments shows a significant correlation. Although not visualized below, the diagnostics for each model indicate that the residuals are homoskedastic and approximately Gaussian.
+All three OTB compartments show significant negative correlations at delays of zero and one month (first and second columns), with a maximum R2 value of 0.38. The magnitudes of the slopes and the R2 values both decrease between `delay=0` and `delay=1`. And in each case, the data exhibit substantial scatter around the regression line, indicating that any given chlorophyll concentration is typically associated with a large range of Secchi values. At a delay of two months (third column), none of the OTB compartments shows a significant correlation. Although not visualized below, the diagnostics for each model indicate that the residuals are homoskedastic and approximately Gaussian.
 
 ```{r fig.width = 15, fig.height = 15 }
   par(mfrow=c(3,3))
