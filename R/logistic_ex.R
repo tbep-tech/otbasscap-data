@@ -7,21 +7,22 @@ load(file = here::here('data/loads.RData'))
 # combine loads and epcwqw
 tomod <- epcwq2 |> 
   filter(param %in% c('Chla', 'Turbidity')) |> 
-  summarise(
+  dplyr::summarise(
     value = mean(value, na.rm = T), 
     .by = c(date, param)
   ) |>
   pivot_wider(names_from = param, values_from = value) |>
   inner_join(loads, by = 'date') |> 
   mutate(chlamet = ifelse(Chla > 9.3, 0, 1))
+tomod <- tomod[ complete.cases(tomod), ]
 
 # create glm of prop of chlorophyll exceeding 9.3 given loads and turbidity
 mod <- glm(chlamet ~ value + Turbidity, data = tomod, family = 'binomial')
 
 # get model prediction grid and predictions
-toprd <- crossing(
+toprd <- expand_grid(
   value = seq(0, max(tomod$value), length.out = 100),
-  Turbidity = c(mean(tomod$Turbidity), quantile(tomod$Turbidity, 0.95))
+  Turbidity = c( quantile(tomod$Turbidity, 0.95), mean(tomod$Turbidity) )
 )
 
 prds <- predict(mod, type = 'response', newdata = toprd, se.fit = T)
@@ -30,13 +31,13 @@ toplo <- toprd |>
     prd = prds$fit,
     hival = prds$fit + 1.96 * prds$se.fit,
     loval = prds$fit - 1.96 * prds$se.fit, 
-    Turbidity = factor(Turbidity, labels = c('mean', '95th %tile'))
+    Turbidity = factor(Turbidity, labels = c('95th %tile','mean'))
   ) 
 
 # get lines to show connection between hypothetical target and certainty of meeting threshold
 trgs <- crossing(
   value  = c(50), 
-  Turbidity = c(mean(tomod$Turbidity), quantile(tomod$Turbidity, 0.95))
+  Turbidity = c( quantile(tomod$Turbidity, 0.95), mean(tomod$Turbidity) )
 )
 lnprds <- predict(mod, type = 'response', newdata = trgs, se.fit = T)
 tolns <- trgs |> 
