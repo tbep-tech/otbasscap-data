@@ -9,7 +9,7 @@ library(tidyverse)
 #     y                 response variable (e.g. Chla), as appears in wqdat$param
 #     x1                first predictor (e.g. TN load), as appears in loaddat$param
 #     x2                second predictor (e.g. temperature), as appears in wqdat$param
-#     ytarget           numeric target for response variable (e.g. 9.3 mg/l Chla)
+#     ytarget           numeric target for response variable y (e.g. 9.3 mg/l Chla)
 #     xtarget           numeric target(s) for predictor x1 (e.g. 100 tons TN load)
 #     qnt               quantile(s) to plot for predictor x2 (numeric values in [0,1])
 #     wqloc             water quality sites for subsetting wqdat (by wqdat$site)
@@ -40,7 +40,7 @@ logim <- function( wqdat, loaddat,
   
   y.unit <- wqdat$unit[ which(wqdat$param==y) ] |> unique()
   
-  # logistic model for probability of attaining Chla target
+  # logistic model for probability of attaining ytarget
   mod <- glm( bin ~ x1 + x2,
               data = tomod, family = 'binomial' )
   
@@ -60,7 +60,7 @@ logim <- function( wqdat, loaddat,
                    levels = unique(x2) ) 
     )
   
-  # get lines to highlight probabilities with a given TN load
+  # get lines to highlight probabilities at specified x1 value
   trgs <- expand_grid(
     x1  = xtarget, 
     x2 = c( quantile(tomod$x2, qnt), mean(tomod$x2) )
@@ -102,12 +102,12 @@ logim <- function( wqdat, loaddat,
   p$labels$fill <- x2
   p$labels$colour <- x2
   
-  # Display plot
+  # display plot
   if( plot ){
     print( p )
   }
   
-  # Assemble function arguments, data, and predicted values
+  # assemble function arguments, data, and predicted values
   inputs <- formals()
   inputs$ytarget <- ytarget
   inputs$xtarget <- xtarget
@@ -115,7 +115,7 @@ logim <- function( wqdat, loaddat,
   inputs$x1 <- x1
   inputs$x2 <- x2
   inputs$wqloc <- wqloc
-  inputs$q <- qnt
+  inputs$qnt <- qnt
   
   return( list( plot = p,
                 model = mod,
