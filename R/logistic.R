@@ -12,16 +12,16 @@ library(tidyverse)
 #     ytarget           numeric target for response variable y (e.g. 9.3 mg/l Chla)
 #     xtarget           numeric target(s) for predictor x1 (e.g. 100 tons TN load)
 #     qnt               quantile(s) to plot for predictor x2 (numeric values in [0,1])
-#     wqloc             water quality sites for subsetting wqdat (by wqdat$site)
+#     wqloc             subsegment(s) for subsetting wqdat (default uses all unique wqdat$subsegs)
 #     plot              logical, displays plot if TRUE
 logim <- function( wqdat, loaddat,
                    y, x1, x2,
                    ytarget, xtarget,
-                   qnt, wqloc,
+                   qnt, wqloc = unique(wqdat$subseg),
                    plot = TRUE ){
   
   # join wq and load data
-  wqsub <- wqdat[ which( wqdat$site %in% wqloc ), ]
+  wqsub <- wqdat[ which( wqdat$subseg %in% wqloc ), ]
   wqsub <- wqsub |> 
     filter(param %in% c(y, x2)) |> 
     dplyr::summarise(
@@ -139,25 +139,20 @@ load(file = here::here('data/loads.RData'))
 mod.turb <- logim( wqdat = epcwq3, loaddat = loads,
                    y = "Chla", x1 = "TN load", x2 = "Turbidity",
                    ytarget = 9.3, xtarget = c(40),
-                   qnt = c(0.95),
-                   wqloc = unique(epcwq3$site) )
-                   # wqloc = c(46,64) )  # NW
-                   # wqloc = c(42,65,66) )  # CW
-                   # wqloc = c(40,41,61,63) )  # CE
+                   qnt = c(0.95)
+                   # , wqloc = c("CE")
+                   )
 
 mod.sal  <- logim( wqdat = epcwq3, loaddat = loads,
                    y = "Chla", x1 = "TN load", x2 = "Sal_top",
                    ytarget = 9.3, xtarget = c(40),
-                   qnt = c(0.95),
-                   wqloc = unique(epcwq3$site) )
-                   # wqloc = c(46,64) )  # NW
-                   # wqloc = c(47,60,62) )  # NE
-                   # wqloc = c(42,65,66) )  # CW
-                   # wqloc = c(40,41,61,63) )  # CE
-                   # wqloc = c(38,67,68)  # SW
-                   # wqloc = c(36,50,51) )  # SE
+                   qnt = c(0.95)
+                   # , wqloc = c("CW")
+                   )
 
 mod.temp <- logim( wqdat = epcwq3, loaddat = loads,
                    y = "Chla", x1 = "TN load", x2 = "Temp_top",
                    ytarget = 9.3, xtarget = c(40),
-                   qnt = c(0.95), wqloc = unique(epcwq3$site) )
+                   qnt = c(0.95)
+                   # , wqloc = c("CW")
+                   )
