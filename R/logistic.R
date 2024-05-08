@@ -2,16 +2,17 @@ rm(list=ls(all=TRUE))
 
 library(tidyverse)
 
-# define logistic modeling function
+# define logistic modeling function for P( y < ytarget ) ~ x1 + x2.
 #   Arguments:
-#     wqdat, loaddat    dataframes containing water quality and loading data
-#     y                 response variable (e.g. Chla), from wqdat dataframe
-#     x1                first predictor (e.g. TN load), from loaddat dataframe
-#     x2                second predictor (e.g. temperature), from wqdat dataframe
-#     ytarget           numeric target for response variable (e.g. 9.3 mg/l chlorophyll)
-#     xtarget           vector of numeric target(s) for predictor x1 (e.g. 100 tons TN load)
-#     qnt               quantile(s) to plot for predictor x2 (numeric vector in [0,1])
-#     wqloc             water quality sites in wqdat$site to include
+#     wqdat, loaddat    dataframes containing water quality and loading data, incl.
+#                         columns date, param, value, unit, site
+#     y                 response variable (e.g. Chla), as appears in wqdat$param
+#     x1                first predictor (e.g. TN load), as appears in loaddat$param
+#     x2                second predictor (e.g. temperature), as appears in wqdat$param
+#     ytarget           numeric target for response variable (e.g. 9.3 mg/l Chla)
+#     xtarget           numeric target(s) for predictor x1 (e.g. 100 tons TN load)
+#     qnt               quantile(s) to plot for predictor x2 (numeric values in [0,1])
+#     wqloc             water quality sites for subsetting wqdat (by wqdat$site)
 #     plot              logical, displays plot if TRUE
 logim <- function( wqdat, loaddat,
                    y, x1, x2,
