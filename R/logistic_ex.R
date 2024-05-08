@@ -31,11 +31,11 @@ toplo <- toprd |>
     prd = prds$fit,
     hival = prds$fit + 1.96 * prds$se.fit,
     loval = prds$fit - 1.96 * prds$se.fit, 
-    Turbidity = factor(Turbidity, labels = c('95th %tile','mean'))
+    Turbidity = factor( Turbidity, labels = c('95th %tile','mean'), levels = unique(Turbidity) )
   ) 
 
 # get lines to show connection between hypothetical target and certainty of meeting threshold
-trgs <- crossing(
+trgs <- expand_grid(
   value  = c(50), 
   Turbidity = c( quantile(tomod$Turbidity, 0.95), mean(tomod$Turbidity) )
 )
@@ -45,7 +45,7 @@ tolns <- trgs |>
     prd = lnprds$fit,
     hival = lnprds$fit + 1.96 * lnprds$se.fit,
     loval = lnprds$fit - 1.96 * lnprds$se.fit, 
-    Turbidity = factor(Turbidity, labels = c('mean', '95th %tile'))
+    Turbidity = factor( Turbidity, labels = c('95th %tile','mean'), levels = unique(Turbidity) )
   )
 
 # plot
