@@ -21,7 +21,8 @@ logim <- function( wqdat, loaddat,
                    plot = TRUE ){
   
   # join wq and load data
-  wqsub <- wqdat |> 
+  wqsub <- wqdat[ which( wqdat$site %in% wqloc ), ]
+  wqsub <- wqsub |> 
     filter(param %in% c(y, x2)) |> 
     dplyr::summarise(
       value = mean(value, na.rm = TRUE ), 
@@ -138,12 +139,23 @@ load(file = here::here('data/loads.RData'))
 mod.turb <- logim( wqdat = epcwq3, loaddat = loads,
                    y = "Chla", x1 = "TN load", x2 = "Turbidity",
                    ytarget = 9.3, xtarget = c(40),
-                   qnt = c(0.95), wqloc = unique(epcwq3$site) )
+                   qnt = c(0.95),
+                   wqloc = unique(epcwq3$site) )
+                   # wqloc = c(46,64) )  # NW
+                   # wqloc = c(42,65,66) )  # CW
+                   # wqloc = c(40,41,61,63) )  # CE
 
 mod.sal  <- logim( wqdat = epcwq3, loaddat = loads,
                    y = "Chla", x1 = "TN load", x2 = "Sal_top",
                    ytarget = 9.3, xtarget = c(40),
-                   qnt = c(0.95), wqloc = unique(epcwq3$site) )
+                   qnt = c(0.95),
+                   wqloc = unique(epcwq3$site) )
+                   # wqloc = c(46,64) )  # NW
+                   # wqloc = c(47,60,62) )  # NE
+                   # wqloc = c(42,65,66) )  # CW
+                   # wqloc = c(40,41,61,63) )  # CE
+                   # wqloc = c(38,67,68)  # SW
+                   # wqloc = c(36,50,51) )  # SE
 
 mod.temp <- logim( wqdat = epcwq3, loaddat = loads,
                    y = "Chla", x1 = "TN load", x2 = "Temp_top",
