@@ -104,6 +104,12 @@ for( i in datacols ){
   epcwq3$date <- epcwq3$date |> floor_date('month')
   epcwq3 <- epcwq2 |> dplyr::summarise( value = mean(value),
                                         .by = c(date,param,site,unit) )
+  
+# assign sub-segment labels based on site label
+  load("data/otb_subseg_sites.RData")
+  epcwq3$subseg <- mapvalues( x = epcwq3$site,
+                              from = otb_subseg_sites$site,
+                              to = otb_subseg_sites$subsegment )
 
 # export clean dataset
   save( epcwq3, file = "data-clean/epcwq_clean.RData" )
