@@ -103,7 +103,7 @@ pyro <- read.csv(file = here::here('data-raw/fwcpyro20112023.csv'))
   plot( max ~ load, data = df1, pch = 21,
         main = "Annual max Pyro vs. annual TN load",
         xlab = "TN load, tons",
-        ylab = "Maximum Pyrodinium abundance, log(cells/L)",
+        ylab = "Maximum Pyrodinium abundance, log10(cells/L)",
         xlim = c(300,1000), ylim = c(5.5,7),
         cex.main = 1.4, cex.lab = 1.3, cex.axis = 1.3,
         col = rgb(0.9,0.3,0,1), lwd = 2.5, cex = 1.5 )
@@ -125,7 +125,7 @@ pyro <- read.csv(file = here::here('data-raw/fwcpyro20112023.csv'))
   plot( max ~ load, data = df2, pch = 21,
         main = "Annual max Pyro vs. wet-season TN load",
         xlab = "TN load, tons",
-        ylab = "Maximum Pyrodinium abundance, log(cells/L)",
+        ylab = "Maximum Pyrodinium abundance, log10(cells/L)",
         xlim = c(100,700), ylim = c(5.5,7),
         cex.main = 1.4, cex.lab = 1.3, cex.axis = 1.3,
         col = rgb(0.9,0.3,0,1), lwd = 2.5, cex = 1.5 )
