@@ -4,9 +4,10 @@ load(file = here::here('data-clean/epcwq_clean.RData'))
 
 subsegs <- c("NW","NE","CW","CE","SW","SE")
 
-par(mfrow=c(3,2), mar=c(4,4,3,1))
 
 # Plot data and annual averages over time at each OTB subsegment
+png("../figs/chl_ts.png", res = 400, units = 'in', width = 10, height = 8 )
+par(mfrow=c(3,2), mar=c(4,4,3,1))
 for( i in 1:length(subsegs) ){
   
   this.dat <- epcwq3[ which( epcwq3$subseg==subsegs[i] &
@@ -48,9 +49,12 @@ for( i in 1:length(subsegs) ){
           col = rgb(0.8,0.1,0,1), bg = rgb(1,1,1,1) )
   
 }
+dev.off()
 
 
 # Plot data by month-of-year with monthly averages at each OTB subsegment
+png("../figs/chl_mo.png", res = 400, units = 'in', width = 10, height = 8 )
+par(mfrow=c(3,2), mar=c(4,4,3,1))
 for( i in 1:length(subsegs) ){
   
   this.dat <- epcwq3[ which( epcwq3$subseg==subsegs[i] &
@@ -104,6 +108,7 @@ for( i in 1:length(subsegs) ){
           col = rgb(0.8,0.1,0,1), bg = rgb(1,1,1,1) )
 
 } # // end i loop
+dev.off()
 
 
 
