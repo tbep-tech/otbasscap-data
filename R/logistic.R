@@ -140,19 +140,19 @@ mod.turb <- logim( wqdat = epcwq3, loaddat = loads,
                    y = "Chla", x1 = "TN load", x2 = "Turbidity",
                    ytarget = 9.3, xtarget = c(40),
                    qnt = c(0.95)
-                   # , wqloc = c("CE")
+                   # , wqloc = c("NW")
                    )
 
 mod.sal  <- logim( wqdat = epcwq3, loaddat = loads,
                    y = "Chla", x1 = "TN load", x2 = "Sal_top",
                    ytarget = 9.3, xtarget = c(40),
-                   qnt = c(0.95)
-                   # , wqloc = c("CW")
+                   qnt = c(0.25,0.75)
+                   , wqloc = c("NW")
                    )
 
 mod.temp <- logim( wqdat = epcwq3, loaddat = loads,
                    y = "Chla", x1 = "TN load", x2 = "Temp_top",
                    ytarget = 9.3, xtarget = c(40),
                    qnt = c(0.95)
-                   # , wqloc = c("CW")
+                   , wqloc = c("SW")
                    )
