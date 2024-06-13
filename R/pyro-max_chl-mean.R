@@ -49,7 +49,7 @@ for( subseg in subsegs ){
   
   # Calculate pyro distn statistics
     # initiate dataframe
-    pyro_chl <- data.frame( chl = seq(4,12,0.1),
+    pyro_chl <- data.frame( chl = seq(4,25,0.1),
                             median = NA,
                             min = NA,
                             lwr_iqr = NA,
@@ -75,7 +75,7 @@ for( subseg in subsegs ){
                       expression(10^5), expression(10^6),
                       expression(10^7) ) )
     abline( h = axTicks(2), col = rgb(0,0,0,0.1) )
-    abline( v = 0:20, col = rgb(0,0,0,0.1) )
+    abline( v = min(pyro_chl$chl):max(pyro_chl$chl), col = rgb(0,0,0,0.1) )
     polygon( x = c( pyro_chl$chl, rev(pyro_chl$chl) ),
              y = c( pyro_chl$min, rev(pyro_chl$max) ),
              col = rgb(0,0.2,0.6,0.1), border = rgb(0,0,0,0) )
@@ -85,8 +85,8 @@ for( subseg in subsegs ){
     segments( x0 = 9.3,
               y0 = 0, y1 = pyro_chl$upr_iqr[which(pyro_chl$chl==9.3)],
               lty = 2, col = 2 )
-    text( x = 9.3, y = pyro_chl$lwr_iqr[which(pyro_chl$chl==9.3)],
-          col = 2, labels = "9.3 ug/L", pos = 2, srt = 90 )
+    text( x = 9.3, y = pyro_chl$upr_iqr[which(pyro_chl$chl==9.3)],
+          col = 2, labels = "9.3 ug/L", pos = 4, srt = 90 )
     segments( x0 = 0, x1 = 9.3,
               y0 = pyro_chl$median[which(pyro_chl$chl==9.3)],
               lty = 2, col = 2 )
@@ -114,7 +114,7 @@ for( subseg in subsegs ){
     # populate rows
     for( i in 1:nrow(chl_year) ){
       # subset chl data by year
-      this <- epcwq3.sub$value[ which( year(epcwq3.sub$month)==chl_year$year[i] ) ]
+      this <- pcdat$chl[ which( year(pcdat$month)==chl_year$year[i] ) ]
       # add output to chl_year dataframe
       chl_year[i,2:6] <- data.frame( mean = mean(this),
                                      lwr_1sd = mean(this)-sd(this),
@@ -126,7 +126,7 @@ for( subseg in subsegs ){
   
     # Plot annual mean chl values with 9.3 ug/L threshold
     plot( mean ~ year, data = chl_year, type = 'l', las = 1,
-          main = paste0( subseg, " OTB\nAnnual mean chlorophyll-a concentration" ),
+          main = paste0( subseg, " OTB\nAnnual mean chl-a (non-zero Pyro months)" ),
           ylim = c(0,50),
           ylab = "Chlorophyll a (ug/L)", xlab = "",
           lwd = 2, col = rgb(0,0.2,0.6,0.7))
