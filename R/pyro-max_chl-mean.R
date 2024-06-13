@@ -96,7 +96,7 @@ for( subseg in subsegs ){
     segments( x0 = 0, x1 = 9.3,
               y0 = pyro_chl$upr_iqr[which(pyro_chl$chl==9.3)],
               lty = 2, col = 2 )
-    legend( 'bottomleft', bty = 'n',
+    legend( 'bottomright', bty = 'n',
             legend = c("Median of maxima",
                        "IQR of maxima",
                        "Range of maxima (min/max)"), text.font = 2,
