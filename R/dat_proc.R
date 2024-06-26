@@ -43,3 +43,13 @@ drive_deauth()
   sg_dat <- tbeptools::read_transect()
   save( list = c('sg_pts','sg_lines','sg_dat'), file = here('data/sg.RData') )
   
+  
+# Load Lake Tarpon discharge data from USGS and export as RData
+  
+  usgs <- readNWISdata( siteNumbers = '02307498',
+                        parameterCd = '00060',
+                        startDate = '2000-01-01',
+                        endDate = '2023-12-01',
+                        service = 'dv' )
+  save( usgs, file = here('data/usgs.RData') )
+  
