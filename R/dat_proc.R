@@ -52,5 +52,5 @@ drive_deauth()
                         startDate = '2000-01-01',
                         endDate = '2023-12-01',
                         service = 'dv' )
-  save( usgs, file = here('data/usgs.RData') )
+  save( usgs, file = here('data-raw/usgs.RData') )
   
