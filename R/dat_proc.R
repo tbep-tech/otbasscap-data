@@ -46,6 +46,7 @@ drive_deauth()
   
 # Load Lake Tarpon discharge data from USGS and export as RData
   
+  library(dataRetrieval)
   usgs <- readNWISdata( siteNumbers = '02307498',
                         parameterCd = '00060',
                         startDate = '2000-01-01',
