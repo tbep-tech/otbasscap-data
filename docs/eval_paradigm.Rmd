@@ -239,7 +239,6 @@ This section loads the Tampa Bay Estuary Program's monthly external loading esti
 The dataset contains `r nrow(loads) |> prettyNum(big.mark=",")` rows.
 
 ```{r}
-save(loads, file = here::here('data/loads.RData'))
 head( loads )
 ```
 
