@@ -12,7 +12,7 @@ load( "../data/Pyro.Rdata")
 subsegs <- c("NW","NE","CW","CE","SW","SE")
 
 # Loop over sub-segments to generate plots
-png( "../figs/pyro-med_chl-mean.png", width = 14, height = 9, units = 'in', res = 500 )
+png( "../figs/cumu_pyro-max_chl-mean.png", width = 14, height = 9, units = 'in', res = 500 )
 par( mfrow=c(3,4), mar=c(4,4,3,2) )
 for( subseg in subsegs ){
 
@@ -28,7 +28,7 @@ for( subseg in subsegs ){
     pyro.sub$month <- floor_date( pyro.sub$date, unit = 'month' ) 
     pyro.sub <- pyro.sub[ which(complete.cases(pyro.sub)), ]  # pyro==NA means zero cells/L
     pyro.sub$logval <- log10( pyro.sub$pyro )
-    pyrodat <- pyro.sub |> group_by(month) |> summarise( pyro = median(logval) ) |> as.data.frame()
+    pyrodat <- pyro.sub |> group_by(month) |> summarise( pyro = max(logval) ) |> as.data.frame()
     # join pyro and chl data by month
     pcdat <- inner_join( pyrodat, chldat, by = 'month' )
   
@@ -64,7 +64,7 @@ for( subseg in subsegs ){
   # Plot pyro distn as a function of chl_max
     plot( median ~ chl, data = pyro_chl, las = 1,
           type = 'l', lwd = 2, col = rgb(0,0.2,0.6,0.7),
-          main = paste0( subseg, " OTB\nMedian Pyro distn ~ Mean Chl-a" ),
+          main = paste0( subseg, " OTB\nMax Pyro distn ~ Mean Chl-a" ),
           ylim = c(1,7), yaxt = 'n',
           ylab = "Pyro (cells/L)", xlab = ""
           )
@@ -75,6 +75,13 @@ for( subseg in subsegs ){
                       expression(10^5), expression(10^6),
                       expression(10^7) ) )
     abline( h = axTicks(2), col = rgb(0,0,0,0.1) )
+    abline( h = log10( c(2e0,3e0,4e0,5e0,6e0,7e0,8e0,9e0,
+                         2e1,3e1,4e1,5e1,6e1,7e1,8e1,9e1,
+                         2e2,3e2,4e2,5e2,6e2,7e2,8e2,9e2,
+                         2e3,3e3,4e3,5e3,6e3,7e3,8e3,9e3,
+                         2e4,3e4,4e4,5e4,6e4,7e4,8e4,9e4,
+                         2e5,3e5,4e5,5e5,6e5,7e5,8e5,9e5,
+                         2e6,3e6,4e6,5e6,6e6,7e6,8e6,9e6) ), col = rgb(0,0,0,0.1) )
     abline( v = min(pyro_chl$chl):max(pyro_chl$chl), col = rgb(0,0,0,0.1) )
     polygon( x = c( pyro_chl$chl, rev(pyro_chl$chl) ),
              y = c( pyro_chl$min, rev(pyro_chl$max) ),
@@ -97,9 +104,9 @@ for( subseg in subsegs ){
               y0 = pyro_chl$upr_iqr[which(pyro_chl$chl==9.3)],
               lty = 2, col = 2 )
     legend( 'bottomright', bty = 'n',
-            legend = c("Median of medians",
-                       "IQR of medians",
-                       "Range of medians (min/max)"), text.font = 2,
+            legend = c("Median of maxima",
+                       "IQR of maxima",
+                       "Range of maxima (min/max)"), text.font = 2,
             text.col = c( rgb(0,0.2,0.6,0.9), rgb(0,0.2,0.6,0.5), rgb(0,0.2,0.6,0.3) ) )
   
   

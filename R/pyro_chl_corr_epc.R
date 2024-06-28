@@ -1,3 +1,7 @@
+# This script computes correlations between Pyro abundance and chlorophyll-a
+# concentrations in the EPC data, for OTB sub-segments.
+# 2024 Miles Medina (ECCO Scientific)
+
 rm(list=ls(all=TRUE)) 
 
 library(plyr)
@@ -6,7 +10,7 @@ library(lubridate)
 
 # Load data from file
 load( "../data-clean/epcwq_clean.RData" )
-load( "../data/Pyro.Rdata")
+load( "../data-clean/epcphyto.Rdata")
 
 # Specify subsegment
 subsegs <- c("NW","NE","CW","CE","SW","SE")
@@ -23,16 +27,18 @@ for( i in 1:length(subsegs) ){
   epcwq3.sub <- epcwq3[ which( epcwq3$param=="Chla" &
                                  year(epcwq3$date) >= 2012 &
                                  epcwq3$subseg==subsegs[i] ), ]
-  epcwq3.sub$month <- floor_date( epcwq3.sub$date, unit = 'month' ) 
-  chldat <- epcwq3.sub |> group_by(month) |> summarise( chl = mean(value) ) |> as.data.frame()
-  # pyro data (FWC)
-  pyro.sub <- pyro[ which( pyro$subsegment==subsegs[i] & pyro$yr>=2012 ), ]
-  pyro.sub$month <- floor_date( pyro.sub$date, unit = 'month' ) 
+  chldat <- epcwq3.sub |> group_by(date) |> summarise( chl = mean(value) ) |> as.data.frame()
+  # pyro data (EPC)
+  pyro.sub <- phyto[ which( phyto$name == "Pyrodinium bahamense" &
+                            phyto$subsegment==subsegs[i] &
+                            year(phyto$date)>=2012 ), ]
+
+  pyro.sub <- pyro.sub[ ,c('date','cellcount') ]
   pyro.sub <- pyro.sub[ which(complete.cases(pyro.sub)), ]  # pyro==NA means zero cells/L
-  pyro.sub$logval <- log10( pyro.sub$pyro )
-  pyrodat <- pyro.sub |> group_by(month) |> summarise( pyro = median(logval) ) |> as.data.frame()
+  pyro.sub$logval <- log10( pyro.sub$cellcount )
+  pyrodat <- pyro.sub |> group_by(date) |> summarise( pyro = max(logval) ) |> as.data.frame()
   # join pyro and chl data by month
-  pcdat[[i]] <- inner_join( pyrodat, chldat, by = 'month' )
+  pcdat[[i]] <- inner_join( pyrodat, chldat, by = 'date' )
   # assign name to list item
   names(pcdat)[i] <- subsegs[i]
   # Compute xlim and ylim for plotting
@@ -41,14 +47,14 @@ for( i in 1:length(subsegs) ){
                      max(pcdat[[i]]$pyro)+1 ), na.rm = TRUE )
   
 }  # // end i loop
-  
+
 
 # Plotting parameters
-png( "../figs/pyro_chl_corr.png", height = 9, width = 9, units = 'in', res = 500 )
+png( "../figs/pyro_chl_corr_epc.png", height = 9, width = 9, units = 'in', res = 500 )
 par( mfrow=c(3,2), mar=c(5,4,2,1) )
 
 for( i in 1:length(pcdat) ){
-
+  
   # Scatterplot
   plot( pcdat[[i]]$pyro ~ pcdat[[i]]$chl,
         xlim = lim$x, ylim = lim$y,
@@ -86,9 +92,10 @@ for( i in 1:length(pcdat) ){
             y0 = intc + slop * min(pcdat[[i]]$chl),
             y1 = intc + slop * max(pcdat[[i]]$chl),
             lty = 2
-            )
-  legend( "bottomright", bty = 'n',
-          legend = paste0( "R2 = ", R2, "\n", pval.string ),
+  )
+  legend( "bottom", bty = 'n',
+          legend = paste0( "N = ", nrow(pcdat[[i]]), "     ",
+                           "R2 = ", R2, "     ", pval.string ),
           cex = 1.3 )
   
 }  # // end subseg loop (plotting)
