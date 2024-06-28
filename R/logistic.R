@@ -31,6 +31,7 @@ logim <- function( wqdat, loaddat,
   wqsub$date <- wqsub$date |> floor_date('month')
   
   loadsub <- loaddat |>
+    filter( param==x1 ) |>
     select( c('date','param','value') ) |> 
     pivot_wider( names_from = param, values_from = value )
   
@@ -131,9 +132,8 @@ logim <- function( wqdat, loaddat,
 
 
 # load data
-load(file = here::here('data-clean/epcwq_clean.RData'))
-load(file = here::here('data/loads.RData'))
-
+load('../data-clean/epcwq_clean.RData')
+load('../data/loads.RData')
 
 # run models
 mod.turb <- logim( wqdat = epcwq3, loaddat = loads,

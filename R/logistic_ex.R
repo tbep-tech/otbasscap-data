@@ -12,7 +12,7 @@ tomod <- epcwq2 |>
     .by = c(date, param)
   ) |>
   pivot_wider(names_from = param, values_from = value) |>
-  inner_join(loads, by = 'date') |> 
+  inner_join(loads[which(loads$param=="TN load"),], by = 'date') |> 
   mutate(chlamet = ifelse(Chla > 9.3, 0, 1)) |> 
   drop_na()
 

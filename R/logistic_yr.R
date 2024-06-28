@@ -43,6 +43,7 @@ logim_yr <- function( wqdat, loaddat,
   loadsub <- loaddat
   loadsub$year <- loadsub$date |> year()
   loadsub <- loadsub |>
+    filter( param==x1 ) |> 
     select( c('date','param','value','year') ) |> 
     dplyr::summarise( value = sum(value, na.rm = TRUE ),
                       .by = c(year) )
@@ -144,8 +145,8 @@ logim_yr <- function( wqdat, loaddat,
 
 
 # load data
-load(file = here::here('data-clean/epcwq_clean.RData'))
-load(file = here::here('data/loads.RData'))
+load('../data-clean/epcwq_clean.RData')
+load('../data/loads.RData')
 
 
 # run models
