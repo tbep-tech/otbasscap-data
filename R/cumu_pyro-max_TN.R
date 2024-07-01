@@ -75,7 +75,7 @@ png( "../figs/cumu_pyro-max_TN.png", width = 7, height = 5, units = 'in', res = 
         type = 'l', lwd = 2, col = rgb(0,0.2,0.6,0.7),
         main = paste0( 
                        # subseg,
-                       " OTB\nMax Pyro distn ~ TN load" ),
+                       " OTB cumulative response plot:\nMonthly maximum Pyrodinium cell counts ~ Monthly TN load" ),
         ylim = c(1,7), yaxt = 'n',
         ylab = "Pyro (cells/L)", xlab = ""
   )

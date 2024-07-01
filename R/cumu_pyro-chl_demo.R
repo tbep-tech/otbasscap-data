@@ -30,7 +30,7 @@ pcdat <- inner_join( pyrodat, chldat, by = 'month' )
 # Plot histogram of max pyro assoc with mean chl-a at or below 9.3 ug/L
 hist( pcdat$pyro[ which(pcdat$chl <= 9.3) ], breaks = 20, freq = TRUE,
       border = rgb(1,1,1,1), col = rgb(0,0,0,0.4),
-      main = "A. Distribution of monthly max Pyro associated with\nmonthly mean chlorophyll-a at or below 9.3 ug/L",
+      main = "A. Monthly maximum Pyrodinium cell counts associated with\nmonthly mean chlorophyll-a at or below 9.3 ug/L",
       xlab = "cells/L", xaxt = 'n', xlim = c(1,7)
       )
 axis( 1, at = 1:7, labels = c( expression(10^1), expression(10^2),
@@ -76,7 +76,7 @@ for( i in 1:nrow(pyro_chl) ){
 # Plot pyro distn as a function of chl_max
 plot( median ~ chl, data = pyro_chl, las = 1,
       type = 'l', lwd = 2, col = rgb(0,0.2,0.6,0.7),
-      main = "B. OTB: Max Pyro distn ~ Mean Chl-a",
+      main = "B. Cumulative response plot",
       ylim = c(1,7), yaxt = 'n',
       ylab = "Pyro (cells/L)", xlab = ""
 )

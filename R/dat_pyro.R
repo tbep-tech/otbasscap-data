@@ -21,6 +21,9 @@ pyro$subsegment[ which( (pyro$Latitude > 27.95  & pyro$Latitude < 27.97 &
 pyro$subsegment[ which( pyro$Latitude > 27.84 & pyro$Latitude < 27.91 ) ] <- 'SW'
 pyro$subsegment[ which( pyro$Longitude > -82.55 ) ] <- 'SE'
 
+# Remove records outside of OTB (is.na(pyro$subsegment)==TRUE)
+pyro <- pyro[ -which( is.na(pyro$subsegment)), ]
+
 # export as RData and csv
 save( pyro, file = "../data/pyro.RData" )
 write.csv( pyro, file = "../data/pyro.csv", row.names = FALSE )
