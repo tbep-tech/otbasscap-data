@@ -44,6 +44,7 @@ weeks <- seq.Date( floor_date(min(pyro$date),'month'),
                    'day'
                   ) |> as.data.frame() |> apply(1,biweekly) |> unique()
 
+# Download ffmpeg at https://ffmpeg.org/download.html
 ani.options(ffmpeg = "C:/Users/miles/Documents/GitHub/otbasscap-data/R/ffmpeg.exe")
 
 t.start <- Sys.time()
