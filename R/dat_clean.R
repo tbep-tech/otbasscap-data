@@ -5,7 +5,7 @@ library(dplyr)
 library(lubridate)
 
 # load data
-load( here::here("data/epcwq.RData"))
+load( "../data/epcwq.RData" )
 epcwq1 <- epcwq |> as.data.frame()
 
 # format dates
@@ -13,9 +13,13 @@ epcwq1$date <- epcwq1$SampleTime |> as.Date("%Y-%m-%d")
 
 # subset columns for selected wq parameters
 # --> data and 'Q' columns must be listed in consecutive pairs!!
-epcwq1 <- select( epcwq1, date, StationNumber, SampleDepth,
+epcwq1 <- select( epcwq1, date, StationNumber, SampleDepth, TotalDepth,
                   Total_Nitrogen, Total_NitrogenQ,
+                  Nitrates_Nitrites, Nitrates_NitritesQ,
+                  Total_Phosphorus, Total_PhosphorusQ,
+                  Ortho_Phosphates, Ortho_PhosphatesQ,
                   Chlorophyll_a, Chlorophyll_aQ,
+                  Silica, SilicaQ,
                   `DO-T`, `DOQ-T`,
                   `DO-M`, `DOQ-M`,
                   `DO-B`, `DOQ-B`,
@@ -38,10 +42,10 @@ epcwq1 <- epcwq1[ which( epcwq1$StationNumber %in% c(36,  38,  40,  41,  42,  46
 epcwq1 <- epcwq1[ which( year(epcwq1$date) >= 2000 ), ]
 
 # loop through data and QC columns to pivot from wide to long format
-datacols <- seq( 4, 30, 2 )
+datacols <- seq( 5, 39, 2 )
 epcwq2 <- data.frame( matrix(ncol=7,nrow=0) )
 for( i in datacols ){
-  temp <- epcwq1[ ,1:3 ]
+  temp <- epcwq1[ ,1:4 ]
   temp$Analyte <- colnames(epcwq1)[i]
   temp$value <- epcwq1[,i] |> as.numeric()
   temp$unit <- NA
@@ -52,17 +56,17 @@ for( i in datacols ){
 
 # standardize parameter names
   param.names.old <- epcwq2$Analyte |> unique() |> sort()
-  param.names.new <- c( "Chla", "DO_bot", "DO_mid", "DO_top",
-                        "Sal_bot", "Sal_mid", "Sal_top","Secchi",
+  param.names.new <- c( "Chla", "DO_bot", "DO_mid", "DO_top","NOx","PO4",
+                        "Sal_bot", "Sal_mid", "Sal_top","Secchi","Silica",
                         "Temp_bot","Temp_mid","Temp_top",
-                        "TN", "TSS", "Turbidity" )
+                        "TN", "TP", "TSS", "Turbidity" )
   epcwq2$param <- mapvalues( epcwq2$Analyte, param.names.old, param.names.new )
   
   # assign units
-  units <- c( "ug/l", "mg/l", "mg/l", "mg/l",
-              "PSU", "PSU", "PSU", "m",
-              "ppt", "ppt", "ppt",
-              "mg/l", "mg/l", "NTU" )  # listed in same order as param.names.new
+  units <- c( "ug/l", "mg/l", "mg/l", "mg/l","mg/l","mg/l",
+              "ppt", "ppt", "ppt", "m","mg/l",
+              "C", "C", "C",
+              "mg/l", "mg/l", "mg/l", "NTU" )  # listed in same order as param.names.new
   epcwq2$unit <- mapvalues( epcwq2$param, param.names.new, units )
 
 # qualifier codes
@@ -86,8 +90,12 @@ for( i in datacols ){
   epcwq2[ which( epcwq2$param=="Secchi" & epcwq2$QA==">"), ] |> nrow() # number of VOB Secchi records
   epcwq2[ which( epcwq2$param=="Secchi"), ] |> nrow()  # total number of Secchi records
 
-# coerce depth to numeric
+# coerce depths to numeric
   epcwq2$SampleDepth <- epcwq2$SampleDepth |> as.numeric()
+  epcwq2$TotalDepth <- epcwq2$TotalDepth |> as.numeric()
+  
+# check for sample depths exceeding total depths (confirm FALSE)
+  any( epcwq2$sampledepth > epcwq2$totaldepth )
 
 # check for duplicates (confirm FALSE)
   epcwq2 |> duplicated() |> any()
@@ -96,22 +104,27 @@ for( i in datacols ){
   any( epcwq2$value == 0 )
 
 # subset and rename columns
-  epcwq2 <- epcwq2[, c("date","param","value","unit","StationNumber") ]
-  colnames( epcwq2 ) <- c("date","param", "value", "unit", "site" )
+  epcwq2 <- epcwq2[, c("date","param","value","unit","QA",
+                       "StationNumber","SampleDepth","TotalDepth") ]
+  colnames( epcwq2 ) <- c("date","param", "value", "unit","QA",
+                          "site","sampledepth","totaldepth" )
   
 # aggregate data to monthly timeframe
   epcwq3 <- epcwq2
   epcwq3$date <- epcwq3$date |> floor_date('month')
-  epcwq3 <- epcwq2 |> dplyr::summarise( value = mean(value),
-                                        .by = c(date,param,site,unit) )
+  epcwq3 <- epcwq3 |> dplyr::summarise( value = mean(value),
+                                        .by = c(date,param,site,unit,
+                                                QA,sampledepth,totaldepth) )
+  epcwq3 <- select( epcwq3, date,param,site,value,unit,
+                            QA,sampledepth,totaldepth)
   
 # assign sub-segment labels based on site label
-  load("data/otb_subseg_sites.RData")
+  load("../data/otb_subseg_sites.RData")
   epcwq3$subseg <- mapvalues( x = epcwq3$site,
                               from = otb_subseg_sites$site,
                               to = otb_subseg_sites$subsegment )
 
 # export clean dataset
-  save( epcwq3, file = "data-clean/epcwq_clean.RData" )
+  save( epcwq3, file = "../data-clean/epcwq_clean.RData" )
 
   
