@@ -3,12 +3,24 @@ rm(list=ls(all=TRUE))
 library(dplyr)
 library(lubridate)
 
+# Load & process chl data
 load('../data-clean/epcwq_clean.RData')
 epcdat <- epcwq3[which(epcwq3$param == "Chla"),]
 epcdat$yr <- year( epcdat$date )
 epcdat$month <- floor_date( epcdat$date, 'month' )
 
+# Specify OTB sub-segments
 subsegs <- c("NW","NE","CW","CE","SW","SE")
+
+# Initialize exceedance dataframes. Values are populated by the first two sections
+exceed_93 <- data.frame( yr = min(epcdat$yr):max(epcdat$yr),
+                         OTB = NA,
+                         NW = NA, NE = NA, CW = NA, CE = NA,
+                         SW = NA, SE = NA )
+exceed_85 <- data.frame( yr = min(epcdat$yr):max(epcdat$yr),
+                         OTB = NA,
+                         NW = NA, NE = NA, CW = NA, CE = NA,
+                         SW = NA, SE = NA )
 
 # OTB chlorophyll over time -----------------------------------------------
 
@@ -35,6 +47,8 @@ par(mfrow=c(2,1), mar=c(3,4,1,1) )
   # annual mean chlorophyll
   epcmeans <- epcdat |> group_by(yr) |> summarise(value=mean(value)) |>
                 as.data.frame()
+  exceed_93$OTB <- (epcmeans$value > 9.3) |> as.integer()
+  exceed_85$OTB <- (epcmeans$value > 8.5) |> as.integer()
   plot( value ~ yr, data = epcmeans,
         type = 'l', las = 1,
         col = rgb(0,0.6,0.4,0.8), lwd = 4,
@@ -72,6 +86,8 @@ par(mfrow=c(3,2), mar=c(2,4,2,1))
            as.data.frame()
     means$upr <- means$value + sd$sd/sqrt(n$n)
     means$lwr <- means$value - sd$sd/sqrt(n$n)
+    exceed_93[which(colnames(exceed_93)==subsegs[i])] <- (means$value > 9.3) |> as.integer()
+    exceed_85[which(colnames(exceed_93)==subsegs[i])] <- (means$value > 8.5) |> as.integer()
     # Generate sub-segment plot
     plot( value ~ yr, data = means,
           type = 'l', las = 1,
