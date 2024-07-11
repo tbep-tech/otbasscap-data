@@ -15,8 +15,8 @@ chldat1$month <- floor_date( chldat1$date, 'month' )
 chldat2 <- chldat1 |> group_by(month) |>
              summarise( value = mean(value) ) |> as.data.frame()
 # Create time series
-chldat <- data.frame( month = seq.Date( min(chldat1$month),
-                                        max(chldat1$month), 'month' ) )
+chldat <- data.frame( month = seq.Date( min(chldat2$month),
+                                        max(chldat2$month), 'month' ) )
 chldat <- left_join( chldat, chldat2, by = 'month' )
 # Impute missing values (linear interpolation)
 which(is.na(chldat$value))
