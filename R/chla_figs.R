@@ -160,4 +160,15 @@ par(mfrow=c(3,2), mar=c(2,4,2,1))
 dev.off()
 
 
+# Exceedance tables -------------------------------------------------------
+
+# Compute column sums
+exceed_93[nrow(exceed_93)+1,] <- apply( exceed_93, 2, sum )
+exceed_93$yr[nrow(exceed_93)] <- NA  # final row contains colsums
+exceed_85[nrow(exceed_85)+1,] <- apply( exceed_85, 2, sum )
+exceed_85$yr[nrow(exceed_85)] <- NA  # final row contains colsums
+
+# Export dataframes
+write.csv( exceed_93, "../data/exceed_93.csv", row.names = FALSE )
+write.csv( exceed_85, "../data/exceed_85.csv", row.names = FALSE )
 
