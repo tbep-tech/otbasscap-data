@@ -19,7 +19,7 @@ png( "../figs/cumu_pyro-max_TN.png", width = 7, height = 5, units = 'in', res = 
   # Assemble data for analysis
   # TN load data (TBEP)
   loaddat <- loads[ which(loads$param=="TN load"), ]
-  loaddat <- loads[ which( year(loaddat$date) >= 2012 ), ]
+  loaddat <- loaddat[ which( year(loaddat$date) >= 2012 ), ]
   loaddat <- select( loaddat, date, value )
   colnames(loaddat) <- c("month","TN")
   
