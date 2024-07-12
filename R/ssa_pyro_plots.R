@@ -34,7 +34,7 @@ for( i in 1:length( obj ) ){
   mtext( paste0( "(",letters[i], ") ", objlab[i],"  (signal strength: ",
                  round(this$sigstrength,2), "%)" ),
          side = 3, line = 0,
-         font = 2, cex = 1.1, adj = 0 )
+         font = 1, cex = 1.1, adj = 0 )
   date.seq <- seq.Date( min(this$dat$month), max(this$dat$month)+365, 'year' )
   if( i==length(obj) ){
     axis( 1, at = date.seq, labels = year(date.seq), cex.axis = 1.3  )
@@ -42,7 +42,7 @@ for( i in 1:length( obj ) ){
     axis( 1, at = date.seq, labels = rep("",length(date.seq))  )
   }
   if( i==4 ){
-    mtext( "Monthly maximum Pyro abundance (cells/L)",
+    mtext( "cells/L",
            side = 2, line = 3, cex = 1.1 )
   }
   axis( 2, at = c(0,2,4,6), las = 1, cex.axis = 1.2,
