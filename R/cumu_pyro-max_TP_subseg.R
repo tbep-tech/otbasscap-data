@@ -73,7 +73,7 @@ for( i in 1:nrow(pyro_TP) ){
 plot( median ~ TP, data = pyro_TP, las = 1,
       type = 'l', lwd = 2, col = rgb(0,0.2,0.6,0.7),
       xlim = c(6,49), ylim = c(1,7), yaxt = 'n',
-      ylab = "Pyrodinium abundance (cells/L)", xlab = ""
+      ylab = expression(italic(P.~bahamense)*" (cells/L)"), xlab = ""
 )
 mtext( paste0(subseg, " sub-segment"),
        side = 3, adj = 0, line = 1 )

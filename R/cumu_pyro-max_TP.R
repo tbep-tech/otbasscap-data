@@ -12,22 +12,22 @@ load( "../data/Pyro.Rdata")
 # subsegs <- c("NW","NE","CW","CE","SW","SE")
 
 # Loop over sub-segments to generate plots
-png( "../figs/cumu_pyro-max_TN.png", width = 7, height = 5, units = 'in', res = 500 )
+png( "../figs/cumu_pyro-max_TP.png", width = 7, height = 5, units = 'in', res = 500 )
 # par( mfrow=c(3,4), mar=c(4,4,3,2) )
 par( mfrow=c(1,1), mar=c(4,4,1,1) )
 # for( subseg in subsegs ){
   
   # Assemble data for analysis
-  # TN load data (TBEP)
-  loaddat <- loads[ which(loads$param=="TN load"), ]
+  # TP load data (TBEP)
+  loaddat <- loads[ which(loads$param=="TP load"), ]
   loaddat <- loaddat[ which( year(loaddat$date) >= 2012 ), ]
   loaddat <- select( loaddat, date, value )
-  colnames(loaddat) <- c("month","TN")
+  colnames(loaddat) <- c("month","TP")
   
   # # sum loads over 3- month window
-  # loaddat$TN_d1 <- c( loaddat$TN[2:nrow(loaddat)] , NA )
-  # loaddat$TN_d2 <- c( loaddat$TN[3:nrow(loaddat)] , NA, NA )
-  # loaddat$TN <- loaddat$TN + loaddat$TN_d1 + loaddat$TN_d2
+  # loaddat$TP_d1 <- c( loaddat$TP[2:nrow(loaddat)] , NA )
+  # loaddat$TP_d2 <- c( loaddat$TP[3:nrow(loaddat)] , NA, NA )
+  # loaddat$TP <- loaddat$TP + loaddat$TP_d1 + loaddat$TP_d2
   # loaddat <- loaddat[ which(complete.cases(loaddat)), ]
   # loaddat <- select( loaddat, month, TN )
   
@@ -43,9 +43,9 @@ par( mfrow=c(1,1), mar=c(4,4,1,1) )
   pcdat <- inner_join( pyrodat, loaddat, by = 'month' )
   
   # Define function to summarize pyro distribution
-  distn <- function( x, max_TN ){
-    # subset pyro data associated with chl values at or below max_TN
-    this <- x$pyro[ which( x$TN <= max_TN ) ]
+  distn <- function( x, max_TP ){
+    # subset pyro data associated with chl values at or below max_TP
+    this <- x$pyro[ which( x$TP <= max_TP ) ]
     # assemble output statistics
     out <- data.frame( median = median(this),
                        min = min(this),
@@ -59,7 +59,7 @@ par( mfrow=c(1,1), mar=c(4,4,1,1) )
   
   # Calculate pyro distn statistics
   # initiate dataframe
-  pyro_TN <- data.frame( TN = seq(10,300,10),
+  pyro_TP <- data.frame( TP = seq(5,50,1),
                          median = NA,
                          min = NA,
                          lwr_iqr = NA,
@@ -67,20 +67,17 @@ par( mfrow=c(1,1), mar=c(4,4,1,1) )
                          max = NA
   )
   # populate rows
-  for( i in 1:nrow(pyro_TN) ){
-    pyro_TN[i,2:6] <- distn( pcdat, max_TN = pyro_TN[i,1] )
+  for( i in 1:nrow(pyro_TP) ){
+    pyro_TP[i,2:6] <- distn( pcdat, max_TP = pyro_TP[i,1] )
   }  # // end i loop
   
   # Plot pyro distn as a function of chl_max
-  plot( median ~ TN, data = pyro_TN, las = 1,
+  plot( median ~ TP, data = pyro_TP, las = 1,
         type = 'l', lwd = 2, col = rgb(0,0.2,0.6,0.7),
-        # main = paste0( 
-        #                subseg,
-        #                " OTB cumulative response plot:\nMonthly maximum Pyrodinium cell counts ~ Monthly TN load" ),
-        ylim = c(1,7), yaxt = 'n',
+        ylim = c(1,7), xlim = c(6,49), yaxt = 'n',
         ylab = expression(italic(P.~bahamense)*" (cells/L)"), xlab = ""
   )
-  mtext( "TN load (tons/month)", side = 1, line = 2, cex = 1 )
+  mtext( "TP load (tons/month)", side = 1, line = 2, cex = 1 )
   axis( 2, at = 1:7, las = 1,
         labels = c( expression(10^1), expression(10^2),
                     expression(10^3), expression(10^4),
@@ -94,26 +91,26 @@ par( mfrow=c(1,1), mar=c(4,4,1,1) )
                        2e4,3e4,4e4,5e4,6e4,7e4,8e4,9e4,
                        2e5,3e5,4e5,5e5,6e5,7e5,8e5,9e5,
                        2e6,3e6,4e6,5e6,6e6,7e6,8e6,9e6) ), col = rgb(0,0,0,0.1) )
-  abline( v = pyro_TN$TN, col = rgb(0,0,0,0.1) )
-  polygon( x = c( pyro_TN$TN, rev(pyro_TN$TN) ),
-           y = c( pyro_TN$min, rev(pyro_TN$max) ),
+  abline( v = pyro_TP$TP, col = rgb(0,0,0,0.1) )
+  polygon( x = c( pyro_TP$TP, rev(pyro_TP$TP) ),
+           y = c( pyro_TP$min, rev(pyro_TP$max) ),
            col = rgb(0,0.2,0.6,0.1), border = rgb(0,0,0,0) )
-  polygon( x = c( pyro_TN$TN, rev(pyro_TN$TN) ),
-           y = c( pyro_TN$lwr_iqr, rev(pyro_TN$upr_iqr) ),
+  polygon( x = c( pyro_TP$TP, rev(pyro_TP$TP) ),
+           y = c( pyro_TP$lwr_iqr, rev(pyro_TP$upr_iqr) ),
            col = rgb(0,0.2,0.6,0.2), border = rgb(0,0,0,0) )
-  segments( x0 = 40,
-            y0 = 0, y1 = pyro_TN$upr_iqr[which(pyro_TN$TN==40)],
+  segments( x0 = 9,  # 449.44 million m3 * 0.23 mg/L TP criterion = 103.4 tons TP/yr = 8.6 tons TP/yr
+            y0 = 0, y1 = pyro_TP$upr_iqr[which(pyro_TP$TP==9)],
             lty = 2, col = 2 )
-  text( x = 40, y = pyro_TN$upr_iqr[which(pyro_TN$TN==40)],
-        col = 2, labels = "40 tons", pos = 4, srt = 90 )
-  segments( x0 = 0, x1 = 40,
-            y0 = pyro_TN$median[which(pyro_TN$TN==40)],
+  text( x = 9, y = pyro_TP$upr_iqr[which(pyro_TP$TP==9)],
+        col = 2, labels = "9 tons", pos = 4, srt = 90 )
+  segments( x0 = 0, x1 = 9,
+            y0 = pyro_TP$median[which(pyro_TP$TP==9)],
             lty = 2, col = 2 )
-  segments( x0 = 0, x1 = 40,
-            y0 = pyro_TN$lwr_iqr[which(pyro_TN$TN==40)],
+  segments( x0 = 0, x1 = 9,
+            y0 = pyro_TP$lwr_iqr[which(pyro_TP$TP==9)],
             lty = 2, col = 2 )
-  segments( x0 = 0, x1 = 40,
-            y0 = pyro_TN$upr_iqr[which(pyro_TN$TN==40)],
+  segments( x0 = 0, x1 = 9,
+            y0 = pyro_TP$upr_iqr[which(pyro_TP$TP==9)],
             lty = 2, col = 2 )
   legend( 'bottomright', bty = 'n',
           legend = c("Median of maxima",
