@@ -68,10 +68,11 @@ for( subseg in subsegs ){
   # Plot pyro distn as a function of q_max
   plot( median ~ discharge, data = pyro_q, las = 1,
         type = 'l', lwd = 2, col = rgb(0,0.2,0.6,0.7),
-        main = paste0( subseg, " OTB\nMax Pyro distn ~ Lake Tarpon Canal discharge" ),
         ylim = c(1,7), yaxt = 'n', xaxt = 'n',
-        ylab = "Pyro (cells/L)", xlab = ""
+        ylab = expression(italic(P.~bahamense)*" (cells/L)"), xlab = ""
   )
+  mtext( paste0(subseg, " sub-segment"),
+         side = 3, adj = 0, line = 1 )
   mtext( "Discharge (ft3/month)", side = 1, line = 2, cex = 0.7 )
   axis( 1, at = 1:9, las = 1,
         labels = c( expression(10^1), expression(10^2),
