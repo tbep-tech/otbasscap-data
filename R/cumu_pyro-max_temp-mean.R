@@ -66,7 +66,7 @@ for( subseg in subsegs ){
           type = 'l', lwd = 2, col = rgb(0,0.2,0.6,0.7),
           main = paste0( subseg, " OTB\nMax Pyro distn ~ Mean Temperature" ),
           ylim = c(1,7), yaxt = 'n',
-          ylab = "Pyro (cells/L)", xlab = ""
+          ylab = expression(italic(P.~bahamense)*" (cells/L)"), xlab = ""
           )
     mtext( "Temperature (C)", side = 1, line = 2, cex = 0.7 )
     axis( 2, at = 1:7, las = 1,

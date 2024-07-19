@@ -14,7 +14,7 @@ par( mar=c(2,4,1,1) )
   plot( discharge/1e6 ~ month, data = tarpon,
         type = 'l', las = 1,
         col = rgb(0,0.4,0.8,0.8), lwd = 2,
-        main = "Monthly Discharge from Lake Tarpon",
+        # main = "Monthly Discharge from Lake Tarpon",
         ylab = "Discharge (million ft3/mo)", xlab = '' )
   abline( v = seq.Date( floor_date(min(tarpon$month),'year'),
                         ceiling_date(max(tarpon$month),'year'), 'year' ),
