@@ -29,7 +29,8 @@ points( tn_load ~ year, data = otbdat,  # actual load
         cex = 1.2, lwd = 2, bg = rgb(1,1,1,1) )
 
 mtext( "TN load (tons)", side = 2, line = 3.5, cex = 1.3 )  # ylab
-mtext( "TN load rate (tons per million m3)", side = 4, line = 3.5, cex = 1.3 )  # y2 lab
+mtext( expression("TN load rate (tons /"~10^6~"m3)"),
+       side = 4, line = 3.5, cex = 1.3 )  # y2 lab
 axis( 4, at = seq(0,1000,200), labels = round(seq(0,2.2,length.out=6),1),     # y2
       cex.lab = 1.3, cex.axis = 1.3, las = 1)
 
@@ -41,9 +42,11 @@ points( tn_load_norm ~ year, data = otbdat, pch = 21, col = rgb(0.7,0.1,0.2,0.8)
         cex = 1.2, lwd = 2, bg = rgb(1,1,1,1) )
 
 legend( 'bottomleft', horiz = FALSE, bty='n',
-        lty = c(1,1,2), lwd = 3, cex = 1.3,
+        lty = c(1,1,2), lwd = 3, cex = 1.2,
         col = c( rgb(0,0.1,0.4,0.8), rgb(0.7,0.1,0.2,0.8), rgb(0,0,0,0.5) ),
-        legend = c("Actual load","Normalized load","TMDL (1.08 tons per million m3)") )
+        legend = c("Actual load","Normalized load",
+                   expression("TMDL (486 tons/yr) = Delivery ratio (1.08 tons /"*10^6~"m3)") )
+         )
 
 
 # Plot hydro loads
