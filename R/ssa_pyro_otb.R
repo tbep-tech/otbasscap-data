@@ -9,12 +9,14 @@ if(!require(dplyr)) { install.packages('dplyr') }; library(dplyr)
 
 # Load & process data
 load( "../data/Pyro.Rdata")
+  # Subset routine Pyro samples
+  pyro <- pyro[ which(pyro$routine==TRUE), ]
   # Aggregate to monthly timeframe
   pyro2 <- pyro[ which(pyro$yr>=2012) , c("date","pyro") ]
   pyro2$pyro[ which(is.na(pyro2$pyro)) ] <- 0  # NAs indicate samples with zero cells
   pyro2$month <- pyro2$date |> floor_date('month')
   pyro2 <- pyro2 |> group_by(month) |> 
-             summarise( pyro = max(pyro) ) |> as.data.frame()
+             dplyr::summarise( pyro = max(pyro) ) |> as.data.frame()
   pyro2$logcells <- log10( pyro2$pyro + 1 )
   # Create time series 
   pyrodat <- data.frame( month = seq.Date( min(pyro2$month),
@@ -94,7 +96,7 @@ load( "../data/Pyro.Rdata")
 # SSA grouping
 ##
   # Specify signal component groups
-  grp <- list( c(1,2), c(3,4,8,10), c(5,6,7,9) )
+  grp <- list( c(1,2), c(3,4) )
   
   # SSA reconstruction
   ##

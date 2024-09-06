@@ -24,6 +24,19 @@ pyro$subsegment[ which( pyro$Longitude > -82.55 ) ] <- 'SE'
 # Remove records outside of OTB (is.na(pyro$subsegment)==TRUE)
 pyro <- pyro[ -which( is.na(pyro$subsegment)), ]
 
+# Label records as routine (TRUE) or event-based (FALSE) samples
+  # concatenate lat-lon coords into strings
+  coordstr <- paste( pyro$Latitude, pyro$Longitude, sep = ", " )
+  # tabulate coord strings; top 9 are the routine sites (confirmed independently)
+  routine_sites <- ( table(coordstr) |> sort(decreasing=TRUE) |> names() )[1:9]
+  # create new column to label routine samples (TRUE)
+  pyro$routine <- FALSE
+  pyro$routine[ which( coordstr %in% routine_sites ) ] <- TRUE
+  # plot to confirm (routine locations in red)
+  plot( Latitude ~ Longitude, data = pyro, cex = 2 )
+  points( Latitude ~ Longitude, data = pyro[which(pyro$routine==TRUE),],
+          cex = 2, col = rgb(1,0,0,1), pch=16 )
+
 # export as RData and csv
 save( pyro, file = "../data/pyro.RData" )
 write.csv( pyro, file = "../data/pyro.csv", row.names = FALSE )

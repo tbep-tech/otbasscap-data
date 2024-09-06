@@ -8,6 +8,7 @@ library(lubridate)
 load( "../data/Pyro.Rdata")
 
 # Process pyro data
+pyro <- pyro[ which(pyro$routine==TRUE), ]
 pyro$pyro[ which(is.na(pyro$pyro)) ] <- 0
 pyro$logcells <- log10( pyro$pyro + 1 )
 pyro <- pyro[ which( pyro$yr > 2011 ), ]

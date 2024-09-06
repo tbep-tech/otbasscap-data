@@ -28,7 +28,8 @@ for( i in 1:length( obj ) ){
   this <- eval( parse(text=obj[i]) )
   
   plot( ts ~ month, dat = this$dat,
-        type = 'l', ylim = c(0,7), las = 1,
+        type = 'l', xlim = c( as.Date("2012-01-01"), as.Date("2023-12-31") ),
+        ylim = c(0,7), las = 1,
         xlab = "", ylab = "", yaxt = 'n', xaxt = 'n',
         lwd = 2, col = rgb(0,0,0,0.6) )
   mtext( paste0( "(",letters[i], ") ", objlab[i],"  (signal strength: ",
