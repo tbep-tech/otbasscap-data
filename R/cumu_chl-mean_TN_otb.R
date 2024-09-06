@@ -34,7 +34,7 @@ epcwq3.sub <- epcwq3[ which( epcwq3$param=="Chla"
                              # & epcwq3$subseg==subseg
                            ), ]
 epcwq3.sub$month <- floor_date( epcwq3.sub$date, unit = 'month' ) 
-chldat <- epcwq3.sub |> group_by(month) |> summarise( chl = mean(value) ) |> as.data.frame()
+chldat <- epcwq3.sub |> group_by(month) |> dplyr::summarise( chl = mean(value) ) |> as.data.frame()
 chldat$chl <- chldat$chl |> log10()
 wqdat <- inner_join( chldat, loaddat, by = 'month' )
 
@@ -75,7 +75,7 @@ plot( mean ~ TN, data = chl_TN, las = 1,
       ylim = c(0,2.5), yaxt = 'n',
       ylab = "Chlorophyll a (ug/L)", xlab = "", xlim = c(10,200)
 )
-mtext( "TN load (tons/month)", side = 1, line = 2, cex = 0.7 )
+mtext( "TN load (tons/month)", side = 1, line = 2, cex = 1 )
 axis( 2, at = 0:3, las = 1,
       labels = c( 10^0, 10^1, 10^2, 10^3 ) )
 # abline( h = axTicks(2), col = rgb(0,0,0,0.1) )

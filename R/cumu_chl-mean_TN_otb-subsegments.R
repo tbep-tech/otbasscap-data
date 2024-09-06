@@ -35,7 +35,7 @@ epcwq3.sub <- epcwq3[ which( epcwq3$param=="Chla"
                              & epcwq3$subseg==subseg
                            ), ]
 epcwq3.sub$month <- floor_date( epcwq3.sub$date, unit = 'month' ) 
-chldat <- epcwq3.sub |> group_by(month) |> summarise( chl = mean(value) ) |> as.data.frame()
+chldat <- epcwq3.sub |> group_by(month) |> dplyr::summarise( chl = mean(value) ) |> as.data.frame()
 chldat$chl <- chldat$chl |> log10()
 wqdat <- inner_join( chldat, loaddat, by = 'month' )
 
