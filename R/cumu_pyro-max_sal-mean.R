@@ -8,6 +8,9 @@ library(lubridate)
 load( "../data-clean/epcwq_clean.RData" )
 load( "../data/Pyro.Rdata")
 
+# Subset routine Pyro samples
+pyro <- pyro[ which(pyro$routine==TRUE), ]
+
 # Specify subsegment
 subsegs <- c("NW","NE","CW","CE","SW","SE")
 

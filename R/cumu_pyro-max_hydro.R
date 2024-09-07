@@ -5,35 +5,29 @@ library(dplyr)
 library(lubridate)
 
 # Load data from file
-load( "../data/loads.RData" )
+hydro <- read.csv("../data-raw/TB_hydro_monthly.csv")
 load( "../data/Pyro.Rdata")
 
 # Subset routine Pyro samples
 pyro <- pyro[ which(pyro$routine==TRUE), ]
 
+# Process OTB hydrologic load data (TBEP)
+hydro$date <- as.Date( paste0(hydro$year,"-",formatC(hydro$month,width=2,flag="0"),"-01") )
+loaddat <- hydro[ which(hydro$bay_segment=="Old Tampa Bay" &
+                        year( hydro$date ) >= 2012 ), ]
+loaddat <- select( loaddat, date, hy_load_106_m3_mo )
+colnames( loaddat ) <- c("month","hydro")
+
 # Specify subsegment
 subsegs <- c("NW","NE","CW","CE","SW","SE")
 
 # Loop over sub-segments to generate plots
-png( "../figs/cumu_pyro-max_TP_subseg.png", width = 7, height = 9, units = 'in', res = 500 )
+png( "../figs/cumu_pyro-max_hydro.png", width = 7, height = 9, units = 'in', res = 500 )
 par( mfrow=c(3,2), mar=c(4,4,3,2) )
+
 for( subseg in subsegs ){
 
-# Assemble data for analysis
-# TP load data (TBEP)
-loaddat <- loads[ which(loads$param=="TP load"), ]
-loaddat <- loaddat[ which( year(loaddat$date) >= 2012 ), ]
-loaddat <- select( loaddat, date, value )
-colnames(loaddat) <- c("month","TP")
-
-# # sum loads over 3- month window
-# loaddat$TP_d1 <- c( loaddat$TP[2:nrow(loaddat)] , NA )
-# loaddat$TP_d2 <- c( loaddat$TP[3:nrow(loaddat)] , NA, NA )
-# loaddat$TP <- loaddat$TP + loaddat$TP_d1 + loaddat$TP_d2
-# loaddat <- loaddat[ which(complete.cases(loaddat)), ]
-# loaddat <- select( loaddat, month, TN )
-
-# pyro data (FWC)
+# Assemble pyro data (FWC)
 pyro.sub <- pyro[ which( pyro$yr>=2012
                          & pyro$subsegment==subseg ), ]
 pyro.sub$month <- floor_date( pyro.sub$date, unit = 'month' ) 
@@ -44,9 +38,9 @@ pyrodat <- pyro.sub |> group_by(month) |> dplyr::summarise( pyro = max(logval) )
 pcdat <- inner_join( pyrodat, loaddat, by = 'month' )
 
 # Define function to summarize pyro distribution
-distn <- function( x, max_TP ){
-  # subset pyro data associated with values at or below max_TP
-  this <- x$pyro[ which( x$TP <= max_TP ) ]
+distn <- function( x, max_load ){
+  # subset pyro data associated with chl values at or below max_load
+  this <- x$pyro[ which( x$hydro <= max_load ) ]
   # assemble output statistics
   out <- data.frame( median = median(this),
                      min = min(this),
@@ -60,7 +54,7 @@ distn <- function( x, max_TP ){
 
 # Calculate pyro distn statistics
 # initiate dataframe
-pyro_TP <- data.frame( TP = seq(5,50,1),
+pyro_hydro <- data.frame( hydro = seq(10,280,10),
                        median = NA,
                        min = NA,
                        lwr_iqr = NA,
@@ -68,19 +62,20 @@ pyro_TP <- data.frame( TP = seq(5,50,1),
                        max = NA
 )
 # populate rows
-for( i in 1:nrow(pyro_TP) ){
-  pyro_TP[i,2:6] <- distn( pcdat, max_TP = pyro_TP[i,1] )
+for( i in 1:nrow(pyro_hydro) ){
+  pyro_hydro[i,2:6] <- distn( pcdat, max_load = pyro_hydro[i,1] )
 }  # // end i loop
 
-# Plot pyro distn as a function of TP_max
-plot( median ~ TP, data = pyro_TP, las = 1,
+# Plot pyro distn as a function of chl_max
+plot( median ~ hydro, data = pyro_hydro, las = 1,
       type = 'l', lwd = 2, col = rgb(0,0.2,0.6,0.7),
-      xlim = c(6,49), ylim = c(1,7), yaxt = 'n',
+      ylim = c(1,7), yaxt = 'n',
       ylab = expression(italic(P.~bahamense)*" (cells/L)"), xlab = ""
 )
 mtext( paste0(subseg, " sub-segment"),
        side = 3, adj = 0, line = 1 )
-mtext( "TP load (tons/month)", side = 1, line = 2, cex = 0.7 )
+mtext( "Hydrologic load (million m3/month)",
+       side = 1, line = 2, cex = 0.7 )
 axis( 2, at = 1:7, las = 1,
       labels = c( expression(10^1), expression(10^2),
                   expression(10^3), expression(10^4),
@@ -94,27 +89,27 @@ abline( h = log10( c(2e0,3e0,4e0,5e0,6e0,7e0,8e0,9e0,
                      2e4,3e4,4e4,5e4,6e4,7e4,8e4,9e4,
                      2e5,3e5,4e5,5e5,6e5,7e5,8e5,9e5,
                      2e6,3e6,4e6,5e6,6e6,7e6,8e6,9e6) ), col = rgb(0,0,0,0.1) )
-abline( v = pyro_TP$TP, col = rgb(0,0,0,0.1) )
-polygon( x = c( pyro_TP$TP, rev(pyro_TP$TP) ),
-         y = c( pyro_TP$min, rev(pyro_TP$max) ),
+abline( v = pyro_hydro$hydro, col = rgb(0,0,0,0.1) )
+polygon( x = c( pyro_hydro$hydro, rev(pyro_hydro$hydro) ),
+         y = c( pyro_hydro$min, rev(pyro_hydro$max) ),
          col = rgb(0,0.2,0.6,0.1), border = rgb(0,0,0,0) )
-polygon( x = c( pyro_TP$TP, rev(pyro_TP$TP) ),
-         y = c( pyro_TP$lwr_iqr, rev(pyro_TP$upr_iqr) ),
+polygon( x = c( pyro_hydro$hydro, rev(pyro_hydro$hydro) ),
+         y = c( pyro_hydro$lwr_iqr, rev(pyro_hydro$upr_iqr) ),
          col = rgb(0,0.2,0.6,0.2), border = rgb(0,0,0,0) )
-segments( x0 = 9,
-          y0 = 0, y1 = pyro_TP$upr_iqr[which(pyro_TP$TP==9)],
-          lty = 2, col = 2 )
-text( x = 9, y = pyro_TP$upr_iqr[which(pyro_TP$TP==9)],
-      col = 2, labels = "9 tons", pos = 4, srt = 90 )
-segments( x0 = 0, x1 = 9,
-          y0 = pyro_TP$median[which(pyro_TP$TP==9)],
-          lty = 2, col = 2 )
-segments( x0 = 0, x1 = 9,
-          y0 = pyro_TP$lwr_iqr[which(pyro_TP$TP==9)],
-          lty = 2, col = 2 )
-segments( x0 = 0, x1 = 9,
-          y0 = pyro_TP$upr_iqr[which(pyro_TP$TP==9)],
-          lty = 2, col = 2 )
+# segments( x0 = 40,
+#           y0 = 0, y1 = pyro_hydro$upr_iqr[which(pyro_hydro$hydro==40)],
+#           lty = 2, col = 2 )
+# text( x = 40, y = pyro_hydro$upr_iqr[which(pyro_hydro$hydro==40)],
+#       col = 2, labels = "40 tons", pos = 4, srt = 90 )
+# segments( x0 = 0, x1 = 40,
+#           y0 = pyro_hydro$median[which(pyro_hydro$hydro==40)],
+#           lty = 2, col = 2 )
+# segments( x0 = 0, x1 = 40,
+#           y0 = pyro_hydro$lwr_iqr[which(pyro_hydro$hydro==40)],
+#           lty = 2, col = 2 )
+# segments( x0 = 0, x1 = 40,
+#           y0 = pyro_hydro$upr_iqr[which(pyro_hydro$hydro==40)],
+#           lty = 2, col = 2 )
 legend( 'bottomright', bty = 'n',
         legend = c("Median of maxima",
                    "IQR of maxima",

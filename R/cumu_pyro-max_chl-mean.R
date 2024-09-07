@@ -8,6 +8,9 @@ library(lubridate)
 load( "../data-clean/epcwq_clean.RData" )
 load( "../data/Pyro.Rdata")
 
+# Subset routine Pyro samples
+pyro <- pyro[ which(pyro$routine==TRUE), ]
+
 # Specify subsegment
 subsegs <- c("NW","NE","CW","CE","SW","SE")
 
@@ -23,13 +26,13 @@ for( subseg in subsegs ){
                                  year(epcwq3$date) >= 2012 &
                                  epcwq3$subseg==subseg ), ]
     epcwq3.sub$month <- floor_date( epcwq3.sub$date, unit = 'month' ) 
-    chldat <- epcwq3.sub |> group_by(month) |> summarise( chl = mean(value) ) |> as.data.frame()
+    chldat <- epcwq3.sub |> group_by(month) |> dplyr::summarise( chl = mean(value) ) |> as.data.frame()
     # pyro data (FWC)
     pyro.sub <- pyro[ which( pyro$subsegment==subseg & pyro$yr>=2012 ), ]
     pyro.sub$month <- floor_date( pyro.sub$date, unit = 'month' ) 
     pyro.sub <- pyro.sub[ which(complete.cases(pyro.sub)), ]  # pyro==NA means zero cells/L
     pyro.sub$logval <- log10( pyro.sub$pyro )
-    pyrodat <- pyro.sub |> group_by(month) |> summarise( pyro = max(logval) ) |> as.data.frame()
+    pyrodat <- pyro.sub |> group_by(month) |> dplyr::summarise( pyro = max(logval) ) |> as.data.frame()
     # join pyro and chl data by month
     pcdat <- inner_join( pyrodat, chldat, by = 'month' )
   

@@ -8,6 +8,9 @@ library(lubridate)
 load( "../data/loads.RData" )
 load( "../data/Pyro.Rdata")
 
+# Subset routine Pyro samples
+pyro <- pyro[ which(pyro$routine==TRUE), ]
+
 # Specify subsegment
 subsegs <- c("NW","NE","CW","CE","SW","SE")
 
@@ -36,7 +39,7 @@ pyro.sub <- pyro[ which( pyro$yr>=2012
 pyro.sub$month <- floor_date( pyro.sub$date, unit = 'month' ) 
 pyro.sub <- pyro.sub[ which(complete.cases(pyro.sub)), ]  # pyro==NA means zero cells/L
 pyro.sub$logval <- log10( pyro.sub$pyro )
-pyrodat <- pyro.sub |> group_by(month) |> summarise( pyro = max(logval) ) |> as.data.frame()
+pyrodat <- pyro.sub |> group_by(month) |> dplyr::summarise( pyro = max(logval) ) |> as.data.frame()
 # join pyro and chl data by month
 pcdat <- inner_join( pyrodat, loaddat, by = 'month' )
 
