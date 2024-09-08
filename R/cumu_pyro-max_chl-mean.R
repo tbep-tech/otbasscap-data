@@ -98,19 +98,19 @@ for( subseg in subsegs ){
     polygon( x = c( pyro_chl$lwr_iqr, rev(pyro_chl$upr_iqr) ),
              y = c( pyro_chl$chl, rev(pyro_chl$chl) ),
              col = rgb(0,0.2,0.6,0.2), border = rgb(0,0,0,0) )
-    segments( x0 = 0, x1 = pyro_chl$upr_iqr[which(pyro_chl$chl==9.3)],
-              y0 = 9.3,
+    segments( x0 = 0, x1 = pyro_chl$upr_iqr[which(pyro_chl$chl==8.5)],
+              y0 = 8.5,
               lty = 3, col = rgb(1,0.1,0.1,0.6), lwd = 2 )
     text( x = 2, y = 9, col = rgb(1,0.1,0.1,0.8),
-          labels = "9.3 ug/L", pos = 3, cex = 1.3 )
-    segments( x0 = pyro_chl$median[which(pyro_chl$chl==9.3)],
-              y0 = 0, y1 = 9.3,
+          labels = "8.5 ug/L", pos = 3, cex = 1.3 )
+    segments( x0 = pyro_chl$median[which(pyro_chl$chl==8.5)],
+              y0 = 0, y1 = 8.5,
               lty = 1, col = rgb(1,0.1,0.1,0.6), lwd = 2 )
-    segments( x0 = pyro_chl$lwr_iqr[which(pyro_chl$chl==9.3)],
-              y0 = 0, y1 = 9.3,
+    segments( x0 = pyro_chl$lwr_iqr[which(pyro_chl$chl==8.5)],
+              y0 = 0, y1 = 8.5,
               lty = 3, col = rgb(1,0.1,0.1,0.6), lwd = 2 )
-    segments( x0 = pyro_chl$upr_iqr[which(pyro_chl$chl==9.3)],
-              y0 = 0, y1 = 9.3,
+    segments( x0 = pyro_chl$upr_iqr[which(pyro_chl$chl==8.5)],
+              y0 = 0, y1 = 8.5,
               lty = 3, col = rgb(1,0.1,0.1,0.6), lwd = 2 )
     legend( x = 0.5, y = 26, bty = 'n',
             legend = c("Median",
@@ -140,7 +140,7 @@ for( subseg in subsegs ){
   #                                    )
   #   }  # // end i loop
   # 
-  #   # Plot annual mean chl values with 9.3 ug/L threshold
+  #   # Plot annual mean chl values with 8.5 ug/L threshold
   #   plot( mean ~ year, data = chl_year, type = 'l', las = 1,
   #         ylim = c(0,50),
   #         main = "", ylab = "", xlab = "",
@@ -159,9 +159,9 @@ for( subseg in subsegs ){
   #   polygon( x = c( chl_year$year, rev(chl_year$year) ),
   #            y = c( chl_year$lwr_2sd, rev(chl_year$upr_2sd) ),
   #            col = rgb(0,0.2,0.6,0.1), border = rgb(0,0,0,0) )
-  #   abline( h = 9.3, lty = 2, col = rgb(1,0.2,0.1,0.7), lwd = 2 )
-  #   # text( x = 2022, y = 9.3,
-  #   #       col = 2, labels = "9.3 ug/L", pos = 3 )
+  #   abline( h = 8.5, lty = 2, col = rgb(1,0.2,0.1,0.7), lwd = 2 )
+  #   # text( x = 2022, y = 8.5,
+  #   #       col = 2, labels = "8.5 ug/L", pos = 3 )
   #   points( mean ~ year, data = chl_year )
   #     legend( 'topright', bty = 'n',
   #             legend = c("Mean","\u00B11sd","\u00B12sd"), text.font = 2, cex = 1.3,

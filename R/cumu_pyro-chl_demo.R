@@ -29,30 +29,31 @@ pyrodat <- pyro.sub |> group_by(month) |> dplyr::summarise( pyro = max(logval) )
 # join pyro and chl data by month
 pcdat <- inner_join( pyrodat, chldat, by = 'month' )
 
-# Plot histogram of max pyro assoc with mean chl-a at or below 9.3 ug/L
-hist( pcdat$pyro[ which(pcdat$chl <= 9.3) ], breaks = 20, freq = TRUE,
+# Plot histogram of max pyro assoc with mean chl-a at or below 8.5 ug/L
+hist( pcdat$pyro[ which(pcdat$chl <= 8.5) ], breaks = 20, freq = TRUE,
       border = rgb(1,1,1,1), col = rgb(0,0,0,0.4),
-      main = "", xlab = "", ylab = "", las = 1, xaxt = 'n', xlim = c(1,7)
+      main = "", xlab = "", ylab = "",
+      las = 1, xaxt = 'n', xlim = c(1,7)
       )
 # mtext( expression(atop("(a) Monthly maximum "*italic(P.~bahamense)*" abundance",
-#                        "associated with monthly mean chlorophyll-a \u22649.3 ug/L")),
+#                        "associated with monthly mean chlorophyll-a \u22648.5 ug/L")),
 #        side = 3, cex = 1.1 )
 mtext( expression("(a) Monthly maximum "*italic(P.~bahamense)*" distribution"),
        side = 3, line = 1.5, adj = 0 )
-mtext( expression("      associated with monthly mean chlorophyll-a \u22649.3 ug/L"),
+mtext( expression("      associated with monthly mean chlorophyll-a \u22648.5 ug/L"),
        side = 3, line = 0.5, adj = 0 )
 mtext( expression(italic(P.~bahamense)*" (cells/L)"),
        side = 1, line = 2.5 )
-mtext( "Frequency", side = 2, line = 2 )
+mtext( "Number of samples", side = 2, line = 2 )
 axis( 1, at = 1:7, labels = c( expression(10^1), expression(10^2),
                                expression(10^3), expression(10^4),
                                expression(10^5), expression(10^6),
                                expression(10^7) ) )
-abline( v = pcdat$pyro[ which(pcdat$chl <= 9.3) ] |> median(), 
+abline( v = pcdat$pyro[ which(pcdat$chl <= 8.5) ] |> median(), 
         col = rgb(1,0.1,0.1,0.6), lwd = 3 )
-abline( v = pcdat$pyro[ which(pcdat$chl <= 9.3) ] |> quantile(0.25),
+abline( v = pcdat$pyro[ which(pcdat$chl <= 8.5) ] |> quantile(0.25),
         lty = 3, col = rgb(1,0.1,0.1,0.6), lwd = 3 )
-abline( v = pcdat$pyro[ which(pcdat$chl <= 9.3) ] |> quantile(0.75),
+abline( v = pcdat$pyro[ which(pcdat$chl <= 8.5) ] |> quantile(0.75),
         lty = 3, col = rgb(1,0.1,0.1,0.6), lwd = 3 )
 
 # Define function to summarize pyro distribution
@@ -115,18 +116,18 @@ polygon( x = c( pyro_chl$min, rev(pyro_chl$max) ),
 polygon( x = c( pyro_chl$lwr_iqr, rev(pyro_chl$upr_iqr) ),
          y = c( pyro_chl$chl, rev(pyro_chl$chl) ),
          col = rgb(0,0.2,0.6,0.2), border = rgb(0,0,0,0) )
-segments( x0 = 0, x1 = pyro_chl$upr_iqr[which(pyro_chl$chl==9.3)],
-          y0 = 9.3,
+segments( x0 = 0, x1 = pyro_chl$upr_iqr[which(pyro_chl$chl==8.5)],
+          y0 = 8.5,
           lty = 3, col = rgb(1,0.1,0.1,0.6), lwd = 3 )
-text( x = 2, y = 9, col = rgb(1,0.1,0.1,0.8), labels = "9.3 ug/L", pos = 3 )
-segments( x0 = pyro_chl$median[which(pyro_chl$chl==9.3)],
-          y0 = 0, y1 = 9.3,
+text( x = 2, y = 9, col = rgb(1,0.1,0.1,0.8), labels = "8.5 ug/L", pos = 3 )
+segments( x0 = pyro_chl$median[which(pyro_chl$chl==8.5)],
+          y0 = 0, y1 = 8.5,
           lty = 1, col = rgb(1,0.1,0.1,0.6), lwd = 3 )
-segments( x0 = pyro_chl$lwr_iqr[which(pyro_chl$chl==9.3)],
-          y0 = 0, y1 = 9.3,
+segments( x0 = pyro_chl$lwr_iqr[which(pyro_chl$chl==8.5)],
+          y0 = 0, y1 = 8.5,
           lty = 3, col = rgb(1,0.1,0.1,0.6), lwd = 3 )
-segments( x0 = pyro_chl$upr_iqr[which(pyro_chl$chl==9.3)],
-          y0 = 0, y1 = 9.3,
+segments( x0 = pyro_chl$upr_iqr[which(pyro_chl$chl==8.5)],
+          y0 = 0, y1 = 8.5,
           lty = 3, col = rgb(1,0.1,0.1,0.6), lwd = 3 )
 legend( 'topleft', bty = 'n',
         legend = c("Median",

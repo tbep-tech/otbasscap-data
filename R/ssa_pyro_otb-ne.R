@@ -97,7 +97,7 @@ wcor(obj,groups = 1:20) |> plot()
 # SSA grouping
 ##
 # Specify signal component groups
-grp <- list( c(1,2), c(3,4), c(7,8), c(9,10) )
+grp <- list( c(1,2), c(3,4), c(7,8) )
 
 # SSA reconstruction
 ##
