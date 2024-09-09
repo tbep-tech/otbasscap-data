@@ -45,8 +45,14 @@ par(mfrow=c(2,1), mar=c(3,4,1,1) )
           y = rep(-8,nrow(epcdat)),
           pch = "|", cex = 0.4, col = rgb(0.3,0.3,0.3,0.5) )
   # annual mean chlorophyll
-  epcmeans <- epcdat |> group_by(yr) |> summarise(value=mean(value)) |>
+  epcmeans <- epcdat |> group_by(yr) |> dplyr::summarise(value=mean(value)) |>
                 as.data.frame()
+  epcsd <- epcdat |> group_by(yr) |> dplyr::summarise(sd=sd(value)) |> 
+    as.data.frame()
+  epcn <- epcdat |> group_by(yr) |> dplyr::summarise(n=length(value)) |> 
+    as.data.frame()
+  epcmeans$upr <- epcmeans$value + epcsd$sd / sqrt(epcn$n)
+  epcmeans$lwr <- epcmeans$value - epcsd$sd / sqrt(epcn$n)
   exceed_93$OTB <- (epcmeans$value > 9.3) |> as.integer()
   exceed_85$OTB <- (epcmeans$value > 8.5) |> as.integer()
   plot( value ~ yr, data = epcmeans,
@@ -54,11 +60,13 @@ par(mfrow=c(2,1), mar=c(3,4,1,1) )
         col = rgb(0,0.6,0.4,0.8), lwd = 4,
         main = "", ylim = c(5,15), xlim = c(2000,2024),
         ylab = "Chlorophyll a (ug/L)", xlab = '' )
-  mtext( "(b) Monthly mean chlorophyll-a concentrations across OTB (EPCHC data)",
+  mtext( "(b) Annual mean \U00B1SE chlorophyll-a concentrations across OTB (EPCHC data)",
          side = 3, line = 0, adj = 0, font = 1 )
   abline( v = axTicks(1), col = rgb(0,0,0,0.1) )
   abline( h = axTicks(2), col = rgb(0,0,0,0.1) )
   abline( h = c(8.5,9.3), lty = c(3,1), col = rgb(0.3,0.2,0.2,0.7), lwd = 2 )
+  segments( x0 = epcmeans$yr, y0 = epcmeans$upr, y1 = epcmeans$lwr,
+            col = rgb(0,0.6,0.4,1), lwd = 2 )
   points( value ~ yr, data = epcmeans, cex = 1.2, lwd = 2,
           pch = 21, bg = rgb(1,1,1,1), col =  rgb(0,0.6,0.4,1) )
   legend( 'topright', bty = 'n',
@@ -78,11 +86,11 @@ par(mfrow=c(3,2), mar=c(2,4,2,1))
   for( i in 1:length(subsegs) ){
     # Assemble sub-segment data
     this.dat <- epcdat[ which( epcdat$subseg==subsegs[i] ),]
-    means <- this.dat |> group_by(yr) |> summarise(value=mean(value)) |> 
+    means <- this.dat |> group_by(yr) |> dplyr::summarise(value=mean(value)) |> 
                as.data.frame()
-    sd <- this.dat |> group_by(yr) |> summarise(sd=sd(value)) |> 
+    sd <- this.dat |> group_by(yr) |> dplyr::summarise(sd=sd(value)) |> 
              as.data.frame()
-    n <- this.dat |> group_by(yr) |> summarise(n=length(value)) |> 
+    n <- this.dat |> group_by(yr) |> dplyr::summarise(n=length(value)) |> 
            as.data.frame()
     means$upr <- means$value + sd$sd/sqrt(n$n)
     means$lwr <- means$value - sd$sd/sqrt(n$n)
@@ -125,11 +133,11 @@ par(mfrow=c(3,2), mar=c(2,4,2,1))
     # Assemble sub-segment data
     this.dat <- epcdat[ which( epcdat$subseg==subsegs[i] ),]
     this.dat$month <- this.dat$date |> month()
-    means <- this.dat |> group_by(month) |> summarise(value=mean(value)) |> 
+    means <- this.dat |> group_by(month) |> dplyr::summarise(value=mean(value)) |> 
                as.data.frame()
-    sd <- this.dat |> group_by(month) |> summarise(sd=sd(value)) |> 
+    sd <- this.dat |> group_by(month) |> dplyr::summarise(sd=sd(value)) |> 
             as.data.frame()
-    n <- this.dat |> group_by(month) |> summarise(n=length(value)) |> 
+    n <- this.dat |> group_by(month) |> dplyr::summarise(n=length(value)) |> 
             as.data.frame()
     means$upr <- means$value + sd$sd/sqrt(n$n)
     means$lwr <- means$value - sd$sd/sqrt(n$n)
