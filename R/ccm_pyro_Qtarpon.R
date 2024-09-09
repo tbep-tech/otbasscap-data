@@ -53,7 +53,7 @@ colnames( signals )[1] <- "date"
 
 delay.seq <- seq(-7,7,1)   # delay sequence for Extended CCM (absolute value of 'from' should be >= 'to' value )
 min.date  <- as.Date( '2012-01-01')
-max.date  <- as.Date( '2021-12-31' )
+max.date  <- as.Date( '2023-12-31' )
 lib.step  <- 10     # library step size
 ccm.frac  <- 0.10  # xmap skill will be estimated from the largest 'ccm.frac' of library sizes
 nsurr     <- 500   # Number of surrogates for significance testing
@@ -439,96 +439,96 @@ plot.CCM.results <- function( CCM.OUTPUT, CCM.RHO, DELAY.SEQ=delay.seq, PVAL, MA
 # CCM tests ---------------------------------------------------------------
 
 
-# OTB Pyro xmap TN load
-ccm.otb.pyro.TN <- delay.CCM( LIBRARY='pyro_otb', TARGET='TN_otb',
+# OTB Pyro xmap discharge
+ccm.otb.pyro.Qtarpon <- delay.CCM( LIBRARY='pyro_otb', TARGET='Qtarpon_otb',
                               EMB = as.list(embed_tbl[which(embed_tbl$var=="pyro_otb"),]) )
-ccm.otb.pyro.TN.rho <- plot.CCM( ccm.otb.pyro.TN )
-ccm.otb.pyro.TN.pval.d0  <- pval.CCM( CCM.OUTPUT=ccm.otb.pyro.TN, CCM.RHO=ccm.otb.pyro.TN.rho, DELAY = 0 )
-ccm.otb.pyro.TN.pval.d1  <- pval.CCM( CCM.OUTPUT=ccm.otb.pyro.TN, CCM.RHO=ccm.otb.pyro.TN.rho, DELAY = -1 ) 
-ccm.otb.pyro.TN.pval.d2  <- pval.CCM( CCM.OUTPUT=ccm.otb.pyro.TN, CCM.RHO=ccm.otb.pyro.TN.rho, DELAY = -2 ) 
-ccm.otb.pyro.TN.pval.d3  <- pval.CCM( CCM.OUTPUT=ccm.otb.pyro.TN, CCM.RHO=ccm.otb.pyro.TN.rho, DELAY = -3 ) 
-ccm.otb.pyro.TN.pval.d4  <- pval.CCM( CCM.OUTPUT=ccm.otb.pyro.TN, CCM.RHO=ccm.otb.pyro.TN.rho, DELAY = -4 ) 
-ccm.otb.pyro.TN.pval.d5  <- pval.CCM( CCM.OUTPUT=ccm.otb.pyro.TN, CCM.RHO=ccm.otb.pyro.TN.rho, DELAY = -5 ) 
-ccm.otb.pyro.TN.pval.d6  <- pval.CCM( CCM.OUTPUT=ccm.otb.pyro.TN, CCM.RHO=ccm.otb.pyro.TN.rho, DELAY = -6 ) 
-ccm.otb.pyro.TN.pval.d7  <- pval.CCM( CCM.OUTPUT=ccm.otb.pyro.TN, CCM.RHO=ccm.otb.pyro.TN.rho, DELAY = -7 ) 
+ccm.otb.pyro.Qtarpon.rho <- plot.CCM( ccm.otb.pyro.Qtarpon )
+ccm.otb.pyro.Qtarpon.pval.d0  <- pval.CCM( CCM.OUTPUT=ccm.otb.pyro.Qtarpon, CCM.RHO=ccm.otb.pyro.Qtarpon.rho, DELAY = 0 )
+ccm.otb.pyro.Qtarpon.pval.d1  <- pval.CCM( CCM.OUTPUT=ccm.otb.pyro.Qtarpon, CCM.RHO=ccm.otb.pyro.Qtarpon.rho, DELAY = -1 ) 
+ccm.otb.pyro.Qtarpon.pval.d2  <- pval.CCM( CCM.OUTPUT=ccm.otb.pyro.Qtarpon, CCM.RHO=ccm.otb.pyro.Qtarpon.rho, DELAY = -2 ) 
+ccm.otb.pyro.Qtarpon.pval.d3  <- pval.CCM( CCM.OUTPUT=ccm.otb.pyro.Qtarpon, CCM.RHO=ccm.otb.pyro.Qtarpon.rho, DELAY = -3 ) 
+ccm.otb.pyro.Qtarpon.pval.d4  <- pval.CCM( CCM.OUTPUT=ccm.otb.pyro.Qtarpon, CCM.RHO=ccm.otb.pyro.Qtarpon.rho, DELAY = -4 ) 
+ccm.otb.pyro.Qtarpon.pval.d5  <- pval.CCM( CCM.OUTPUT=ccm.otb.pyro.Qtarpon, CCM.RHO=ccm.otb.pyro.Qtarpon.rho, DELAY = -5 ) 
+ccm.otb.pyro.Qtarpon.pval.d6  <- pval.CCM( CCM.OUTPUT=ccm.otb.pyro.Qtarpon, CCM.RHO=ccm.otb.pyro.Qtarpon.rho, DELAY = -6 ) 
+ccm.otb.pyro.Qtarpon.pval.d7  <- pval.CCM( CCM.OUTPUT=ccm.otb.pyro.Qtarpon, CCM.RHO=ccm.otb.pyro.Qtarpon.rho, DELAY = -7 ) 
 
-# NW Pyro xmap TN load
-ccm.nw.pyro.TN <- delay.CCM( LIBRARY='pyro_otb_nw', TARGET='TN_otb',
+# NW Pyro xmap discharge
+ccm.nw.pyro.Qtarpon <- delay.CCM( LIBRARY='pyro_otb_nw', TARGET='Qtarpon_otb',
                              EMB = as.list(embed_tbl[which(embed_tbl$var=="pyro_otb_nw"),]) )
-ccm.nw.pyro.TN.rho <- plot.CCM( ccm.nw.pyro.TN )
-ccm.nw.pyro.TN.pval.d0  <- pval.CCM( CCM.OUTPUT=ccm.nw.pyro.TN, CCM.RHO=ccm.nw.pyro.TN.rho, DELAY = 0 )
-ccm.nw.pyro.TN.pval.d1  <- pval.CCM( CCM.OUTPUT=ccm.nw.pyro.TN, CCM.RHO=ccm.nw.pyro.TN.rho, DELAY = -1 ) 
-ccm.nw.pyro.TN.pval.d2  <- pval.CCM( CCM.OUTPUT=ccm.nw.pyro.TN, CCM.RHO=ccm.nw.pyro.TN.rho, DELAY = -2 ) 
-ccm.nw.pyro.TN.pval.d3  <- pval.CCM( CCM.OUTPUT=ccm.nw.pyro.TN, CCM.RHO=ccm.nw.pyro.TN.rho, DELAY = -3 ) 
-ccm.nw.pyro.TN.pval.d4  <- pval.CCM( CCM.OUTPUT=ccm.nw.pyro.TN, CCM.RHO=ccm.nw.pyro.TN.rho, DELAY = -4 ) 
-ccm.nw.pyro.TN.pval.d5  <- pval.CCM( CCM.OUTPUT=ccm.nw.pyro.TN, CCM.RHO=ccm.nw.pyro.TN.rho, DELAY = -5 ) 
-ccm.nw.pyro.TN.pval.d6  <- pval.CCM( CCM.OUTPUT=ccm.nw.pyro.TN, CCM.RHO=ccm.nw.pyro.TN.rho, DELAY = -6 ) 
-ccm.nw.pyro.TN.pval.d7  <- pval.CCM( CCM.OUTPUT=ccm.nw.pyro.TN, CCM.RHO=ccm.nw.pyro.TN.rho, DELAY = -7 ) 
+ccm.nw.pyro.Qtarpon.rho <- plot.CCM( ccm.nw.pyro.Qtarpon )
+ccm.nw.pyro.Qtarpon.pval.d0  <- pval.CCM( CCM.OUTPUT=ccm.nw.pyro.Qtarpon, CCM.RHO=ccm.nw.pyro.Qtarpon.rho, DELAY = 0 )
+ccm.nw.pyro.Qtarpon.pval.d1  <- pval.CCM( CCM.OUTPUT=ccm.nw.pyro.Qtarpon, CCM.RHO=ccm.nw.pyro.Qtarpon.rho, DELAY = -1 ) 
+ccm.nw.pyro.Qtarpon.pval.d2  <- pval.CCM( CCM.OUTPUT=ccm.nw.pyro.Qtarpon, CCM.RHO=ccm.nw.pyro.Qtarpon.rho, DELAY = -2 ) 
+ccm.nw.pyro.Qtarpon.pval.d3  <- pval.CCM( CCM.OUTPUT=ccm.nw.pyro.Qtarpon, CCM.RHO=ccm.nw.pyro.Qtarpon.rho, DELAY = -3 ) 
+ccm.nw.pyro.Qtarpon.pval.d4  <- pval.CCM( CCM.OUTPUT=ccm.nw.pyro.Qtarpon, CCM.RHO=ccm.nw.pyro.Qtarpon.rho, DELAY = -4 ) 
+ccm.nw.pyro.Qtarpon.pval.d5  <- pval.CCM( CCM.OUTPUT=ccm.nw.pyro.Qtarpon, CCM.RHO=ccm.nw.pyro.Qtarpon.rho, DELAY = -5 ) 
+ccm.nw.pyro.Qtarpon.pval.d6  <- pval.CCM( CCM.OUTPUT=ccm.nw.pyro.Qtarpon, CCM.RHO=ccm.nw.pyro.Qtarpon.rho, DELAY = -6 ) 
+ccm.nw.pyro.Qtarpon.pval.d7  <- pval.CCM( CCM.OUTPUT=ccm.nw.pyro.Qtarpon, CCM.RHO=ccm.nw.pyro.Qtarpon.rho, DELAY = -7 ) 
 
-# NE Pyro xmap TN load
-ccm.ne.pyro.TN <- delay.CCM( LIBRARY='pyro_otb_ne', TARGET='TN_otb',
+# NE Pyro xmap discharge
+ccm.ne.pyro.Qtarpon <- delay.CCM( LIBRARY='pyro_otb_ne', TARGET='Qtarpon_otb',
                              EMB = as.list(embed_tbl[which(embed_tbl$var=="pyro_otb_ne"),]) )
-ccm.ne.pyro.TN.rho <- plot.CCM( ccm.ne.pyro.TN )
-ccm.ne.pyro.TN.pval.d0  <- pval.CCM( CCM.OUTPUT=ccm.ne.pyro.TN, CCM.RHO=ccm.ne.pyro.TN.rho, DELAY = 0 )
-ccm.ne.pyro.TN.pval.d1  <- pval.CCM( CCM.OUTPUT=ccm.ne.pyro.TN, CCM.RHO=ccm.ne.pyro.TN.rho, DELAY = -1 ) 
-ccm.ne.pyro.TN.pval.d2  <- pval.CCM( CCM.OUTPUT=ccm.ne.pyro.TN, CCM.RHO=ccm.ne.pyro.TN.rho, DELAY = -2 ) 
-ccm.ne.pyro.TN.pval.d3  <- pval.CCM( CCM.OUTPUT=ccm.ne.pyro.TN, CCM.RHO=ccm.ne.pyro.TN.rho, DELAY = -3 ) 
-ccm.ne.pyro.TN.pval.d4  <- pval.CCM( CCM.OUTPUT=ccm.ne.pyro.TN, CCM.RHO=ccm.ne.pyro.TN.rho, DELAY = -4 ) 
-ccm.ne.pyro.TN.pval.d5  <- pval.CCM( CCM.OUTPUT=ccm.ne.pyro.TN, CCM.RHO=ccm.ne.pyro.TN.rho, DELAY = -5 ) 
-ccm.ne.pyro.TN.pval.d6  <- pval.CCM( CCM.OUTPUT=ccm.ne.pyro.TN, CCM.RHO=ccm.ne.pyro.TN.rho, DELAY = -6 ) 
-ccm.ne.pyro.TN.pval.d7  <- pval.CCM( CCM.OUTPUT=ccm.ne.pyro.TN, CCM.RHO=ccm.ne.pyro.TN.rho, DELAY = -7 )
+ccm.ne.pyro.Qtarpon.rho <- plot.CCM( ccm.ne.pyro.Qtarpon )
+ccm.ne.pyro.Qtarpon.pval.d0  <- pval.CCM( CCM.OUTPUT=ccm.ne.pyro.Qtarpon, CCM.RHO=ccm.ne.pyro.Qtarpon.rho, DELAY = 0 )
+ccm.ne.pyro.Qtarpon.pval.d1  <- pval.CCM( CCM.OUTPUT=ccm.ne.pyro.Qtarpon, CCM.RHO=ccm.ne.pyro.Qtarpon.rho, DELAY = -1 ) 
+ccm.ne.pyro.Qtarpon.pval.d2  <- pval.CCM( CCM.OUTPUT=ccm.ne.pyro.Qtarpon, CCM.RHO=ccm.ne.pyro.Qtarpon.rho, DELAY = -2 ) 
+ccm.ne.pyro.Qtarpon.pval.d3  <- pval.CCM( CCM.OUTPUT=ccm.ne.pyro.Qtarpon, CCM.RHO=ccm.ne.pyro.Qtarpon.rho, DELAY = -3 ) 
+ccm.ne.pyro.Qtarpon.pval.d4  <- pval.CCM( CCM.OUTPUT=ccm.ne.pyro.Qtarpon, CCM.RHO=ccm.ne.pyro.Qtarpon.rho, DELAY = -4 ) 
+ccm.ne.pyro.Qtarpon.pval.d5  <- pval.CCM( CCM.OUTPUT=ccm.ne.pyro.Qtarpon, CCM.RHO=ccm.ne.pyro.Qtarpon.rho, DELAY = -5 ) 
+ccm.ne.pyro.Qtarpon.pval.d6  <- pval.CCM( CCM.OUTPUT=ccm.ne.pyro.Qtarpon, CCM.RHO=ccm.ne.pyro.Qtarpon.rho, DELAY = -6 ) 
+ccm.ne.pyro.Qtarpon.pval.d7  <- pval.CCM( CCM.OUTPUT=ccm.ne.pyro.Qtarpon, CCM.RHO=ccm.ne.pyro.Qtarpon.rho, DELAY = -7 )
 
-# CW Pyro xmap TN load
-ccm.cw.pyro.TN <- delay.CCM( LIBRARY='pyro_otb_cw', TARGET='TN_otb',
+# CW Pyro xmap discharge
+ccm.cw.pyro.Qtarpon <- delay.CCM( LIBRARY='pyro_otb_cw', TARGET='Qtarpon_otb',
                              EMB = as.list(embed_tbl[which(embed_tbl$var=="pyro_otb_cw"),]) )
-ccm.cw.pyro.TN.rho <- plot.CCM( ccm.cw.pyro.TN )
-ccm.cw.pyro.TN.pval.d0  <- pval.CCM( CCM.OUTPUT=ccm.cw.pyro.TN, CCM.RHO=ccm.cw.pyro.TN.rho, DELAY = 0 )
-ccm.cw.pyro.TN.pval.d1  <- pval.CCM( CCM.OUTPUT=ccm.cw.pyro.TN, CCM.RHO=ccm.cw.pyro.TN.rho, DELAY = -1 ) 
-ccm.cw.pyro.TN.pval.d2  <- pval.CCM( CCM.OUTPUT=ccm.cw.pyro.TN, CCM.RHO=ccm.cw.pyro.TN.rho, DELAY = -2 ) 
-ccm.cw.pyro.TN.pval.d3  <- pval.CCM( CCM.OUTPUT=ccm.cw.pyro.TN, CCM.RHO=ccm.cw.pyro.TN.rho, DELAY = -3 ) 
-ccm.cw.pyro.TN.pval.d4  <- pval.CCM( CCM.OUTPUT=ccm.cw.pyro.TN, CCM.RHO=ccm.cw.pyro.TN.rho, DELAY = -4 ) 
-ccm.cw.pyro.TN.pval.d5  <- pval.CCM( CCM.OUTPUT=ccm.cw.pyro.TN, CCM.RHO=ccm.cw.pyro.TN.rho, DELAY = -5 ) 
-ccm.cw.pyro.TN.pval.d6  <- pval.CCM( CCM.OUTPUT=ccm.cw.pyro.TN, CCM.RHO=ccm.cw.pyro.TN.rho, DELAY = -6 ) 
-ccm.cw.pyro.TN.pval.d7  <- pval.CCM( CCM.OUTPUT=ccm.cw.pyro.TN, CCM.RHO=ccm.cw.pyro.TN.rho, DELAY = -7 ) 
+ccm.cw.pyro.Qtarpon.rho <- plot.CCM( ccm.cw.pyro.Qtarpon )
+ccm.cw.pyro.Qtarpon.pval.d0  <- pval.CCM( CCM.OUTPUT=ccm.cw.pyro.Qtarpon, CCM.RHO=ccm.cw.pyro.Qtarpon.rho, DELAY = 0 )
+ccm.cw.pyro.Qtarpon.pval.d1  <- pval.CCM( CCM.OUTPUT=ccm.cw.pyro.Qtarpon, CCM.RHO=ccm.cw.pyro.Qtarpon.rho, DELAY = -1 ) 
+ccm.cw.pyro.Qtarpon.pval.d2  <- pval.CCM( CCM.OUTPUT=ccm.cw.pyro.Qtarpon, CCM.RHO=ccm.cw.pyro.Qtarpon.rho, DELAY = -2 ) 
+ccm.cw.pyro.Qtarpon.pval.d3  <- pval.CCM( CCM.OUTPUT=ccm.cw.pyro.Qtarpon, CCM.RHO=ccm.cw.pyro.Qtarpon.rho, DELAY = -3 ) 
+ccm.cw.pyro.Qtarpon.pval.d4  <- pval.CCM( CCM.OUTPUT=ccm.cw.pyro.Qtarpon, CCM.RHO=ccm.cw.pyro.Qtarpon.rho, DELAY = -4 ) 
+ccm.cw.pyro.Qtarpon.pval.d5  <- pval.CCM( CCM.OUTPUT=ccm.cw.pyro.Qtarpon, CCM.RHO=ccm.cw.pyro.Qtarpon.rho, DELAY = -5 ) 
+ccm.cw.pyro.Qtarpon.pval.d6  <- pval.CCM( CCM.OUTPUT=ccm.cw.pyro.Qtarpon, CCM.RHO=ccm.cw.pyro.Qtarpon.rho, DELAY = -6 ) 
+ccm.cw.pyro.Qtarpon.pval.d7  <- pval.CCM( CCM.OUTPUT=ccm.cw.pyro.Qtarpon, CCM.RHO=ccm.cw.pyro.Qtarpon.rho, DELAY = -7 ) 
 
-# CE Pyro xmap TN load
-ccm.ce.pyro.TN <- delay.CCM( LIBRARY='pyro_otb_ce', TARGET='TN_otb',
+# CE Pyro xmap discharge
+ccm.ce.pyro.Qtarpon <- delay.CCM( LIBRARY='pyro_otb_ce', TARGET='Qtarpon_otb',
                              EMB = as.list(embed_tbl[which(embed_tbl$var=="pyro_otb_ce"),]) )
-ccm.ce.pyro.TN.rho <- plot.CCM( ccm.ce.pyro.TN )
-ccm.ce.pyro.TN.pval.d0  <- pval.CCM( CCM.OUTPUT=ccm.ce.pyro.TN, CCM.RHO=ccm.ce.pyro.TN.rho, DELAY = 0 )
-ccm.ce.pyro.TN.pval.d1  <- pval.CCM( CCM.OUTPUT=ccm.ce.pyro.TN, CCM.RHO=ccm.ce.pyro.TN.rho, DELAY = -1 ) 
-ccm.ce.pyro.TN.pval.d2  <- pval.CCM( CCM.OUTPUT=ccm.ce.pyro.TN, CCM.RHO=ccm.ce.pyro.TN.rho, DELAY = -2 ) 
-ccm.ce.pyro.TN.pval.d3  <- pval.CCM( CCM.OUTPUT=ccm.ce.pyro.TN, CCM.RHO=ccm.ce.pyro.TN.rho, DELAY = -3 ) 
-ccm.ce.pyro.TN.pval.d4  <- pval.CCM( CCM.OUTPUT=ccm.ce.pyro.TN, CCM.RHO=ccm.ce.pyro.TN.rho, DELAY = -4 ) 
-ccm.ce.pyro.TN.pval.d5  <- pval.CCM( CCM.OUTPUT=ccm.ce.pyro.TN, CCM.RHO=ccm.ce.pyro.TN.rho, DELAY = -5 ) 
-ccm.ce.pyro.TN.pval.d6  <- pval.CCM( CCM.OUTPUT=ccm.ce.pyro.TN, CCM.RHO=ccm.ce.pyro.TN.rho, DELAY = -6 ) 
-ccm.ce.pyro.TN.pval.d7  <- pval.CCM( CCM.OUTPUT=ccm.ce.pyro.TN, CCM.RHO=ccm.ce.pyro.TN.rho, DELAY = -7 ) 
+ccm.ce.pyro.Qtarpon.rho <- plot.CCM( ccm.ce.pyro.Qtarpon )
+ccm.ce.pyro.Qtarpon.pval.d0  <- pval.CCM( CCM.OUTPUT=ccm.ce.pyro.Qtarpon, CCM.RHO=ccm.ce.pyro.Qtarpon.rho, DELAY = 0 )
+ccm.ce.pyro.Qtarpon.pval.d1  <- pval.CCM( CCM.OUTPUT=ccm.ce.pyro.Qtarpon, CCM.RHO=ccm.ce.pyro.Qtarpon.rho, DELAY = -1 ) 
+ccm.ce.pyro.Qtarpon.pval.d2  <- pval.CCM( CCM.OUTPUT=ccm.ce.pyro.Qtarpon, CCM.RHO=ccm.ce.pyro.Qtarpon.rho, DELAY = -2 ) 
+ccm.ce.pyro.Qtarpon.pval.d3  <- pval.CCM( CCM.OUTPUT=ccm.ce.pyro.Qtarpon, CCM.RHO=ccm.ce.pyro.Qtarpon.rho, DELAY = -3 ) 
+ccm.ce.pyro.Qtarpon.pval.d4  <- pval.CCM( CCM.OUTPUT=ccm.ce.pyro.Qtarpon, CCM.RHO=ccm.ce.pyro.Qtarpon.rho, DELAY = -4 ) 
+ccm.ce.pyro.Qtarpon.pval.d5  <- pval.CCM( CCM.OUTPUT=ccm.ce.pyro.Qtarpon, CCM.RHO=ccm.ce.pyro.Qtarpon.rho, DELAY = -5 ) 
+ccm.ce.pyro.Qtarpon.pval.d6  <- pval.CCM( CCM.OUTPUT=ccm.ce.pyro.Qtarpon, CCM.RHO=ccm.ce.pyro.Qtarpon.rho, DELAY = -6 ) 
+ccm.ce.pyro.Qtarpon.pval.d7  <- pval.CCM( CCM.OUTPUT=ccm.ce.pyro.Qtarpon, CCM.RHO=ccm.ce.pyro.Qtarpon.rho, DELAY = -7 ) 
 
-# SW Pyro xmap TN load
-ccm.sw.pyro.TN <- delay.CCM( LIBRARY='pyro_otb_sw', TARGET='TN_otb',
+# SW Pyro xmap discharge
+ccm.sw.pyro.Qtarpon <- delay.CCM( LIBRARY='pyro_otb_sw', TARGET='Qtarpon_otb',
                              EMB = as.list(embed_tbl[which(embed_tbl$var=="pyro_otb_sw"),]) )
-ccm.sw.pyro.TN.rho <- plot.CCM( ccm.sw.pyro.TN )
-ccm.sw.pyro.TN.pval.d0  <- pval.CCM( CCM.OUTPUT=ccm.sw.pyro.TN, CCM.RHO=ccm.sw.pyro.TN.rho, DELAY = 0 )
-ccm.sw.pyro.TN.pval.d1  <- pval.CCM( CCM.OUTPUT=ccm.sw.pyro.TN, CCM.RHO=ccm.sw.pyro.TN.rho, DELAY = -1 ) 
-ccm.sw.pyro.TN.pval.d2  <- pval.CCM( CCM.OUTPUT=ccm.sw.pyro.TN, CCM.RHO=ccm.sw.pyro.TN.rho, DELAY = -2 ) 
-ccm.sw.pyro.TN.pval.d3  <- pval.CCM( CCM.OUTPUT=ccm.sw.pyro.TN, CCM.RHO=ccm.sw.pyro.TN.rho, DELAY = -3 ) 
-ccm.sw.pyro.TN.pval.d4  <- pval.CCM( CCM.OUTPUT=ccm.sw.pyro.TN, CCM.RHO=ccm.sw.pyro.TN.rho, DELAY = -4 ) 
-ccm.sw.pyro.TN.pval.d5  <- pval.CCM( CCM.OUTPUT=ccm.sw.pyro.TN, CCM.RHO=ccm.sw.pyro.TN.rho, DELAY = -5 ) 
-ccm.sw.pyro.TN.pval.d6  <- pval.CCM( CCM.OUTPUT=ccm.sw.pyro.TN, CCM.RHO=ccm.sw.pyro.TN.rho, DELAY = -6 ) 
-ccm.sw.pyro.TN.pval.d7  <- pval.CCM( CCM.OUTPUT=ccm.sw.pyro.TN, CCM.RHO=ccm.sw.pyro.TN.rho, DELAY = -7 ) 
+ccm.sw.pyro.Qtarpon.rho <- plot.CCM( ccm.sw.pyro.Qtarpon )
+ccm.sw.pyro.Qtarpon.pval.d0  <- pval.CCM( CCM.OUTPUT=ccm.sw.pyro.Qtarpon, CCM.RHO=ccm.sw.pyro.Qtarpon.rho, DELAY = 0 )
+ccm.sw.pyro.Qtarpon.pval.d1  <- pval.CCM( CCM.OUTPUT=ccm.sw.pyro.Qtarpon, CCM.RHO=ccm.sw.pyro.Qtarpon.rho, DELAY = -1 ) 
+ccm.sw.pyro.Qtarpon.pval.d2  <- pval.CCM( CCM.OUTPUT=ccm.sw.pyro.Qtarpon, CCM.RHO=ccm.sw.pyro.Qtarpon.rho, DELAY = -2 ) 
+ccm.sw.pyro.Qtarpon.pval.d3  <- pval.CCM( CCM.OUTPUT=ccm.sw.pyro.Qtarpon, CCM.RHO=ccm.sw.pyro.Qtarpon.rho, DELAY = -3 ) 
+ccm.sw.pyro.Qtarpon.pval.d4  <- pval.CCM( CCM.OUTPUT=ccm.sw.pyro.Qtarpon, CCM.RHO=ccm.sw.pyro.Qtarpon.rho, DELAY = -4 ) 
+ccm.sw.pyro.Qtarpon.pval.d5  <- pval.CCM( CCM.OUTPUT=ccm.sw.pyro.Qtarpon, CCM.RHO=ccm.sw.pyro.Qtarpon.rho, DELAY = -5 ) 
+ccm.sw.pyro.Qtarpon.pval.d6  <- pval.CCM( CCM.OUTPUT=ccm.sw.pyro.Qtarpon, CCM.RHO=ccm.sw.pyro.Qtarpon.rho, DELAY = -6 ) 
+ccm.sw.pyro.Qtarpon.pval.d7  <- pval.CCM( CCM.OUTPUT=ccm.sw.pyro.Qtarpon, CCM.RHO=ccm.sw.pyro.Qtarpon.rho, DELAY = -7 ) 
 
-# SE Pyro xmap TN load
-ccm.se.pyro.TN <- delay.CCM( LIBRARY='pyro_otb_se', TARGET='TN_otb',
+# SE Pyro xmap discharge
+ccm.se.pyro.Qtarpon <- delay.CCM( LIBRARY='pyro_otb_se', TARGET='Qtarpon_otb',
                              EMB = as.list(embed_tbl[which(embed_tbl$var=="pyro_otb_se"),]) )
-ccm.se.pyro.TN.rho <- plot.CCM( ccm.se.pyro.TN )
-ccm.se.pyro.TN.pval.d0  <- pval.CCM( CCM.OUTPUT=ccm.se.pyro.TN, CCM.RHO=ccm.se.pyro.TN.rho, DELAY = 0 )
-ccm.se.pyro.TN.pval.d1  <- pval.CCM( CCM.OUTPUT=ccm.se.pyro.TN, CCM.RHO=ccm.se.pyro.TN.rho, DELAY = -1 ) 
-ccm.se.pyro.TN.pval.d2  <- pval.CCM( CCM.OUTPUT=ccm.se.pyro.TN, CCM.RHO=ccm.se.pyro.TN.rho, DELAY = -2 ) 
-ccm.se.pyro.TN.pval.d3  <- pval.CCM( CCM.OUTPUT=ccm.se.pyro.TN, CCM.RHO=ccm.se.pyro.TN.rho, DELAY = -3 ) 
-ccm.se.pyro.TN.pval.d4  <- pval.CCM( CCM.OUTPUT=ccm.se.pyro.TN, CCM.RHO=ccm.se.pyro.TN.rho, DELAY = -4 ) 
-ccm.se.pyro.TN.pval.d5  <- pval.CCM( CCM.OUTPUT=ccm.se.pyro.TN, CCM.RHO=ccm.se.pyro.TN.rho, DELAY = -5 ) 
-ccm.se.pyro.TN.pval.d6  <- pval.CCM( CCM.OUTPUT=ccm.se.pyro.TN, CCM.RHO=ccm.se.pyro.TN.rho, DELAY = -6 ) 
-ccm.se.pyro.TN.pval.d7  <- pval.CCM( CCM.OUTPUT=ccm.se.pyro.TN, CCM.RHO=ccm.se.pyro.TN.rho, DELAY = -7 ) 
+ccm.se.pyro.Qtarpon.rho <- plot.CCM( ccm.se.pyro.Qtarpon )
+ccm.se.pyro.Qtarpon.pval.d0  <- pval.CCM( CCM.OUTPUT=ccm.se.pyro.Qtarpon, CCM.RHO=ccm.se.pyro.Qtarpon.rho, DELAY = 0 )
+ccm.se.pyro.Qtarpon.pval.d1  <- pval.CCM( CCM.OUTPUT=ccm.se.pyro.Qtarpon, CCM.RHO=ccm.se.pyro.Qtarpon.rho, DELAY = -1 ) 
+ccm.se.pyro.Qtarpon.pval.d2  <- pval.CCM( CCM.OUTPUT=ccm.se.pyro.Qtarpon, CCM.RHO=ccm.se.pyro.Qtarpon.rho, DELAY = -2 ) 
+ccm.se.pyro.Qtarpon.pval.d3  <- pval.CCM( CCM.OUTPUT=ccm.se.pyro.Qtarpon, CCM.RHO=ccm.se.pyro.Qtarpon.rho, DELAY = -3 ) 
+ccm.se.pyro.Qtarpon.pval.d4  <- pval.CCM( CCM.OUTPUT=ccm.se.pyro.Qtarpon, CCM.RHO=ccm.se.pyro.Qtarpon.rho, DELAY = -4 ) 
+ccm.se.pyro.Qtarpon.pval.d5  <- pval.CCM( CCM.OUTPUT=ccm.se.pyro.Qtarpon, CCM.RHO=ccm.se.pyro.Qtarpon.rho, DELAY = -5 ) 
+ccm.se.pyro.Qtarpon.pval.d6  <- pval.CCM( CCM.OUTPUT=ccm.se.pyro.Qtarpon, CCM.RHO=ccm.se.pyro.Qtarpon.rho, DELAY = -6 ) 
+ccm.se.pyro.Qtarpon.pval.d7  <- pval.CCM( CCM.OUTPUT=ccm.se.pyro.Qtarpon, CCM.RHO=ccm.se.pyro.Qtarpon.rho, DELAY = -7 ) 
 
 
 
@@ -563,31 +563,31 @@ df.pval <- data.frame( var1 = sub('[\\$,]pval','',as.vector(unlist(pvars))),
 df.pval[ which(df.pval$pval<0.1), ]  # Print 'significant' results to console
 
 # Export outputs
-save.image( file = "../data/ccm_pyro_TN.RData" )
-write.csv( df.pval, file = "../data/ccm_pyro_TN_pvals.csv", row.names = FALSE )
+save.image( file = "../data/ccm_pyro_Qtarpon.RData" )
+write.csv( df.pval, file = "../data/ccm_pyro_Qtarpon_pvals.csv", row.names = FALSE )
 
 
 
 # CCM figures --------------------------------------------------------------
-png( "../figs/ccm_pyro_TN.png", width = 6, height = 10, units = 'in', res = 600 )
+png( "../figs/ccm_pyro_Qtarpon.png", width = 6, height = 10, units = 'in', res = 600 )
 par(mfrow=c(4,2), mar=c(4,4.5,2,1))
 
-plot.CCM.results( CCM.OUTPUT=ccm.otb.pyro.TN,
-                  CCM.RHO=ccm.otb.pyro.TN.rho,
+plot.CCM.results( CCM.OUTPUT=ccm.otb.pyro.Qtarpon,
+                  CCM.RHO=ccm.otb.pyro.Qtarpon.rho,
                   MAIN = "OTB segment", YLAB = TRUE,
-                  PVAL=c(ccm.otb.pyro.TN.pval.d0$pval, 
-                         ccm.otb.pyro.TN.pval.d1$pval, 
-                         ccm.otb.pyro.TN.pval.d2$pval, 
-                         ccm.otb.pyro.TN.pval.d3$pval, 
-                         ccm.otb.pyro.TN.pval.d4$pval, 
-                         ccm.otb.pyro.TN.pval.d5$pval, 
-                         ccm.otb.pyro.TN.pval.d6$pval, 
-                         ccm.otb.pyro.TN.pval.d7$pval ) )
+                  PVAL=c(ccm.otb.pyro.Qtarpon.pval.d0$pval, 
+                         ccm.otb.pyro.Qtarpon.pval.d1$pval, 
+                         ccm.otb.pyro.Qtarpon.pval.d2$pval, 
+                         ccm.otb.pyro.Qtarpon.pval.d3$pval, 
+                         ccm.otb.pyro.Qtarpon.pval.d4$pval, 
+                         ccm.otb.pyro.Qtarpon.pval.d5$pval, 
+                         ccm.otb.pyro.Qtarpon.pval.d6$pval, 
+                         ccm.otb.pyro.Qtarpon.pval.d7$pval ) )
 plot(c(0,1),c(0,1),bty='n',xaxt='n',yaxt='n',xlab='',ylab='',col=rgb(0,0,0,0))
   text( x = 0, y = 0.95, pos = 4, cex = 1.3,
-        labels = expression(italic("P. bahamense")*" xmap TN load"), )
+        labels = expression(italic("P. bahamense")*" xmap discharge"), )
   text( x = 0, y = 0.85, pos = 4, cex = 1.3,
-        labels = paste0("(2012\U2013","2021)") )
+        labels = paste0("(2012\U2013","2023)") )
   segments( x0 = 0, x1 = 0.05, y0 = 0.6, lwd=2, col=rgb(1,0.2,0,0.7) )
   text( x = 0.09, y = 0.6, pos = 4, labels = "xmap correlation\n(mean rho \U00B1SD)", cex = 1.3 )
   arrows( x0 = 0.025, y0 = 0.57, y1 = 0.63, 
@@ -595,71 +595,71 @@ plot(c(0,1),c(0,1),bty='n',xaxt='n',yaxt='n',xlab='',ylab='',col=rgb(0,0,0,0))
   points( x = 0.025, y = 0.3, pch = "*", cex = 2.5, col=rgb(1,0.2,0,0.8) )
   text( x = 0.09, y = 0.3, pos = 4, labels = "P<0.05\n(surrogate data test)", cex = 1.3 )
 
-plot.CCM.results( CCM.OUTPUT=ccm.nw.pyro.TN,
-                  CCM.RHO=ccm.nw.pyro.TN.rho,
+plot.CCM.results( CCM.OUTPUT=ccm.nw.pyro.Qtarpon,
+                  CCM.RHO=ccm.nw.pyro.Qtarpon.rho,
                   MAIN = "NW sub-segment", YLAB = TRUE,
-                  PVAL=c(ccm.nw.pyro.TN.pval.d0$pval, 
-                         ccm.nw.pyro.TN.pval.d1$pval, 
-                         ccm.nw.pyro.TN.pval.d2$pval, 
-                         ccm.nw.pyro.TN.pval.d3$pval, 
-                         ccm.nw.pyro.TN.pval.d4$pval, 
-                         ccm.nw.pyro.TN.pval.d5$pval, 
-                         ccm.nw.pyro.TN.pval.d6$pval, 
-                         ccm.nw.pyro.TN.pval.d7$pval ) )
-plot.CCM.results( CCM.OUTPUT=ccm.ne.pyro.TN,
-                  CCM.RHO=ccm.ne.pyro.TN.rho,
+                  PVAL=c(ccm.nw.pyro.Qtarpon.pval.d0$pval, 
+                         ccm.nw.pyro.Qtarpon.pval.d1$pval, 
+                         ccm.nw.pyro.Qtarpon.pval.d2$pval, 
+                         ccm.nw.pyro.Qtarpon.pval.d3$pval, 
+                         ccm.nw.pyro.Qtarpon.pval.d4$pval, 
+                         ccm.nw.pyro.Qtarpon.pval.d5$pval, 
+                         ccm.nw.pyro.Qtarpon.pval.d6$pval, 
+                         ccm.nw.pyro.Qtarpon.pval.d7$pval ) )
+plot.CCM.results( CCM.OUTPUT=ccm.ne.pyro.Qtarpon,
+                  CCM.RHO=ccm.ne.pyro.Qtarpon.rho,
                   MAIN = "NE sub-segment",
-                  PVAL=c(ccm.ne.pyro.TN.pval.d0$pval, 
-                         ccm.ne.pyro.TN.pval.d1$pval, 
-                         ccm.ne.pyro.TN.pval.d2$pval, 
-                         ccm.ne.pyro.TN.pval.d3$pval, 
-                         ccm.ne.pyro.TN.pval.d4$pval, 
-                         ccm.ne.pyro.TN.pval.d5$pval, 
-                         ccm.ne.pyro.TN.pval.d6$pval, 
-                         ccm.ne.pyro.TN.pval.d7$pval ) )
-plot.CCM.results( CCM.OUTPUT=ccm.cw.pyro.TN,
-                  CCM.RHO=ccm.cw.pyro.TN.rho,
+                  PVAL=c(ccm.ne.pyro.Qtarpon.pval.d0$pval, 
+                         ccm.ne.pyro.Qtarpon.pval.d1$pval, 
+                         ccm.ne.pyro.Qtarpon.pval.d2$pval, 
+                         ccm.ne.pyro.Qtarpon.pval.d3$pval, 
+                         ccm.ne.pyro.Qtarpon.pval.d4$pval, 
+                         ccm.ne.pyro.Qtarpon.pval.d5$pval, 
+                         ccm.ne.pyro.Qtarpon.pval.d6$pval, 
+                         ccm.ne.pyro.Qtarpon.pval.d7$pval ) )
+plot.CCM.results( CCM.OUTPUT=ccm.cw.pyro.Qtarpon,
+                  CCM.RHO=ccm.cw.pyro.Qtarpon.rho,
                   MAIN = "CW sub-segment", YLAB = TRUE,
-                  PVAL=c(ccm.cw.pyro.TN.pval.d0$pval, 
-                         ccm.cw.pyro.TN.pval.d1$pval, 
-                         ccm.cw.pyro.TN.pval.d2$pval, 
-                         ccm.cw.pyro.TN.pval.d3$pval, 
-                         ccm.cw.pyro.TN.pval.d4$pval, 
-                         ccm.cw.pyro.TN.pval.d5$pval, 
-                         ccm.cw.pyro.TN.pval.d6$pval, 
-                         ccm.cw.pyro.TN.pval.d7$pval ) )
-plot.CCM.results( CCM.OUTPUT=ccm.ce.pyro.TN,
-                  CCM.RHO=ccm.ce.pyro.TN.rho,
+                  PVAL=c(ccm.cw.pyro.Qtarpon.pval.d0$pval, 
+                         ccm.cw.pyro.Qtarpon.pval.d1$pval, 
+                         ccm.cw.pyro.Qtarpon.pval.d2$pval, 
+                         ccm.cw.pyro.Qtarpon.pval.d3$pval, 
+                         ccm.cw.pyro.Qtarpon.pval.d4$pval, 
+                         ccm.cw.pyro.Qtarpon.pval.d5$pval, 
+                         ccm.cw.pyro.Qtarpon.pval.d6$pval, 
+                         ccm.cw.pyro.Qtarpon.pval.d7$pval ) )
+plot.CCM.results( CCM.OUTPUT=ccm.ce.pyro.Qtarpon,
+                  CCM.RHO=ccm.ce.pyro.Qtarpon.rho,
                   MAIN = "CE sub-segment",
-                  PVAL=c(ccm.ce.pyro.TN.pval.d0$pval, 
-                         ccm.ce.pyro.TN.pval.d1$pval, 
-                         ccm.ce.pyro.TN.pval.d2$pval, 
-                         ccm.ce.pyro.TN.pval.d3$pval, 
-                         ccm.ce.pyro.TN.pval.d4$pval, 
-                         ccm.ce.pyro.TN.pval.d5$pval, 
-                         ccm.ce.pyro.TN.pval.d6$pval, 
-                         ccm.ce.pyro.TN.pval.d7$pval ) )
-plot.CCM.results( CCM.OUTPUT=ccm.sw.pyro.TN,
-                  CCM.RHO=ccm.sw.pyro.TN.rho,
+                  PVAL=c(ccm.ce.pyro.Qtarpon.pval.d0$pval, 
+                         ccm.ce.pyro.Qtarpon.pval.d1$pval, 
+                         ccm.ce.pyro.Qtarpon.pval.d2$pval, 
+                         ccm.ce.pyro.Qtarpon.pval.d3$pval, 
+                         ccm.ce.pyro.Qtarpon.pval.d4$pval, 
+                         ccm.ce.pyro.Qtarpon.pval.d5$pval, 
+                         ccm.ce.pyro.Qtarpon.pval.d6$pval, 
+                         ccm.ce.pyro.Qtarpon.pval.d7$pval ) )
+plot.CCM.results( CCM.OUTPUT=ccm.sw.pyro.Qtarpon,
+                  CCM.RHO=ccm.sw.pyro.Qtarpon.rho,
                   MAIN = "SW sub-segment", YLAB = TRUE, XLAB = TRUE,
-                  PVAL=c(ccm.sw.pyro.TN.pval.d0$pval, 
-                         ccm.sw.pyro.TN.pval.d1$pval, 
-                         ccm.sw.pyro.TN.pval.d2$pval, 
-                         ccm.sw.pyro.TN.pval.d3$pval, 
-                         ccm.sw.pyro.TN.pval.d4$pval, 
-                         ccm.sw.pyro.TN.pval.d5$pval, 
-                         ccm.sw.pyro.TN.pval.d6$pval, 
-                         ccm.sw.pyro.TN.pval.d7$pval ) )
-plot.CCM.results( CCM.OUTPUT=ccm.se.pyro.TN,
-                  CCM.RHO=ccm.se.pyro.TN.rho,
+                  PVAL=c(ccm.sw.pyro.Qtarpon.pval.d0$pval, 
+                         ccm.sw.pyro.Qtarpon.pval.d1$pval, 
+                         ccm.sw.pyro.Qtarpon.pval.d2$pval, 
+                         ccm.sw.pyro.Qtarpon.pval.d3$pval, 
+                         ccm.sw.pyro.Qtarpon.pval.d4$pval, 
+                         ccm.sw.pyro.Qtarpon.pval.d5$pval, 
+                         ccm.sw.pyro.Qtarpon.pval.d6$pval, 
+                         ccm.sw.pyro.Qtarpon.pval.d7$pval ) )
+plot.CCM.results( CCM.OUTPUT=ccm.se.pyro.Qtarpon,
+                  CCM.RHO=ccm.se.pyro.Qtarpon.rho,
                   MAIN = "SE sub-segment", XLAB = TRUE,
-                  PVAL=c(ccm.se.pyro.TN.pval.d0$pval, 
-                         ccm.se.pyro.TN.pval.d1$pval, 
-                         ccm.se.pyro.TN.pval.d2$pval, 
-                         ccm.se.pyro.TN.pval.d3$pval, 
-                         ccm.se.pyro.TN.pval.d4$pval, 
-                         ccm.se.pyro.TN.pval.d5$pval, 
-                         ccm.se.pyro.TN.pval.d6$pval, 
-                         ccm.se.pyro.TN.pval.d7$pval ) )
+                  PVAL=c(ccm.se.pyro.Qtarpon.pval.d0$pval, 
+                         ccm.se.pyro.Qtarpon.pval.d1$pval, 
+                         ccm.se.pyro.Qtarpon.pval.d2$pval, 
+                         ccm.se.pyro.Qtarpon.pval.d3$pval, 
+                         ccm.se.pyro.Qtarpon.pval.d4$pval, 
+                         ccm.se.pyro.Qtarpon.pval.d5$pval, 
+                         ccm.se.pyro.Qtarpon.pval.d6$pval, 
+                         ccm.se.pyro.Qtarpon.pval.d7$pval ) )
 
 dev.off()
