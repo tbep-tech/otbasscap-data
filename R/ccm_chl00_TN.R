@@ -662,3 +662,25 @@ plot.CCM.results( CCM.OUTPUT=ccm.se.chl.TN,
                          ccm.se.chl.TN.pval.d7$pval ) )
 
 dev.off()
+
+
+
+# Generate OTB CCM figure for report --------------------------------------
+
+png( "../figs/ccm_chl00_TN_otb.png", width = 4.5, height = 4.5, units = 'in', res = 600 )
+par(mfrow=c(1,1), mar=c(4,5,2,1))
+
+# CCM results
+plot.CCM.results( CCM.OUTPUT=ccm.otb.chl.TN,
+                  CCM.RHO=ccm.otb.chl.TN.rho,
+                  MAIN = "OTB segment", YLAB = TRUE, XLAB = "TRUE",
+                  PVAL=c(ccm.otb.chl.TN.pval.d0$pval, 
+                         ccm.otb.chl.TN.pval.d1$pval, 
+                         ccm.otb.chl.TN.pval.d2$pval, 
+                         ccm.otb.chl.TN.pval.d3$pval, 
+                         ccm.otb.chl.TN.pval.d4$pval, 
+                         ccm.otb.chl.TN.pval.d5$pval, 
+                         ccm.otb.chl.TN.pval.d6$pval, 
+                         ccm.otb.chl.TN.pval.d7$pval ) )
+
+dev.off()
