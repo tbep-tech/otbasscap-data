@@ -16,7 +16,7 @@ subsegs <- c("NW","NE","CW","CE","SW","SE")
 
 # Loop over sub-segments to generate plots
 png( "../figs/cumu_pyro-max_TN_subseg.png", width = 7, height = 9, units = 'in', res = 500 )
-par( mfrow=c(3,2), mar=c(4,4,3,2) )
+par( mfrow=c(3,2), mar=c(4,4,2,2) )
 for( subseg in subsegs ){
 
 # Assemble data for analysis
@@ -60,7 +60,7 @@ distn <- function( x, max_TN ){
 
 # Calculate pyro distn statistics
 # initiate dataframe
-pyro_TN <- data.frame( TN = seq(10,300,10),
+pyro_TN <- data.frame( TN = seq(10,300,5),
                        median = NA,
                        min = NA,
                        lwr_iqr = NA,
@@ -75,12 +75,19 @@ for( i in 1:nrow(pyro_TN) ){
 # Plot pyro distn as a function of chl_max
 plot( median ~ TN, data = pyro_TN, las = 1,
       type = 'l', lwd = 2, col = rgb(0,0.2,0.6,0.7),
+      main = paste0( subseg," sub-segment"),
       ylim = c(1,7), yaxt = 'n',
-      ylab = expression(italic(P.~bahamense)*" (cells/L)"), xlab = ""
+      cex.axis = 1.4, cex.lab = 1.4, cex.main = 1.5,
+      ylab = "", xlab = ""
 )
-mtext( paste0(subseg, " sub-segment"),
-       side = 3, adj = 0, line = 1 )
-mtext( "TN load (tons/month)", side = 1, line = 2, cex = 0.7 )
+if(subseg %in% c("SW","SE")){
+  mtext( "TN load (tons/month)", side = 1, line = 2.5, cex = 1 )
+}
+if(subseg %in% c("CW")){
+  mtext( expression(italic(P.~bahamense)*" (cells/L)"),
+         side = 2, line = 2.5, cex = 1 )
+}
+
 axis( 2, at = 1:7, las = 1,
       labels = c( expression(10^1), expression(10^2),
                   expression(10^3), expression(10^4),
@@ -101,21 +108,40 @@ polygon( x = c( pyro_TN$TN, rev(pyro_TN$TN) ),
 polygon( x = c( pyro_TN$TN, rev(pyro_TN$TN) ),
          y = c( pyro_TN$lwr_iqr, rev(pyro_TN$upr_iqr) ),
          col = rgb(0,0.2,0.6,0.2), border = rgb(0,0,0,0) )
+
 segments( x0 = 40,
-          y0 = 0, y1 = pyro_TN$upr_iqr[which(pyro_TN$TN==40)],
-          lty = 2, col = 2 )
-text( x = 40, y = pyro_TN$upr_iqr[which(pyro_TN$TN==40)],
-      col = 2, labels = "40 tons", pos = 4, srt = 90 )
+          y0 = -10, y1 = pyro_TN$upr_iqr[which(pyro_TN$TN==40)],
+          lty = 2, col = 1 )
 segments( x0 = 0, x1 = 40,
           y0 = pyro_TN$median[which(pyro_TN$TN==40)],
-          lty = 2, col = 2 )
+          lty = 2, col = 1 )
 segments( x0 = 0, x1 = 40,
           y0 = pyro_TN$lwr_iqr[which(pyro_TN$TN==40)],
-          lty = 2, col = 2 )
+          lty = 2, col = 1 )
 segments( x0 = 0, x1 = 40,
           y0 = pyro_TN$upr_iqr[which(pyro_TN$TN==40)],
+          lty = 2, col = 1 )
+
+segments( x0 = 65,
+          y0 = -10, y1 = pyro_TN$upr[which(pyro_TN$TN==65)],
           lty = 2, col = 2 )
-legend( 'bottomright', bty = 'n',
+segments( x0 = 0, x1 = 65,
+          y0 = pyro_TN$median[which(pyro_TN$TN==65)],
+          lty = 2, col = 2 )
+segments( x0 = 0, x1 = 65,
+          y0 = pyro_TN$lwr[which(pyro_TN$TN==65)],
+          lty = 2, col = 2 )
+segments( x0 = 0, x1 = 65,
+          y0 = pyro_TN$upr[which(pyro_TN$TN==65)],
+          lty = 2, col = 2 )
+
+text( x = 40, y = pyro_TN$upr_iqr[which(pyro_TN$TN==40)],
+      col = 1, labels = "40 tons", pos = 4, srt = 90 )
+text( x = 65, y = pyro_TN$upr[which(pyro_TN$TN==65)],
+      col = 2, labels = "65 tons", pos = 4, srt = 90 )
+
+
+legend( 'bottomright', bty = 'n', cex = 1.3,
         legend = c("Median of maxima",
                    "IQR of maxima",
                    "Range of maxima (min/max)"), text.font = 2,

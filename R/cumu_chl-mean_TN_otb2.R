@@ -24,6 +24,7 @@ colnames(pyro.months) <- "month"
 # Loop over sub-segments to generate plots
 png( "../figs/cumu_chl-mean_TN_otb2.png", width = 7, height = 5, units = 'in', res = 500 )
 # par( mfrow=c(3,4), mar=c(4,4,3,2) )
+par( mfrow=c(1,1), mar=c(4,4,1,1) )
 # for( subseg in subsegs ){
 
 # Assemble data for analysis
@@ -80,10 +81,10 @@ for( i in 1:nrow(chl_TN) ){
 # Plot chl distn as a function of chl_max
 plot( mean ~ TN, data = chl_TN, las = 1,
       type = 'l', lwd = 2, col = rgb(0,0.2,0.6,0.7),
-      main = paste0( 
-        # subseg,
-        " OTB\nMonthly mean Chl-a distn ~ TN load",
-        "\n(during non-zero P. bahamense months only)" ),
+      # main = paste0( 
+      #   # subseg,
+      #   " OTB\nMonthly mean Chl-a distn ~ TN load",
+      #   "\n(during non-zero P. bahamense months only)" ),
       ylim = c(0,35),
       ylab = "Chlorophyll a (ug/L)", xlab = "", xlim = c(10,200)
 )
