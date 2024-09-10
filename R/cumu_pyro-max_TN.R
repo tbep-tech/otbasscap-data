@@ -62,7 +62,7 @@ par( mfrow=c(1,1), mar=c(4,4,1,1) )
   
   # Calculate pyro distn statistics
   # initiate dataframe
-  pyro_TN <- data.frame( TN = seq(10,300,10),
+  pyro_TN <- data.frame( TN = seq(10,300,5),
                          median = NA,
                          min = NA,
                          lwr_iqr = NA,
@@ -104,20 +104,37 @@ par( mfrow=c(1,1), mar=c(4,4,1,1) )
   polygon( x = c( pyro_TN$TN, rev(pyro_TN$TN) ),
            y = c( pyro_TN$lwr_iqr, rev(pyro_TN$upr_iqr) ),
            col = rgb(0,0.2,0.6,0.2), border = rgb(0,0,0,0) )
+  
   segments( x0 = 40,
             y0 = 0, y1 = pyro_TN$upr_iqr[which(pyro_TN$TN==40)],
-            lty = 2, col = 2 )
+            lty = 2, col = 1 )
   text( x = 40, y = pyro_TN$upr_iqr[which(pyro_TN$TN==40)],
-        col = 2, labels = "40 tons", pos = 4, srt = 90 )
+        col = 1, labels = "40 tons", pos = 4, srt = 90 )
   segments( x0 = 0, x1 = 40,
             y0 = pyro_TN$median[which(pyro_TN$TN==40)],
-            lty = 2, col = 2 )
+            lty = 2, col = 1 )
   segments( x0 = 0, x1 = 40,
             y0 = pyro_TN$lwr_iqr[which(pyro_TN$TN==40)],
-            lty = 2, col = 2 )
+            lty = 2, col = 1 )
   segments( x0 = 0, x1 = 40,
             y0 = pyro_TN$upr_iqr[which(pyro_TN$TN==40)],
+            lty = 2, col = 1 )
+  
+  segments( x0 = 65,
+            y0 = -10, y1 = pyro_TN$upr[which(pyro_TN$TN==65)],
             lty = 2, col = 2 )
+  text( x = 65, y = pyro_TN$upr[which(pyro_TN$TN==65)],
+        col = 2, labels = "65 tons", pos = 4, srt = 90 )
+  segments( x0 = 0, x1 = 65,
+            y0 = pyro_TN$median[which(pyro_TN$TN==65)],
+            lty = 2, col = 2 )
+  segments( x0 = 0, x1 = 65,
+            y0 = pyro_TN$lwr[which(pyro_TN$TN==65)],
+            lty = 2, col = 2 )
+  segments( x0 = 0, x1 = 65,
+            y0 = pyro_TN$upr[which(pyro_TN$TN==65)],
+            lty = 2, col = 2 )
+  
   legend( 'bottomright', bty = 'n',
           legend = c("Median of maxima",
                      "IQR of maxima",

@@ -45,7 +45,7 @@ epcwq3.sub <- epcwq3[ which( epcwq3$param=="Chla"
                            ), ]
 epcwq3.sub$month <- floor_date( epcwq3.sub$date, unit = 'month' ) 
 chldat <- epcwq3.sub |> group_by(month) |> dplyr::summarise( chl = mean(value) ) |> as.data.frame()
-chldat$chl <- chldat$chl |> log10()
+# chldat$chl <- chldat$chl |> log10()
 wqdat <- inner_join( pyro.months, chldat, by = 'month' )
 wqdat <- inner_join( wqdat, loaddat, by = 'month' )
 
@@ -65,7 +65,7 @@ distn <- function( x, max_TN ){
 
 # Calculate chl distn statistics
 # initiate dataframe
-chl_TN <- data.frame( TN = seq(10,200,10),
+chl_TN <- data.frame( TN = seq(10,200,5),
                       mean = NA,
                       min = NA,
                       lwr = NA,
@@ -84,16 +84,17 @@ plot( mean ~ TN, data = chl_TN, las = 1,
         # subseg,
         " OTB\nMonthly mean Chl-a distn ~ TN load",
         "\n(during non-zero P. bahamense months only)" ),
-      ylim = c(0,2.5), yaxt = 'n',
+      ylim = c(0,35),
       ylab = "Chlorophyll a (ug/L)", xlab = "", xlim = c(10,200)
 )
 mtext( "TN load (tons/month)", side = 1, line = 2, cex = 1 )
-axis( 2, at = 0:3, las = 1,
-      labels = c( 10^0, 10^1, 10^2, 10^3 ) )
-# abline( h = axTicks(2), col = rgb(0,0,0,0.1) )
-abline( h = log10( c(1e0,2e0,3e0,4e0,5e0,6e0,7e0,8e0,9e0,
-                     1e1,2e1,3e1,4e1,5e1,6e1,7e1,8e1,9e1,
-                     1e2,2e2,3e2,4e2,5e2,6e2,7e2,8e2,9e2 ) ), col = rgb(0,0,0,0.1) )
+# axis( 2, at = 0:3, las = 1,
+#       labels = c( 10^0, 10^1, 10^2, 10^3 ) )
+abline( h = seq(0,40,5), col = rgb(0,0,0,0.1) )
+abline( h = seq(0,40,10), col = rgb(0,0,0,0.1) )
+# abline( h = log10( c(1e0,2e0,3e0,4e0,5e0,6e0,7e0,8e0,9e0,
+#                      1e1,2e1,3e1,4e1,5e1,6e1,7e1,8e1,9e1,
+#                      1e2,2e2,3e2,4e2,5e2,6e2,7e2,8e2,9e2 ) ), col = rgb(0,0,0,0.1) )
 abline( v = chl_TN$TN, col = rgb(0,0,0,0.1) )
 polygon( x = c( chl_TN$TN, rev(chl_TN$TN) ),
          y = c( chl_TN$min, rev(chl_TN$max) ),
@@ -101,21 +102,38 @@ polygon( x = c( chl_TN$TN, rev(chl_TN$TN) ),
 polygon( x = c( chl_TN$TN, rev(chl_TN$TN) ),
          y = c( chl_TN$lwr, rev(chl_TN$upr) ),
          col = rgb(0,0.2,0.6,0.2), border = rgb(0,0,0,0) )
+
 segments( x0 = 40,
-          y0 = 0, y1 = chl_TN$upr[which(chl_TN$TN==40)],
-          lty = 2, col = 2 )
+          y0 = -10, y1 = chl_TN$upr[which(chl_TN$TN==40)],
+          lty = 2, col = 1 )
 text( x = 40, y = chl_TN$upr[which(chl_TN$TN==40)],
-      col = 2, labels = "40 tons", pos = 4, srt = 90 )
+      col = 1, labels = "40 tons", pos = 4, srt = 90 )
 segments( x0 = 0, x1 = 40,
           y0 = chl_TN$mean[which(chl_TN$TN==40)],
-          lty = 2, col = 2 )
+          lty = 2, col = 1 )
 segments( x0 = 0, x1 = 40,
           y0 = chl_TN$lwr[which(chl_TN$TN==40)],
-          lty = 2, col = 2 )
+          lty = 2, col = 1 )
 segments( x0 = 0, x1 = 40,
           y0 = chl_TN$upr[which(chl_TN$TN==40)],
+          lty = 2, col = 1 )
+
+segments( x0 = 65,
+          y0 = -10, y1 = chl_TN$upr[which(chl_TN$TN==65)],
           lty = 2, col = 2 )
-legend( 'bottomright', bty = 'n',
+text( x = 65, y = chl_TN$upr[which(chl_TN$TN==65)],
+      col = 2, labels = "65 tons", pos = 4, srt = 90 )
+segments( x0 = 0, x1 = 65,
+          y0 = chl_TN$mean[which(chl_TN$TN==65)],
+          lty = 2, col = 2 )
+segments( x0 = 0, x1 = 65,
+          y0 = chl_TN$lwr[which(chl_TN$TN==65)],
+          lty = 2, col = 2 )
+segments( x0 = 0, x1 = 65,
+          y0 = chl_TN$upr[which(chl_TN$TN==65)],
+          lty = 2, col = 2 )
+
+legend( 'topleft', bty = 'n',
         legend = c("Mean of means",
                    "Mean\U00B1SD of means",
                    "Range of means (min/max)"), text.font = 2,
