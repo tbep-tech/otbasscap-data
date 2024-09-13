@@ -129,6 +129,12 @@ segments( x0 = pyro_chl$lwr_iqr[which(pyro_chl$chl==8.5)],
 segments( x0 = pyro_chl$upr_iqr[which(pyro_chl$chl==8.5)],
           y0 = 0, y1 = 8.5,
           lty = 3, col = rgb(1,0.1,0.1,0.6), lwd = 3 )
+
+segments( x0 = 2.3, x1 = 2.3, y0 = 5.8, y1 = 6.6, lwd = 2 )
+arrows( x0 = 2.3, x1 = 2.7, y0 = 5.8, y1 = 5.8, lwd = 2, length = 0.05 )
+arrows( x0 = 2.3, x1 = 3.2, y0 = 6.6, y1 = 6.6, lwd = 2, length = 0.05 )
+text( x = 1.8, y = 6.2, labels = "target\nrange" )
+
 legend( 'topleft', bty = 'n',
         legend = c("Median",
                    "IQR",
