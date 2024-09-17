@@ -43,8 +43,8 @@ for( subseg in subsegs ){
       # assemble output statistics
       out <- data.frame( median = median(this),
                          min = min(this),
-                         lwr_iqr = quantile(this, 0.25),
-                         upr_iqr = quantile(this, 0.75),
+                         lwr = quantile(this, 0.10),
+                         upr = quantile(this, 0.90),
                          max = max(this)
                          )
       return( out )
@@ -56,8 +56,8 @@ for( subseg in subsegs ){
     pyro_chl <- data.frame( chl = seq(4,25,0.1),
                             median = NA,
                             min = NA,
-                            lwr_iqr = NA,
-                            upr_iqr = NA,
+                            lwr = NA,
+                            upr = NA,
                             max = NA
                             )
     # populate rows
@@ -95,10 +95,10 @@ for( subseg in subsegs ){
     polygon( x = c( pyro_chl$min, rev(pyro_chl$max) ),
              y = c( pyro_chl$chl, rev(pyro_chl$chl) ),
              col = rgb(0,0.2,0.6,0.1), border = rgb(0,0,0,0) )
-    polygon( x = c( pyro_chl$lwr_iqr, rev(pyro_chl$upr_iqr) ),
+    polygon( x = c( pyro_chl$lwr, rev(pyro_chl$upr) ),
              y = c( pyro_chl$chl, rev(pyro_chl$chl) ),
              col = rgb(0,0.2,0.6,0.2), border = rgb(0,0,0,0) )
-    segments( x0 = 0, x1 = pyro_chl$upr_iqr[which(pyro_chl$chl==8.5)],
+    segments( x0 = 0, x1 = pyro_chl$upr[which(pyro_chl$chl==8.5)],
               y0 = 8.5,
               lty = 3, col = rgb(1,0.1,0.1,0.6), lwd = 2 )
     text( x = 2, y = 9, col = rgb(1,0.1,0.1,0.8),
@@ -106,15 +106,15 @@ for( subseg in subsegs ){
     segments( x0 = pyro_chl$median[which(pyro_chl$chl==8.5)],
               y0 = 0, y1 = 8.5,
               lty = 1, col = rgb(1,0.1,0.1,0.6), lwd = 2 )
-    segments( x0 = pyro_chl$lwr_iqr[which(pyro_chl$chl==8.5)],
+    segments( x0 = pyro_chl$lwr[which(pyro_chl$chl==8.5)],
               y0 = 0, y1 = 8.5,
               lty = 3, col = rgb(1,0.1,0.1,0.6), lwd = 2 )
-    segments( x0 = pyro_chl$upr_iqr[which(pyro_chl$chl==8.5)],
+    segments( x0 = pyro_chl$upr[which(pyro_chl$chl==8.5)],
               y0 = 0, y1 = 8.5,
               lty = 3, col = rgb(1,0.1,0.1,0.6), lwd = 2 )
     legend( x = 0.5, y = 26, bty = 'n',
             legend = c("Median",
-                       "IQR",
+                       paste0( "10th-90th percentile"),
                        "Range"), text.font = 2, cex = 1.3,
             text.col = c( rgb(0,0.2,0.6,0.9), rgb(0,0.2,0.6,0.5), rgb(0,0.2,0.6,0.3) ) )
     

@@ -52,8 +52,8 @@ par( mfrow=c(1,1), mar=c(4,4,1,1) )
     # assemble output statistics
     out <- data.frame( median = median(this),
                        min = min(this),
-                       lwr_iqr = quantile(this, 0.25),
-                       upr_iqr = quantile(this, 0.75),
+                       lwr = quantile(this, 0.10),
+                       upr = quantile(this, 0.90),
                        max = max(this)
     )
     return( out )
@@ -65,8 +65,8 @@ par( mfrow=c(1,1), mar=c(4,4,1,1) )
   pyro_TN <- data.frame( TN = seq(10,300,5),
                          median = NA,
                          min = NA,
-                         lwr_iqr = NA,
-                         upr_iqr = NA,
+                         lwr = NA,
+                         upr = NA,
                          max = NA
   )
   # populate rows
@@ -102,22 +102,22 @@ par( mfrow=c(1,1), mar=c(4,4,1,1) )
            y = c( pyro_TN$min, rev(pyro_TN$max) ),
            col = rgb(0,0.2,0.6,0.1), border = rgb(0,0,0,0) )
   polygon( x = c( pyro_TN$TN, rev(pyro_TN$TN) ),
-           y = c( pyro_TN$lwr_iqr, rev(pyro_TN$upr_iqr) ),
+           y = c( pyro_TN$lwr, rev(pyro_TN$upr) ),
            col = rgb(0,0.2,0.6,0.2), border = rgb(0,0,0,0) )
   
   segments( x0 = 40,
-            y0 = 0, y1 = pyro_TN$upr_iqr[which(pyro_TN$TN==40)],
+            y0 = 0, y1 = pyro_TN$upr[which(pyro_TN$TN==40)],
             lty = 2, col = 1 )
-  text( x = 40, y = pyro_TN$upr_iqr[which(pyro_TN$TN==40)],
+  text( x = 40, y = pyro_TN$upr[which(pyro_TN$TN==40)],
         col = 1, labels = "40 tons", pos = 4, srt = 90 )
   segments( x0 = 0, x1 = 40,
             y0 = pyro_TN$median[which(pyro_TN$TN==40)],
             lty = 2, col = 1 )
   segments( x0 = 0, x1 = 40,
-            y0 = pyro_TN$lwr_iqr[which(pyro_TN$TN==40)],
+            y0 = pyro_TN$lwr[which(pyro_TN$TN==40)],
             lty = 2, col = 1 )
   segments( x0 = 0, x1 = 40,
-            y0 = pyro_TN$upr_iqr[which(pyro_TN$TN==40)],
+            y0 = pyro_TN$upr[which(pyro_TN$TN==40)],
             lty = 2, col = 1 )
   
   segments( x0 = 65,
@@ -137,7 +137,7 @@ par( mfrow=c(1,1), mar=c(4,4,1,1) )
   
   legend( 'bottomright', bty = 'n',
           legend = c("Median of maxima",
-                     "IQR of maxima",
+                     paste0( "10th-90th percentile"),
                      "Range of maxima (min/max)"), text.font = 2,
           text.col = c( rgb(0,0.2,0.6,0.9), rgb(0,0.2,0.6,0.5), rgb(0,0.2,0.6,0.3) ) )
   

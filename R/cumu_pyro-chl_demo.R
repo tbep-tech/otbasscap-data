@@ -8,6 +8,9 @@ library(lubridate)
 load( "../data-clean/epcwq_clean.RData" )
 load( "../data/Pyro.Rdata")
 
+# Specify Pyro percentile
+percentile <- 0.90
+
 # Subset routine Pyro samples
 pyro <- pyro[ which(pyro$routine==TRUE), ]
 
@@ -51,9 +54,9 @@ axis( 1, at = 1:7, labels = c( expression(10^1), expression(10^2),
                                expression(10^7) ) )
 abline( v = pcdat$pyro[ which(pcdat$chl <= 8.5) ] |> median(), 
         col = rgb(1,0.1,0.1,0.6), lwd = 3 )
-abline( v = pcdat$pyro[ which(pcdat$chl <= 8.5) ] |> quantile(0.25),
+abline( v = pcdat$pyro[ which(pcdat$chl <= 8.5) ] |> quantile(1-percentile),
         lty = 3, col = rgb(1,0.1,0.1,0.6), lwd = 3 )
-abline( v = pcdat$pyro[ which(pcdat$chl <= 8.5) ] |> quantile(0.75),
+abline( v = pcdat$pyro[ which(pcdat$chl <= 8.5) ] |> quantile(percentile),
         lty = 3, col = rgb(1,0.1,0.1,0.6), lwd = 3 )
 
 # Define function to summarize pyro distribution
@@ -63,8 +66,8 @@ distn <- function( x, max_chl ){
   # assemble output statistics
   out <- data.frame( median = median(this),
                      min = min(this),
-                     lwr_iqr = quantile(this, 0.25),
-                     upr_iqr = quantile(this, 0.75),
+                     lwr = quantile(this, 1-percentile),
+                     upr = quantile(this, percentile),
                      max = max(this)
   )
   return( out )
@@ -76,8 +79,8 @@ distn <- function( x, max_chl ){
 pyro_chl <- data.frame( chl = seq(4,25,0.1),
                         median = NA,
                         min = NA,
-                        lwr_iqr = NA,
-                        upr_iqr = NA,
+                        lwr = NA,
+                        upr = NA,
                         max = NA
 )
 # populate rows
@@ -113,32 +116,37 @@ abline( h = min(pyro_chl$chl):max(pyro_chl$chl), col = rgb(0,0,0,0.1) )
 polygon( x = c( pyro_chl$min, rev(pyro_chl$max) ),
          y = c( pyro_chl$chl, rev(pyro_chl$chl) ),
          col = rgb(0,0.2,0.6,0.1), border = rgb(0,0,0,0) )
-polygon( x = c( pyro_chl$lwr_iqr, rev(pyro_chl$upr_iqr) ),
+polygon( x = c( pyro_chl$lwr, rev(pyro_chl$upr) ),
          y = c( pyro_chl$chl, rev(pyro_chl$chl) ),
          col = rgb(0,0.2,0.6,0.2), border = rgb(0,0,0,0) )
-segments( x0 = 0, x1 = pyro_chl$upr_iqr[which(pyro_chl$chl==8.5)],
+segments( x0 = 0, x1 = pyro_chl$upr[which(pyro_chl$chl==8.5)],
           y0 = 8.5,
           lty = 3, col = rgb(1,0.1,0.1,0.6), lwd = 3 )
-text( x = 2, y = 9, col = rgb(1,0.1,0.1,0.8), labels = "8.5 ug/L", pos = 3 )
+text( x = 2, y = 8.5, col = rgb(1,0.1,0.1,0.8), labels = "8.5 ug/L", pos = 3 )
 segments( x0 = pyro_chl$median[which(pyro_chl$chl==8.5)],
           y0 = 0, y1 = 8.5,
           lty = 1, col = rgb(1,0.1,0.1,0.6), lwd = 3 )
-segments( x0 = pyro_chl$lwr_iqr[which(pyro_chl$chl==8.5)],
+segments( x0 = pyro_chl$lwr[which(pyro_chl$chl==8.5)],
           y0 = 0, y1 = 8.5,
           lty = 3, col = rgb(1,0.1,0.1,0.6), lwd = 3 )
-segments( x0 = pyro_chl$upr_iqr[which(pyro_chl$chl==8.5)],
+segments( x0 = pyro_chl$upr[which(pyro_chl$chl==8.5)],
           y0 = 0, y1 = 8.5,
           lty = 3, col = rgb(1,0.1,0.1,0.6), lwd = 3 )
 
-segments( x0 = 2.3, x1 = 2.3, y0 = 5.8, y1 = 6.6, lwd = 2 )
-arrows( x0 = 2.3, x1 = 2.7, y0 = 5.8, y1 = 5.8, lwd = 2, length = 0.05 )
-arrows( x0 = 2.3, x1 = 3.2, y0 = 6.6, y1 = 6.6, lwd = 2, length = 0.05 )
-text( x = 1.8, y = 6.2, labels = "target\nrange" )
+# segments( x0 = 2.3, x1 = 2.3, y0 = 6, y1 = 7, lwd = 2 )
+# arrows( x0 = 2.3, x1 = 2.7, y0 = 6, y1 = 6, lwd = 2, length = 0.05 )
+# arrows( x0 = 2.3, x1 = 3.2, y0 = 7, y1 = 7, lwd = 2, length = 0.05 )
+# text( x = 1.8, y = 6.5, labels = "target\nrange" )
 
-legend( 'topleft', bty = 'n',
+segments( x0 = 6, x1 = 6, y0 = 5.9, y1 = 6.9, lwd = 2 )
+arrows( x0 = 6, x1 = 5.2, y0 = 5.9, y1 = 5.9, lwd = 2, length = 0.05 )
+arrows( x0 = 6, x1 = 5.8, y0 = 6.9, y1 = 6.9, lwd = 2, length = 0.05 )
+text( x = 6.55, y = 6.5, labels = "target\nrange" )
+
+legend( x = 0.6, y = 26, bty = 'n',
         legend = c("Median",
-                   "IQR",
-                   "Range"), text.font = 2,
+                   paste0( (1-percentile)*100,"th-",percentile*100,"th percentile"),
+                   "Min-max range"), text.font = 2,
         text.col = c( rgb(0,0.2,0.6,0.9), rgb(0,0.2,0.6,0.5), rgb(0,0.2,0.6,0.3) ) )
 
 
