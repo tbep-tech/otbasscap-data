@@ -15,7 +15,9 @@ epcwq1$date <- epcwq1$SampleTime |> as.Date("%Y-%m-%d")
 # --> data and 'Q' columns must be listed in consecutive pairs!!
 epcwq1 <- select( epcwq1, date, StationNumber, SampleDepth, TotalDepth,
                   Total_Nitrogen, Total_NitrogenQ,
+                  Kjeldahl_Nitrogen, Kjeldahl_NitrogenQ,
                   Nitrates_Nitrites, Nitrates_NitritesQ,
+                  Ammonia, AmmoniaQ,
                   Total_Phosphorus, Total_PhosphorusQ,
                   Ortho_Phosphates, Ortho_PhosphatesQ,
                   Chlorophyll_a, Chlorophyll_aQ,
@@ -42,7 +44,7 @@ epcwq1 <- epcwq1[ which( epcwq1$StationNumber %in% c(36,  38,  40,  41,  42,  46
 epcwq1 <- epcwq1[ which( year(epcwq1$date) >= 2000 ), ]
 
 # loop through data and QC columns to pivot from wide to long format
-datacols <- seq( 5, 39, 2 )
+datacols <- seq( 5, 43, 2 )
 epcwq2 <- data.frame( matrix(ncol=7,nrow=0) )
 for( i in datacols ){
   temp <- epcwq1[ ,1:4 ]
@@ -56,14 +58,16 @@ for( i in datacols ){
 
 # standardize parameter names
   param.names.old <- epcwq2$Analyte |> unique() |> sort()
-  param.names.new <- c( "Chla", "DO_bot", "DO_mid", "DO_top","NOx","PO4",
+  param.names.new <- c( "NHx", "Chla", "DO_bot", "DO_mid", "DO_top",
+                        "TKN","NOx","PO4",
                         "Sal_bot", "Sal_mid", "Sal_top","Secchi","Silica",
                         "Temp_bot","Temp_mid","Temp_top",
                         "TN", "TP", "TSS", "Turbidity" )
   epcwq2$param <- mapvalues( epcwq2$Analyte, param.names.old, param.names.new )
   
   # assign units
-  units <- c( "ug/l", "mg/l", "mg/l", "mg/l","mg/l","mg/l",
+  units <- c( "mg/l","ug/l", "mg/l", "mg/l", "mg/l",
+              "mg/l","mg/l","mg/l",
               "ppt", "ppt", "ppt", "m","mg/l",
               "C", "C", "C",
               "mg/l", "mg/l", "mg/l", "NTU" )  # listed in same order as param.names.new
@@ -85,6 +89,17 @@ for( i in datacols ){
   # apply function to locate fatal records
   rm.fatal.idx <- apply( matrix(epcwq2$QA,ncol=1), 1, find.fatal ) |> which()
   epcwq2 <- epcwq2[ -rm.fatal.idx, ]
+  
+# label non-detects
+  find.U <- function( QUALIFIER, CODE = "U" ){
+    input.code <- QUALIFIER |> strsplit(split='') |>
+      unlist() |> toupper()  # parse string into single characters
+    nondetect <- input.code %in% CODE |> any()  # check if any characters match CODE
+    return(nondetect)
+  }
+  epcwq2$Nondetect <- apply( matrix(epcwq2$QA,ncol=1), 1, find.U )
+  epcwq2$QA[ which(epcwq2$Nondetect==TRUE) ] |> table()  # verification
+  epcwq2$QA[ which(epcwq2$Nondetect==FALSE) ] |> table()  # verification
 
 # acknowledge Secchi records visible on bottom
   epcwq2[ which( epcwq2$param=="Secchi" & epcwq2$QA==">"), ] |> nrow() # number of VOB Secchi records
@@ -105,18 +120,18 @@ for( i in datacols ){
 
 # subset and rename columns
   epcwq2 <- epcwq2[, c("date","param","value","unit","QA",
-                       "StationNumber","SampleDepth","TotalDepth") ]
+                       "StationNumber","SampleDepth","TotalDepth","Nondetect") ]
   colnames( epcwq2 ) <- c("date","param", "value", "unit","QA",
-                          "site","sampledepth","totaldepth" )
+                          "site","sampledepth","totaldepth","nondetect" )
   
 # aggregate data to monthly timeframe
   epcwq3 <- epcwq2
   epcwq3$date <- epcwq3$date |> floor_date('month')
   epcwq3 <- epcwq3 |> dplyr::summarise( value = mean(value),
                                         .by = c(date,param,site,unit,
-                                                QA,sampledepth,totaldepth) )
+                                                QA,sampledepth,totaldepth,nondetect) )
   epcwq3 <- select( epcwq3, date,param,site,value,unit,
-                            QA,sampledepth,totaldepth)
+                            QA,sampledepth,totaldepth,nondetect)
   
 # assign sub-segment labels based on site label
   load("../data/otb_subseg_sites.RData")
