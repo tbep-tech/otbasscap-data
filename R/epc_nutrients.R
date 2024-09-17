@@ -5,14 +5,9 @@ library(lubridate)
 
 # Load & process chl data
 load('../data-clean/epcwq_clean.RData')
-epcdat <- epcwq3[which(epcwq3$param %in% c("TN","NOx","TP","PO4") ),]
+epcdat <- epcwq3[which(epcwq3$param %in% c("TN","NOx","NHx","TP","PO4") ),]
 epcdat$yr <- year( epcdat$date )
 epcdat$month <- floor_date( epcdat$date, 'month' )
-
-# Define geometric mean function
-geomean <- function(x){
-  return( 10^mean(log10(x)) )
-}
 
 # Specify OTB sub-segments
 subsegs <- c("NW","NE","CW","CE","SW","SE")
@@ -27,7 +22,7 @@ par(mfrow=c(3,2), mar=c(2,4,2,1))
   for( i in 1:length(subsegs) ){
     # Assemble sub-segment TN data
     this.TN.dat <- epcdat[ which( epcdat$subseg==subsegs[i] & epcdat$param=="TN" ),]
-    TN.means <- this.TN.dat |> group_by(yr) |> dplyr::summarise(value=geomean(value)) |> 
+    TN.means <- this.TN.dat |> group_by(yr) |> dplyr::summarise(value=mean(value)) |> 
                as.data.frame()
     TN.sd <- this.TN.dat |> group_by(yr) |> dplyr::summarise(sd=sd(value)) |> 
              as.data.frame()
@@ -37,7 +32,7 @@ par(mfrow=c(3,2), mar=c(2,4,2,1))
     TN.means$lwr <- TN.means$value - TN.sd$sd/sqrt(TN.n$n)
     # Assemble sub-segment NOx data
     this.NOx.dat <- epcdat[ which( epcdat$subseg==subsegs[i] & epcdat$param=="NOx" ),]
-    NOx.means <- this.NOx.dat |> group_by(yr) |> dplyr::summarise(value=geomean(value)) |> 
+    NOx.means <- this.NOx.dat |> group_by(yr) |> dplyr::summarise(value=mean(value)) |> 
       as.data.frame()
     NOx.sd <- this.NOx.dat |> group_by(yr) |> dplyr::summarise(sd=sd(value)) |> 
       as.data.frame()
@@ -45,6 +40,16 @@ par(mfrow=c(3,2), mar=c(2,4,2,1))
       as.data.frame()
     NOx.means$upr <- NOx.means$value + NOx.sd$sd/sqrt(NOx.n$n)
     NOx.means$lwr <- NOx.means$value - NOx.sd$sd/sqrt(NOx.n$n)
+    # Assemble sub-segment NHx data
+    this.NHx.dat <- epcdat[ which( epcdat$subseg==subsegs[i] & epcdat$param=="NHx" ),]
+    NHx.means <- this.NHx.dat |> group_by(yr) |> dplyr::summarise(value=mean(value)) |> 
+      as.data.frame()
+    NHx.sd <- this.NHx.dat |> group_by(yr) |> dplyr::summarise(sd=sd(value)) |> 
+      as.data.frame()
+    NHx.n <- this.NHx.dat |> group_by(yr) |> dplyr::summarise(n=length(value)) |> 
+      as.data.frame()
+    NHx.means$upr <- NHx.means$value + NHx.sd$sd/sqrt(NHx.n$n)
+    NHx.means$lwr <- NHx.means$value - NHx.sd$sd/sqrt(NHx.n$n)
     # Generate sub-segment plot
     # TN (black)
     plot( value ~ yr, data = TN.means,
@@ -66,10 +71,16 @@ par(mfrow=c(3,2), mar=c(2,4,2,1))
               col = rgb(1,0.2,0.1,0.8), lwd = 2 )
     points( value ~ yr, data = NOx.means, cex = 1.2, lwd = 2,
             pch = 21, bg = rgb(1,1,1,1), col =  rgb(1,0.2,0.1,1) )
+    # NHx
+    lines( value ~ yr, data = NHx.means, lwd = 2, col = rgb(0,0.6,0.8,0.8) )
+    segments( x0 = NHx.means$yr, y0 = NHx.means$upr, y1 = NHx.means$lwr,
+              col = rgb(0,0.6,0.8,0.8), lwd = 2 )
+    points( value ~ yr, data = NHx.means, cex = 1.2, lwd = 2,
+            pch = 21, bg = rgb(1,1,1,1), col =  rgb(0,0.6,0.8,1) )
     if(i==1){
       legend( 'topright', bty = 'n',
-              legend = c("TN","NOx"),
-              col = c( 1, rgb(1,0.2,0.1,1) ),
+              legend = c("TN","NOx","NHx"),
+              col = c( 1, rgb(1,0.2,0.1,1), rgb(0,0.6,0.8,1) ),
               lwd = 2 )
     }
   }
@@ -86,7 +97,7 @@ par(mfrow=c(3,2), mar=c(2,4,2,1))
 for( i in 1:length(subsegs) ){
   # Assemble sub-segment TP data
   this.TP.dat <- epcdat[ which( epcdat$subseg==subsegs[i] & epcdat$param=="TP" ),]
-  TP.means <- this.TP.dat |> group_by(yr) |> dplyr::summarise(value=geomean(value)) |> 
+  TP.means <- this.TP.dat |> group_by(yr) |> dplyr::summarise(value=mean(value)) |> 
     as.data.frame()
   TP.sd <- this.TP.dat |> group_by(yr) |> dplyr::summarise(sd=sd(value)) |> 
     as.data.frame()
@@ -96,7 +107,7 @@ for( i in 1:length(subsegs) ){
   TP.means$lwr <- TP.means$value - TP.sd$sd/sqrt(TP.n$n)
   # Assemble sub-segment PO4 data
   this.PO4.dat <- epcdat[ which( epcdat$subseg==subsegs[i] & epcdat$param=="PO4" ),]
-  PO4.means <- this.PO4.dat |> group_by(yr) |> dplyr::summarise(value=geomean(value)) |> 
+  PO4.means <- this.PO4.dat |> group_by(yr) |> dplyr::summarise(value=mean(value)) |> 
     as.data.frame()
   PO4.sd <- this.PO4.dat |> group_by(yr) |> dplyr::summarise(sd=sd(value)) |> 
     as.data.frame()
@@ -109,7 +120,7 @@ for( i in 1:length(subsegs) ){
   plot( value ~ yr, data = TP.means,
         type = 'l', las = 1,
         col = rgb(0,0,0,0.8), lwd = 2,
-        main = "", ylim = c(0,0.25), xlim = c(2000,2024),
+        main = "", ylim = c(0,0.27), xlim = c(2000,2024),
         ylab = "Concentration (mg/L)", xlab = '' )
   mtext( paste0(subsegs[i]," sub-segment"),
          side = 3, line = 0, adj = 0, font = 1 )
