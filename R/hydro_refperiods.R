@@ -9,26 +9,6 @@ load("../data-raw/totanndat.RData")
 loads <- totanndat[ which( totanndat$bay_segment=="Old Tampa Bay"),
                               c('year','hy_load','tn_load') ] |> as.data.frame()
 
-# # Load data
-# hydro <- read.csv("../data-raw/TB_hydro_monthly.csv")
-# load('../data/loads.RData')
-# 
-# # Assemble annual hydrologic loads
-# hydro$date <- as.Date( paste0(hydro$year,"-",formatC(hydro$month,width=2,flag="0"),"-01") )
-# hydro <- hydro[ which(hydro$bay_segment=="Old Tampa Bay" ), ]
-# hydro <- hydro[, c("date","hy_load_106_m3_mo") ]
-# hydro$year <- year( hydro$date )
-# hydro <- hydro |> group_by(year) |> dplyr::summarise(hy_load_106_m3_yr=sum(hy_load_106_m3_mo)) |> 
-#            as.data.frame()
-# plot( hy_load_106_m3_yr ~ year, data = hydro, type = 'b' )
-# 
-# # Assemble annual TN loads
-# loads <- loads[ which( loads$param=="TN load" ), ]
-# loads$year <- year( loads$date )
-# TN_load <- loads |> group_by(year) |> dplyr::summarise(tn_load_tons_yr=sum(value)) |> 
-#   as.data.frame()
-
-
 # Calculate alternative delivery ratios
   # Specify reference periods (start and end years)
   ref_periods <- data.frame( year_str = c( 1992, 2000, 2004, 2015 ),
