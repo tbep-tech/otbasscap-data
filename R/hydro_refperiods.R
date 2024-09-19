@@ -11,13 +11,12 @@ loads <- totanndat[ which( totanndat$bay_segment=="Old Tampa Bay"),
 
 # Calculate alternative delivery ratios
   # Specify reference periods (start and end years)
-  ref_periods <- data.frame( year_str = c( 1992, 2001, 2004, 2004, 2007, 2015 ),
-                             year_end = c( 1994, 2021, 2010, 2006, 2009, 2021 ),
+  ref_periods <- data.frame( year_str = c( 1992, 2001, 2004, 2005, 2015 ),
+                             year_end = c( 1994, 2021, 2010, 2009, 2021 ),
                              comment = c("Current paradigm",
                                          "Broad contemporary period",
-                                         "Precedes historic seagrass growth/recovery",
-                                         "3-year subset of 2004-2010 seagrass growth period",
-                                         "3-year subset of 2004-2010 seagrass growth period",
+                                         "Period of historic seagrass expansion",
+                                         "Subset of 2004-2010 seagrass expansion period",
                                          "Precedes/includes seagrass decline")
                             )
   # Initialize delivery ratio table
