@@ -443,5 +443,21 @@ threshold.hi  <- 1e6
   
   dev.off()
   
+  # Export bloom event table (10^5 cells/L)
+  # Subset events table for medium abundance conditions
+  bloom_events <- events[,c('year','str_med','end_med','duration_med')]
+  colnames(bloom_events) <- c('year','str_julian','end_julian','duration')
+  # Loop through rows to convert Julian dates to calendar dates
+  bloom_events$str_date <- as.Date(NA)
+  bloom_events$end_date <- as.Date(NA)
+  for( i in 1:nrow(bloom_events) ){
+    this.seq <- seq.Date( as.Date(paste0(bloom_events$year[i],"-01-01")),
+                          as.Date(paste0(bloom_events$year[i],"-12-31")),
+                          'day' )
+    bloom_events$str_date[i] <- this.seq[bloom_events$str_julian[i]] |> as.Date()
+    bloom_events$end_date[i] <- this.seq[bloom_events$end_julian[i]] |> as.Date()
+  }
   
+  # Export
+  write.csv( bloom_events, file = "../data/pyro_events_table.csv", row.names = FALSE )
   
