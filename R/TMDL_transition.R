@@ -29,7 +29,7 @@ points( TMDL_portion ~ month, data = TN_mo, pch = 21,
         bg = rgb(1,1,1,1), col = rgb(0.5,0.5,0.5,1), lwd = 2, cex = 1.2 )
 text( x = TN_mo$month, y = TN_mo$TMDL_portion,
       pos = 3, col = rgb(0.2,0.5,0.9,1), font = 2,
-      labels = paste0(round(100*TN_mo$pct,1),"%") )
+      labels = paste0(format(round(100*TN_mo$pct,1),nsmall=1),"%") )
 dev.off()
 
 # Plot the average TN load percentages by month. These percentages can be
