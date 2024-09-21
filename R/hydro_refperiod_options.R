@@ -92,8 +92,8 @@ legend( 'bottomleft', horiz = FALSE, bty='n',
 )
 dev.off()
 
-# Option 4
-TN_safety <- 522  # 522 tons/year is associated with 50% lower bound attainment probability, P(chl<8.5)
+# Option 4. Margin of safety
+TN_safety <- 394  # 394 is 19% of 486 tons; 19% is the ratio of new and old ref hydro load (536.96/494.44)
 png( "../figs/hydro_refperiod_option4.png", width = 8, height = 4, units = "in", res = 600 )
 par( mfrow=c(1,1), mar=c(4,5,1,1) )
 plot( tn_load ~ year, data = otbdat, type = 'l',
@@ -123,7 +123,7 @@ legend( 'bottomleft', horiz = FALSE, bty='n',
                  rgb(0,0.7,1,0.5), rgb(0,0,0,0.5) ),
         legend = c("Actual load",
                    "Normalized load (1992-1994 ref period)",
-                   expression("TMDL + safety factor (522 tons/yr)"),
-                   expression("TMDL (486 tons/yr)") )
+                   paste0("TMDL with safety margin (",TN_safety," tons/yr)"),
+                   "TMDL (486 tons/yr)" )
 )
 dev.off()
