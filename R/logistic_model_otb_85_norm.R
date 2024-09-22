@@ -82,7 +82,7 @@ dat <- inner_join( chl[,c('date','chl','chl_year_t1')],
   # Create binary response variable
   dat$y <- ifelse( dat$chl > chl_target, 0, 1 )
   # Fit the model
-  mod <- glm( y ~ chl_year_t1 + ratio + ratio_year_t1,
+  mod <- glm( y ~ ratio, #+ chl_year_t1 + ratio_year_t1,
               data = dat, family = 'binomial' )
   
   # Generate predictions
@@ -109,7 +109,7 @@ dat <- inner_join( chl[,c('date','chl','chl_year_t1')],
     dplyr::summarise(lwr=median(loval)) |> as.data.frame() |> select(lwr) 
   
   # Plot predictions
-  # png( "../figs/logistic_model_otb_85_norm.png", width = 7, height = 7, units = 'in', res = 600 )
+  png( "../figs/logistic_model_otb_85_norm.png", width = 7, height = 7, units = 'in', res = 600 )
   par(mar=c(4.5,4,2,1))
   plot( median ~ ratio, data = plot_data, type = 'l',
         col = rgb(0.3,0.7,1,1), lwd = 2,
@@ -128,7 +128,7 @@ dat <- inner_join( chl[,c('date','chl','chl_year_t1')],
   lines( lwr$lwr ~ ratio, data = plot_data, col = rgb(0.3,0.7,1,1) )  
   # abline( v = 0 )
   # Plot targets
-  deliv_targets <- c(1.08,0.85)
+  deliv_targets <- c(1.08,1.71)
   seg_colors <- c( rgb(0.1,0.6,1,0.7), rgb(0,0.1,0.1,0.7) )
   text_pos <- c(-0.03,0.03)
   for( i in 1:length(deliv_targets) ){
@@ -161,4 +161,4 @@ dat <- inner_join( chl[,c('date','chl','chl_year_t1')],
   legend( 'topright', bty = 'n', lty = 2, col = seg_colors,
           legend = paste0(deliv_targets," tons/Mm3")
             )
-  # dev.off()
+  dev.off()

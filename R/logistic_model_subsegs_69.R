@@ -58,7 +58,7 @@ dat <- inner_join( chl[,c('date','chl','chl_year_t1')],
   # Create binary response variable
   dat$y <- ifelse( dat$chl > chl_target, 0, 1 )
   # Fit the model
-  mod <- glm( y ~ chl_year_t1 + TN_load + TN_load_year_t1,
+  mod <- glm( y ~ TN_load, # + chl_year_t1 + TN_load_year_t1,
               data = dat, family = 'binomial' )
   
   # Generate predictions
@@ -91,19 +91,19 @@ dat <- inner_join( chl[,c('date','chl','chl_year_t1')],
           main = paste0("Probability of attaining ",chl_target," ug/L (",
                         subseg[i]," sub-segment)"),
           ylab = "Probability", yaxt = 'n',
-          xlab = "TN load (tons/year)", xaxt = 'n' )
-    axis( 1, at = seq(0,200,25), labels = seq(0,200,25)*12 )
+          xlab = "TN load (tons/month)", xaxt = 'n' )
+    axis( 1, at = seq(0,200,20) )
     axis( 2, at = seq(0,1,0.2), labels = paste0( seq(0,1,0.2)*100,"%"), las = 1 )
     polygon( x = c( plot_data$TN_load, rev(plot_data$TN_load) ),
              y = c( plot_data$upr$upr, rev(plot_data$lwr$lwr) ),
              col = rgb(0.3,0.7,1,0.2), border = rgb(0,0,0,0) )
-    abline( v = seq(0,400,50/6), col = rgb(0,0,0,0.1) )  
+    abline( v = seq(0,200,10), col = rgb(0,0,0,0.1) )  
     abline( h = seq(0,1,0.1), col = rgb(0,0,0,0.1) )  
     lines( upr$upr ~ TN_load, data = plot_data, col = rgb(0.3,0.7,1,1) )  
     lines( lwr$lwr ~ TN_load, data = plot_data, col = rgb(0.3,0.7,1,1) )  
     # abline( v = 0 )
     # Plot targets
-    TN_targets <- c(40.5,72.5)
+    TN_targets <- c(40.5,73)
     seg_colors <- c( rgb(0.1,0.6,1,0.7), rgb(0,0.1,0.1,0.7) )
     text_pos <- c(-3,3)
     for( i in 1:length(TN_targets) ){
@@ -134,7 +134,7 @@ dat <- inner_join( chl[,c('date','chl','chl_year_t1')],
            )
     }
     legend( 'topright', bty = 'n', lty = 2, col = seg_colors,
-            legend = paste0(TN_targets*12," tons/year")
+            legend = paste0(TN_targets," tons/month")
               )
   }
   dev.off()
