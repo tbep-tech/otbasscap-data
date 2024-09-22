@@ -5,11 +5,12 @@ library(dplyr)
 library(plyr)
 library(lubridate)
 library(ggplot2)
+library(here)
 
-load('../data-clean/epcwq_clean.RData')  # WQ data
-load('../data/loads.RData')  # monthly TN loads
-hydro <- read.csv("../data-raw/TB_hydro_monthly.csv")  # monthly hydro loads
-load("../data-raw/totanndat.RData")  # annual TN and hydro loads
+load(here('data-clean/epcwq_clean.RData'))  # WQ data
+load(here('data/loads.RData'))  # monthly TN loads
+hydro <- read.csv(here("data-raw/TB_hydro_monthly.csv"))  # monthly hydro loads
+load(here("data-raw/totanndat.RData"))  # annual TN and hydro loads
 
 # Specify subsegment
 subseg <- unique(epcwq3$subseg)

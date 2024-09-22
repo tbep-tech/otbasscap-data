@@ -5,9 +5,10 @@ library(dplyr)
 library(plyr)
 library(lubridate)
 library(ggplot2)
+library(here)
 
-load('../data-clean/epcwq_clean.RData')
-load('../data/loads.RData')
+load(here('data-clean/epcwq_clean.RData'))
+load(here('data/loads.RData'))
 
 # Specify subsegment
 subseg <- unique(epcwq3$subseg)
