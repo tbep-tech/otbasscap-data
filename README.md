@@ -4,6 +4,8 @@
 
 * Initial summary of existing paradigm [link](https://tbep-tech.github.io/otbasscap-data/eval_paradigm.html)
 
+* Assessment of attainment with hypothetical chlorophyll upper limits [link](https://tbep-tech.github.io/otbasscap-data/upper.html)
+
 ----------------------
 
 ## ./data/winwq.RData
