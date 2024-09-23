@@ -9,7 +9,7 @@ load( "../data-clean/epcwq_clean.RData" )
 # Specify subsegment and target or threshold value
 subsegment <- c("NW","CW")
 summer_months <- 6:10  # numeric (e.g. June is 6)
-critval <- c(8.5,9.3)  # mgmt target = 8.5 ug/l; NNC threshold = 9.4 ug/l
+critval <- c(8.5,9.3)  # mgmt target = 8.5 ug/l; NNC threshold = 9.3 ug/l
 
 png( "../figs/chl_attain_summer.png", width = 10, height = 8, units = 'in', res = 600 )
 par(mfrow=c(2,2),mar=c(4,5,3,1))
