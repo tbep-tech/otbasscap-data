@@ -62,11 +62,12 @@ dat <- inner_join( chl[,c('date','chl','chl_year_t1')],
               data = dat, family = 'binomial' )
   
   # Generate predictions
-  toprd <- expand.grid(
-    chl_year_t1 = unique( dat$chl_year_t1 ),
-    TN_load = seq( 0, max(dat$TN_load), 0.5 ),
-    TN_load_year_t1 = unique( dat$TN_load_year_t1 )
-    )
+  toprd <- data.frame( TN_load = seq( 0, max(dat$TN_load), 0.5 ) )
+  # toprd <- expand.grid(
+  #   chl_year_t1 = unique( dat$chl_year_t1 ),
+  #   TN_load = seq( 0, max(dat$TN_load), 0.5 ),
+  #   TN_load_year_t1 = unique( dat$TN_load_year_t1 )
+  #   )
   prds <- predict( mod, type = 'response',
                    newdata = toprd, se.fit = TRUE )
   toplo <- toprd |> 
