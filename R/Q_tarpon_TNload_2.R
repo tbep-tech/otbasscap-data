@@ -46,11 +46,12 @@ dev.off()
 # Calculate TN load reductions associated with LTOC discharge reduction (40 cfs)
 otb_TN <- totanndat[ which( totanndat$bay_segment=="Old Tampa Bay"),
                      c('year','tn_load') ] |> as.data.frame()
-colnames(otb_TN)[2] <- 'OTB_TN_tons'
-loads_TN <- left_join( tarpon_TN[,c('year','LTOC_TN_ton_upr','LTOC_TN_ton_lwr')], otb_TN, 'year' )
-loads_TN$OTB_TN_excess <- loads_TN$OTB_TN_tons - 486  # actual loads minus TMDL
-loads_TN$LTOC_reduc_upr <- loads_TN$LTOC_TN_ton_upr - (40*86000*30*12)*28.3168*1*1e-9  # LTOC load reduction (40 cfs & 1 mg/L)
-loads_TN$LTOC_reduc_lwr <- loads_TN$LTOC_TN_ton_lwr - (40*86000*30*12)*28.3168*0.5*1e-9  # LTOC load reduction (40 cfs & 0.5 mg/L)
+colnames(otb_TN) <- c('yr', 'OTB_TN_tons' )
+loads_TN <- left_join( ltoc, otb_TN, 'yr' )
+colnames(loads_TN)[2] <- 'LTOC_TN_tons'
+loads_TN$OTB_TN_excess <- loads_TN$OTB_TN_tons - 486  # actual loads minus TMDL 
+loads_TN$LTOC_reduc_upr <- loads_TN$LTOC_TN_tons - (40*86000*30*12)*28.3168*1*1e-9  # LTOC load reduction (40 cfs & 1 mg/L)
+loads_TN$LTOC_reduc_lwr <- loads_TN$LTOC_TN_tons - (40*86000*30*12)*28.3168*0.5*1e-9  # LTOC load reduction (40 cfs & 0.5 mg/L)
 loads_TN$LTOC_ratio_upr <- loads_TN$LTOC_reduc_upr / loads_TN$OTB_TN_excess # ratio of LTOC reduc to excess (40 cfs & 1 mg/L)
 loads_TN$LTOC_ratio_lwr <- loads_TN$LTOC_reduc_lwr / loads_TN$OTB_TN_excess# ratio of LTOC reduc to excess (40 cfs & 0.5 mg/L)
 loads_TN
