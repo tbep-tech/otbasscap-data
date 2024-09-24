@@ -11,6 +11,14 @@ subsegment <- c("NW","CW")
 summer_months <- 6:10  # numeric (e.g. June is 6)
 critval <- c(8.5,9.3)  # mgmt target = 8.5 ug/l; NNC threshold = 9.3 ug/l
 
+# Initialize tables to hold summertime concs assoc with 50% and 75% prob
+prob_50 <- matrix(NA,nrow=2,ncol=2)
+  row.names(prob_50) <- rep(NA,2)
+  colnames(prob_50) <- rep(NA,2)
+prob_75 <- matrix(NA,nrow=2,ncol=2)
+  row.names(prob_75) <- rep(NA,2)
+  colnames(prob_75) <- rep(NA,2)
+
 png( "../figs/chl_attain_summer.png", width = 10, height = 8, units = 'in', res = 600 )
 par(mfrow=c(2,2),mar=c(4,5,3,1))
 
@@ -58,7 +66,45 @@ for( i in 1:length(critval) ){
              y = c( prd.y$fit+1.96*prd.y$se.fit, rev(prd.y$fit-1.96*prd.y$se.fit) ),
              col = rgb(0.2,0.5,0.9,0.2), border = rgb(0,0,0,0) )
     
+    # Print to predicted values to console
+    # prob <- 0.50
+    # df <- data.frame( x = prd.x,
+    #                   y_low = prd.y$fit-1.96*prd.y$se.fit,
+    #                   y_med = prd.y$fit,
+    #                   y_hi  = prd.y$fit+1.96*prd.y$se.fit )
+    # out <- df[ which( (df$y_low>(prob*0.95) & df$y_low<(prob*1.05)) |
+    #                   (df$y_med>(prob*0.95) & df$y_med<(prob*1.05)) |
+    #                   (df$y_hi>(prob*0.95) & df$y_hi<(prob*1.05)) ), ]
+    # cat( "\n",subsegment[j],"subseg    critval:",critval[i],"   prob:",prob,"\n" ); print( out )
+    
+    # Populate 50% and 75% probability tables
+    df_50 <- data.frame( x = prd.x,
+                         y_low = prd.y$fit-1.96*prd.y$se.fit,
+                         y_med = prd.y$fit,
+                         y_hi  = prd.y$fit+1.96*prd.y$se.fit )
+    prob_50[i,j] <- paste( format(df_50$x[ which( df_50$y_low<0.50 )[1] ],nsmall=1),
+                           format(df_50$x[ which( df_50$y_med<0.50 )[1] ],nsmall=1),
+                           format(df_50$x[ which( df_50$y_hi<0.50 )[1] ],nsmall=1),
+                           sep = " / " )
+    row.names(prob_50)[i] <- paste0(critval[i]," ug/L")
+    colnames(prob_50)[j] <- paste0(subsegment[j]," sub-segment")
+    
+    df_75 <- data.frame( x = prd.x,
+                         y_low = prd.y$fit-1.96*prd.y$se.fit,
+                         y_med = prd.y$fit,
+                         y_hi  = prd.y$fit+1.96*prd.y$se.fit )
+    prob_75[i,j] <- paste( format(df_75$x[ which( df_50$y_low<0.75 )[1] ],nsmall=1),
+                           format(df_75$x[ which( df_50$y_med<0.75 )[1] ],nsmall=1),
+                           format(df_75$x[ which( df_50$y_hi<0.75 )[1] ],nsmall=1),
+                           sep = " / " )
+    row.names(prob_75)[i] <- paste0(critval[i]," ug/L")
+    colnames(prob_75)[j] <- paste0(subsegment[j]," sub-segment")
+    
   }  # // end subsegment loop j
 }  # end critval loop i
 
 dev.off()
+
+# Export probability tables
+write.csv( prob_50, "../data/chl_attain_summer_50.csv", row.names = TRUE )
+write.csv( prob_75, "../data/chl_attain_summer_75.csv", row.names = TRUE )
