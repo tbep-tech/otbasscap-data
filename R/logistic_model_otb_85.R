@@ -89,7 +89,7 @@ dat <- inner_join( chl[,c('date','chl','chl_year_t1')],
         ylim = c(0,1), xlim = c(0,150), las = 1,
         main = paste0("Probability of attaining ",chl_target," ug/L target (monthly)"),
         ylab = "Probability", yaxt = 'n',
-        xlab = "TN load (tons/monthly)", xaxt = 'n' )
+        xlab = "TN load (tons/month)", xaxt = 'n' )
   axis( 1, at = seq(0,200,20) )
   axis( 2, at = seq(0,1,0.2), labels = paste0( seq(0,1,0.2)*100,"%"), las = 1 )
   polygon( x = c( plot_data$TN_load, rev(plot_data$TN_load) ),
