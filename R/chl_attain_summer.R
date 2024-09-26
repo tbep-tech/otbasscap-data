@@ -100,6 +100,12 @@ for( i in 1:length(critval) ){
     row.names(prob_75)[i] <- paste0(critval[i]," ug/L")
     colnames(prob_75)[j] <- paste0(subsegment[j]," sub-segment")
     
+    # Add lines to plots to indicate 75% probability and associated concentration
+    if( i == 1 ){
+    segments( x0 = -20, x1 = df_75$x[ which( df_50$y_low<0.75 )[1] ], y0 = 0.75, lty = 2 )
+    segments( x0 = df_75$x[ which( df_50$y_low<0.75 )[1] ], y0 = -1, y1 = 0.75, lty = 2 )
+    }
+    
   }  # // end subsegment loop j
 }  # end critval loop i
 
