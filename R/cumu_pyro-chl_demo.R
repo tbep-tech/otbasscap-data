@@ -141,7 +141,7 @@ segments( x0 = pyro_chl$upr[which(pyro_chl$chl==8.5)],
 segments( x0 = 6, x1 = 6, y0 = 5.9, y1 = 6.9, lwd = 2 )
 arrows( x0 = 6, x1 = 5.2, y0 = 5.9, y1 = 5.9, lwd = 2, length = 0.05 )
 arrows( x0 = 6, x1 = 5.8, y0 = 6.9, y1 = 6.9, lwd = 2, length = 0.05 )
-# text( x = 6.55, y = 6.5, labels = "target\nrange" )
+text( x = 6.1, y = 6.5, labels = "5.9 \U2012 6.9\nug/L range", cex = 0.8, adj=0 )
 
 legend( x = 0.6, y = 26, bty = 'n',
         legend = c("Median",
