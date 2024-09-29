@@ -6,6 +6,8 @@
 
 * Assessment of attainment with hypothetical chlorophyll upper limits [link](https://tbep-tech.github.io/otbasscap-data/upperchla.html)
 
+* GLM of monthly chlorophyll attainment for sug-segments [link](https://tbep-tech.github.io/otbasscap-data/chlmoattain.html)
+
 ----------------------
 
 ## ./data/winwq.RData

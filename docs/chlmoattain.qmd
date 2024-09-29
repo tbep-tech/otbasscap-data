@@ -1,0 +1,304 @@
+---
+title: "Chlorophyll attainment by month, sub-segment"
+format: 
+  html:
+    code-fold: true
+editor: source
+lightbox: true
+
+execute: 
+  warning: false
+  message: false
+  echo: true
+---
+
+```{r}
+library(tidyverse)
+library(tbeptools)
+library(sjPlot)
+
+load(file = here::here("data/otb_subseg_sites.RData"))
+load(file = here::here("data/loads.RData"))
+
+otbdat <- epcdata |> 
+  filter(bay_segment == 'OTB') |> 
+  mutate(
+    epchc_station = as.character(epchc_station)
+  ) |> 
+  left_join(otb_subseg_sites, by = c('epchc_station' = 'site')) |> 
+  filter(yr >= 2000 & yr <= 2021) |> 
+  select(epchc_station, yr, mo, chla, tn, subsegment)
+
+lddat <- loads |> 
+  mutate(
+    yr = year(date), 
+    mo = month(date)
+  ) |>
+  filter(param == 'TN load') |> 
+  select(yr, mo, load = value) |> 
+  mutate(
+    loadlag1 = lag(load, 1), 
+    loadlag2 = lag(load, 2),
+    loadlag3 = lag(load, 3),
+    lagsum2 = loadlag1 + loadlag2,
+    lagsum3 = loadlag1 + loadlag2 + loadlag3
+  ) |> 
+  filter(yr >= 2000 & yr <= 2021) 
+```
+
+```{r}
+#| fig-heigth: 4
+#| fig-width: 6
+ldplo <- lddat |> 
+  summarise(
+    load = sum(load, na.rm = T), 
+    .by = mo
+  ) |> 
+  mutate(
+    load = load / sum(load),
+    lab = paste0(round(100 * load, 1), '%')
+  )
+  
+ggplot(ldplo, aes(x = mo, y = load)) + 
+  geom_line() + 
+  geom_point() + 
+  geom_text(aes(label = lab), nudge_y = 0.01) +
+  labs(
+    x = 'Month', 
+    y = 'Proportion of annual TN load'
+  ) + 
+  scale_y_continuous(labels = scales::percent) +
+  scale_x_continuous(breaks = 1:12) +
+  theme_minimal() +
+  theme(
+    panel.grid.minor = element_blank()
+  )
+```
+
+::: {.panel-tabset}
+
+## NW sub-segment
+
+```{r}
+# monthly attainment whole bay segment, june through sep only
+moattain <- otbdat |> 
+  summarise(
+    chla = mean(chla, na.rm = T), 
+    .by = c('yr', 'mo')
+  ) |>
+  mutate(
+    attain = chla < 9.3
+  ) |> 
+  select(-chla)
+
+tomod <- otbdat |> 
+  filter(mo %in% c(6:9)) |> 
+  summarise(
+    chla = mean(chla, na.rm = T), 
+    .by = c(yr, mo, subsegment)
+  ) |> 
+  filter(subsegment == 'NW') |> 
+  left_join(moattain, by = c('yr', 'mo')) 
+
+mod <- glm(attain ~ chla, data = tomod, family = binomial)
+
+prddat <- tibble(
+    chla = seq(0, quantile(tomod$chla, 0.9), length.out = 200)
+  )
+prd <- tibble(
+    ave = predict(mod, newdata = prddat, type = 'response'),
+    lov = ave - predict(mod, newdata = prddat, type = 'response', se.fit = T)$se.fit * 1.96,
+    hiv = ave + predict(mod, newdata = prddat, type = 'response', se.fit = T)$se.fit * 1.96
+  ) |> 
+  bind_cols(prddat)
+
+# find chlorphyll value that is closes to lov 0.5
+lns <- prd |> 
+  mutate(
+    diff = abs(0.5 - ave)
+  ) |> 
+  arrange(diff) |> 
+  head(1)
+lnslab <- paste0(round(lns$chla, 1), ' ug/L')
+
+ggplot(prd, aes(x = chla, y = ave)) + 
+  geom_ribbon(aes(ymin = lov, ymax = hiv), alpha = 0.5) + 
+  geom_line() + 
+  scale_y_continuous(labels = scales::percent) +
+  geom_segment(x = lns$chla, xend = lns$chla, y = 0, yend = 0.5, linetype = 'dashed') +
+  geom_segment(x = 0, xend = lns$chla, y = 0.5, yend = 0.5, linetype = 'dashed') +
+  geom_text(x = lns$chla, y = 0, label = lnslab, vjust = 1) +
+  labs(
+    x = 'Chla (ug/L)', 
+    y = 'Probability', 
+    title = 'Probability of attaining baywide monthly 9.3 ug/L Chla based on NW subsegment concentrations',
+    subtitle = 'June through September'
+  ) + 
+  theme_minimal() + 
+  theme(
+    panel.grid.minor = element_blank()
+  )
+```
+
+```{r}
+# probability of attaining monthly 50% chl value vs load
+tomod2 <- tomod |> 
+  mutate(
+    attain = chla < lns$chla
+  ) |> 
+  left_join(lddat, by = c('yr', 'mo')) |> 
+  mutate(
+    mo = factor(mo),
+    prdvar = lagsum2
+  )
+
+mod <- glm(attain ~ prdvar, data = tomod2, family = binomial)
+
+prddat <- tibble(
+    prdvar = seq(0, quantile(tomod2$prdvar, 1), length.out = 200)
+  ) 
+prd <- tibble(
+    ave = predict(mod, newdata = prddat, type = 'response'),
+    lov = ave - predict(mod, newdata = prddat, type = 'response', se.fit = T)$se.fit * 1.96,
+    hiv = ave + predict(mod, newdata = prddat, type = 'response', se.fit = T)$se.fit * 1.96
+  ) |> 
+  bind_cols(prddat)
+
+ggplot(prd, aes(x = prdvar, y = ave)) + 
+  geom_ribbon(aes(ymin = lov, ymax = hiv), alpha = 0.5) + 
+  geom_line() + 
+  scale_y_continuous(labels = scales::percent) +
+  coord_cartesian(ylim = c(0, 1)) + 
+  labs(
+    x = 'Cumulative two month load (tons / 2 month)', 
+    y = 'Probability',
+    title = paste('Probability of attaining monthly', lnslab, 'in NW subsegment'),
+    subtitle = 'June through September'
+  ) + 
+  theme_minimal() + 
+  theme(
+    panel.grid.minor = element_blank()
+  )
+```
+
+```{r}
+#| output: asis
+mod1 <- glm(attain ~ load, data = tomod2, family = binomial)
+mod2 <- glm(attain ~ lagsum2, data = tomod2, family = binomial)
+mod3 <- glm(attain ~ lagsum3, data = tomod2, family = binomial)
+tab_model(mod1, mod2, mod3)
+```
+
+## CW sub-segment
+
+```{r}
+# monthly attainment whole bay segment, june through sep only
+moattain <- otbdat |> 
+  summarise(
+    chla = mean(chla, na.rm = T), 
+    .by = c('yr', 'mo')
+  ) |>
+  mutate(
+    attain = chla < 9.3
+  ) |> 
+  select(-chla)
+
+tomod <- otbdat |> 
+  filter(mo %in% c(6:9)) |> 
+  summarise(
+    chla = mean(chla, na.rm = T), 
+    .by = c(yr, mo, subsegment)
+  ) |> 
+  filter(subsegment == 'CW') |> 
+  left_join(moattain, by = c('yr', 'mo')) 
+
+mod <- glm(attain ~ chla, data = tomod, family = binomial)
+
+prddat <- tibble(
+    chla = seq(0, quantile(tomod$chla, 0.9), length.out = 200)
+  )
+prd <- tibble(
+    ave = predict(mod, newdata = prddat, type = 'response'),
+    lov = ave - predict(mod, newdata = prddat, type = 'response', se.fit = T)$se.fit * 1.96,
+    hiv = ave + predict(mod, newdata = prddat, type = 'response', se.fit = T)$se.fit * 1.96
+  ) |> 
+  bind_cols(prddat)
+
+# find chlorphyll value that is closes to lov 0.5
+lns <- prd |> 
+  mutate(
+    diff = abs(0.5 - ave)
+  ) |> 
+  arrange(diff) |> 
+  head(1)
+lnslab <- paste0(round(lns$chla, 1), ' ug/L')
+
+ggplot(prd, aes(x = chla, y = ave)) + 
+  geom_ribbon(aes(ymin = lov, ymax = hiv), alpha = 0.5) + 
+  geom_line() + 
+  scale_y_continuous(labels = scales::percent) +
+  geom_segment(x = lns$chla, xend = lns$chla, y = 0, yend = 0.5, linetype = 'dashed') +
+  geom_segment(x = 0, xend = lns$chla, y = 0.5, yend = 0.5, linetype = 'dashed') +
+  geom_text(x = lns$chla, y = 0, label = lnslab, vjust = 1) +
+  labs(
+    x = 'Chla (ug/L)', 
+    y = 'Probability', 
+    title = 'Probability of attaining baywide monthly 9.3 ug/L Chla based on NW subsegment concentrations',
+    subtitle = 'June through September'
+  ) + 
+  theme_minimal() + 
+  theme(
+    panel.grid.minor = element_blank()
+  )
+```
+
+```{r}
+# probability of attaining monthly 50% chl value vs load
+tomod2 <- tomod |> 
+  mutate(
+    attain = chla < lns$chla
+  ) |> 
+  left_join(lddat, by = c('yr', 'mo')) |> 
+  mutate(
+    mo = factor(mo),
+    prdvar = lagsum2
+  )
+
+mod <- glm(attain ~ prdvar, data = tomod2, family = binomial)
+
+prddat <- tibble(
+    prdvar = seq(0, quantile(tomod2$prdvar, 1), length.out = 200)
+  ) 
+prd <- tibble(
+    ave = predict(mod, newdata = prddat, type = 'response'),
+    lov = ave - predict(mod, newdata = prddat, type = 'response', se.fit = T)$se.fit * 1.96,
+    hiv = ave + predict(mod, newdata = prddat, type = 'response', se.fit = T)$se.fit * 1.96
+  ) |> 
+  bind_cols(prddat)
+
+ggplot(prd, aes(x = prdvar, y = ave)) + 
+  geom_ribbon(aes(ymin = lov, ymax = hiv), alpha = 0.5) + 
+  geom_line() + 
+  scale_y_continuous(labels = scales::percent) +
+  coord_cartesian(ylim = c(0, 1)) + 
+  labs(
+    x = 'Cumulative two month load (tons / 2 month)', 
+    y = 'Probability',
+    title = paste('Probability of attaining monthly', lnslab, 'in NW subsegment'),
+    subtitle = 'June through September'
+  ) + 
+  theme_minimal() + 
+  theme(
+    panel.grid.minor = element_blank()
+  )
+```
+
+```{r}
+#| output: asis
+mod1 <- glm(attain ~ load, data = tomod2, family = binomial)
+mod2 <- glm(attain ~ lagsum2, data = tomod2, family = binomial)
+mod3 <- glm(attain ~ lagsum3, data = tomod2, family = binomial)
+tab_model(mod1, mod2, mod3)
+```
+
+:::
