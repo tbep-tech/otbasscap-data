@@ -93,7 +93,6 @@ toplo1 <- otbcei1 |>
 ggplot(toplo1, aes(x = chlmax, y = value, color = name)) + 
   geom_line() + 
   geom_vline(xintercept = 9.3, linetype = 'dashed') + 
-  geom_vline(xintercept = 8.5, linetype = 'dashed') +
   scale_y_continuous(labels = scales::percent) + 
   theme_minimal() + 
   theme(
@@ -165,7 +164,6 @@ toplo2 <- otbcei2 |>
 ggplot(toplo2, aes(x = chlmax, y = value, color = name)) + 
   geom_line() + 
   geom_vline(xintercept = 9.3, linetype = 'dashed') + 
-  geom_vline(xintercept = 8.5, linetype = 'dashed') +
   scale_y_continuous(labels = scales::percent) + 
   theme_minimal() + 
   theme(
@@ -249,7 +247,6 @@ toplo3 <- otbcei3 |>
 ggplot(toplo3, aes(x = chlmax, y = value, color = name)) + 
   geom_line() + 
   geom_vline(xintercept = 9.3, linetype = 'dashed') + 
-  geom_vline(xintercept = 8.5, linetype = 'dashed') +
   scale_y_continuous(labels = scales::percent) + 
   theme_minimal() + 
   facet_wrap(~season, ncol = 4) +
@@ -334,7 +331,6 @@ toplo4 <- otbcei4 |>
 ggplot(toplo4, aes(x = chlmax, y = value, color = name)) + 
   geom_line() + 
   geom_vline(xintercept = 9.3, linetype = 'dashed') + 
-  geom_vline(xintercept = 8.5, linetype = 'dashed') +
   scale_y_continuous(labels = scales::percent) + 
   theme_minimal() + 
   facet_wrap(~season, ncol = 4) +
