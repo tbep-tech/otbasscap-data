@@ -49,16 +49,7 @@ loads_yr <- loads |> group_by(year) |> dplyr::summarise(TN_load=sum(TN_load)) |>
 dat <- inner_join( chl[,c('date','chl')],
                    loads[,c('date','TN_load_2mo')], 
                    by = 'date' )
-# Choose month OR season OR summer in glm() call and expand.grid() call below
-dat$month <- month( dat$date) |> as.integer() |> as.factor()
-dat$season <- ifelse( dat$month %in% 1:3, 'Q1',
-                      ifelse( dat$month %in% 4:6, 'Q2',
-                              ifelse( dat$month %in% 7:9, 'Q3', 'Q4'
-                              )
-                      )
-) |> as.factor()
-dat$summer <- ifelse( dat$month %in% 6:9, 1, 0 )
-
+dat$month <- month( dat$date ) |> as.integer() |> as.factor()
 
 # Logistic model
 # Specify chlorophyll target
@@ -72,8 +63,6 @@ mod <- glm( y ~ TN_load_2mo,
 
 # Generate predictions
 toprd <- expand.grid( TN_load_2mo = seq( 0, max(dat$TN_load_2mo), 0.5 ),
-                      # summer = c(0,1) )
-                      # season = unique(dat$season) )
                       month = month(1:12) |> as.integer() |> as.factor() )
 prds <- predict( mod, type = 'response',
                  newdata = toprd, se.fit = TRUE )
