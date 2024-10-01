@@ -35,22 +35,17 @@ loads$year <- year( loads$date )
 # Create 2-month TN load sums
 loads$TN_load_d1 <- lag( loads$TN_load, n = 1 )
 loads$TN_load_2mo <- loads$TN_load + loads$TN_load_d1
-# loads <- loads[ which(complete.cases(loads)), ]
 loads <- loads[ which( month(loads$dat) %in% 6:9 ), ]
 
 
 # Annual TN loads
 loads_yr <- loads |> group_by(year) |> dplyr::summarise(TN_load=sum(TN_load)) |> 
   as.data.frame()
-# loads$TN_load_year_t1 <- mapvalues( loads$year, loads_yr$year, loads_yr$TN_load )
-
 
 # Input data
 dat <- inner_join( chl[,c('date','chl')],
                    loads[,c('date','TN_load_2mo')], 
                    by = 'date' )
-dat$month <- month( dat$date ) |> as.integer() |> as.factor()
-
 
 # Logistic model
 # Specify chlorophyll target
@@ -63,8 +58,7 @@ mod <- glm( y ~ TN_load_2mo,
             data = dat, family = 'binomial' )
 
 # Generate predictions
-toprd <- expand.grid( TN_load_2mo = seq( 0, max(dat$TN_load_2mo), 0.5 ),
-                      month = month(1:12) |> as.integer() |> as.factor() )
+toprd <- data.frame( TN_load_2mo = seq( 0, max(dat$TN_load_2mo), 0.5 ) )
 prds <- predict( mod, type = 'response',
                  newdata = toprd, se.fit = TRUE )
 toplo <- toprd |> 
