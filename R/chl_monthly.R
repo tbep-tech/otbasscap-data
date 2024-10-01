@@ -135,7 +135,7 @@ for( i in 1:length(attain) ){
                             paste0(attain[i],"-12-31"),
                             paste0(attain[i],"-12-31"),
                             paste0(attain[i],"-01-01"))) ),
-           y = c(0,0,50,50), col = rgb(0,0.6,0.8,0.1), border = rgb(0,0,0,0) )
+           y = c(0,0,50,50), col = rgb(0,0.6,0.8,0.2), border = rgb(0,0,0,0) )
 }
 # abline( v = seq.Date(as.Date("2000-01-01"), as.Date("2024-01-01"), "6 months"), col=rgb(0,0,0,0.1) )
 abline( v = seq.Date(as.Date("2000-01-01"), as.Date("2024-01-01"), "year"), col=rgb(0,0,0,0.2) )
