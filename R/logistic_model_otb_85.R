@@ -5,7 +5,6 @@ library(dplyr)
 library(plyr)
 library(lubridate)
 library(ggplot2)
-library(here)
 
 load(here('data-clean/epcwq_clean.RData'))
 load(here('data/loads.RData'))
@@ -120,16 +119,16 @@ dat <- inner_join( chl[,c('date','chl','chl_year_t1')],
               y0 = plot_data$lwr$lwr[which(plot_data$TN_load==TN_targets[i])],
               lty = 2, col = seg_colors[i]
               )
-    text( x = rep(text_pos[i],3),
-          y = c( plot_data$median[which(plot_data$TN_load==TN_targets[i])],
-                 plot_data$upr$upr[which(plot_data$TN_load==TN_targets[i])],
-                 plot_data$lwr$lwr[which(plot_data$TN_load==TN_targets[i])]
-                 ),
-          labels = round( c( 100*plot_data$median[which(plot_data$TN_load==TN_targets[i])],
-                             100*plot_data$upr$upr[which(plot_data$TN_load==TN_targets[i])],
-                             100*plot_data$lwr$lwr[which(plot_data$TN_load==TN_targets[i])]
-                             ),0 ), cex = 0.7, offset = 0.1, pos = 3, col = seg_colors[i]
-         )
+    # text( x = rep(text_pos[i],3),
+    #       y = c( plot_data$median[which(plot_data$TN_load==TN_targets[i])],
+    #              plot_data$upr$upr[which(plot_data$TN_load==TN_targets[i])],
+    #              plot_data$lwr$lwr[which(plot_data$TN_load==TN_targets[i])]
+    #              ),
+    #       labels = round( c( 100*plot_data$median[which(plot_data$TN_load==TN_targets[i])],
+    #                          100*plot_data$upr$upr[which(plot_data$TN_load==TN_targets[i])],
+    #                          100*plot_data$lwr$lwr[which(plot_data$TN_load==TN_targets[i])]
+    #                          ),0 ), cex = 0.7, offset = 0.1, pos = 3, col = seg_colors[i]
+    #      )
   }
   legend( 'topright', bty = 'n', lty = 2, col = seg_colors,
           legend = paste0(TN_targets," tons/month")
