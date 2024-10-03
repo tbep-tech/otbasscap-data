@@ -27,26 +27,30 @@ thm <- theme(
   axis.ticks = element_blank()
 )
 p1a <- show_matrix(epcdata, bay_segment = 'OTB') + 
+  geom_hline(yintercept = 1999.5, lwd = 1.5) + 
   theme(
     axis.text.x = element_blank(), 
     axis.ticks.x = element_blank()
   ) + 
   labs(
-    title = '(a) Target', 
+    title = '(a) Target (RYG management outcomes)', 
     subtitle = 'Actual data'
   )
 p1b <- show_matrix(epcdatamin, bay_segment = 'OTB') + 
+  geom_hline(yintercept = 1999.5, lwd = 1.5) + 
   thm + 
   labs(
     subtitle = 'Proposed targets attained'
   )
-p2a <- show_wqmatrix(epcdata, param = 'chla', bay_segment = 'OTB') + 
+p2a <- show_wqmatrix(epcdata, param = 'chla', bay_segment = 'OTB') +
+  geom_hline(yintercept = 1999.5, lwd = 1.5) + 
   thm + 
   labs(
-    title = '(b) Threshold',
+    title = '(b) Threshold (RG regulatory outcomes)',
     subtitle = 'Actual data'
   )
 p2b <- show_wqmatrix(epcdatamin, param = 'chla', bay_segment = 'OTB') + 
+  geom_hline(yintercept = 1999.5, lwd = 1.5) + 
   thm + 
   labs(
     subtitle = 'Proposed targets attained'
