@@ -32,7 +32,7 @@ p1a <- show_matrix(epcdata, bay_segment = 'OTB') +
     axis.ticks.x = element_blank()
   ) + 
   labs(
-    title = '(a) Management outcomes', 
+    title = '(a) Target', 
     subtitle = 'Actual data'
   )
 p1b <- show_matrix(epcdatamin, bay_segment = 'OTB') + 
@@ -43,7 +43,7 @@ p1b <- show_matrix(epcdatamin, bay_segment = 'OTB') +
 p2a <- show_wqmatrix(epcdata, param = 'chla', bay_segment = 'OTB') + 
   thm + 
   labs(
-    title = '(b) Attainment of chlorophyll threshold',
+    title = '(b) Threshold',
     subtitle = 'Actual data'
   )
 p2b <- show_wqmatrix(epcdatamin, param = 'chla', bay_segment = 'OTB') + 
@@ -54,6 +54,6 @@ p2b <- show_wqmatrix(epcdatamin, param = 'chla', bay_segment = 'OTB') +
 
 p <- p1a + p1b + p2a + p2b + plot_layout(ncol = 4)
 
-png(here('figs/chl_hyp.png'), width = 8, height = 8, units = 'in', res = 300)
+png(here('figs/chl_hyp.png'), width = 8, height = 8, units = 'in', res = 600)
 print(p)
 dev.off()
