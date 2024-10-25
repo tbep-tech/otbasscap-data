@@ -93,7 +93,7 @@ plot( median ~ TN_load, data = plot_data, type = 'l',
       main = "",
       ylab = "Probability", yaxt = 'n',
       xlab = "", xaxt = 'n' )
-mtext( "(a) Chl-a target attainment and TN load",
+mtext( "(a) Chl-a threshold attainment and TN load",
        side = 3, line = 0, cex = 1.2, adj = 0 )
 mtext( "TN load (tons/month)", side = 1, line = 2, cex = 1 )
 axis( 1, at = seq(0,200,20) )
@@ -259,7 +259,7 @@ plot( median ~ ratio, data = plot_data, type = 'l',
       main = "",
       ylab = "Probability", yaxt = 'n',
       xlab = "", xaxt = 'n' )
-mtext( "(b) Chl-a target attainment and\nTN delivery ratio",
+mtext( "(b) Chl-a threshold attainment and\nTN delivery ratio",
        side = 3, line = 0, cex = 1.2, adj = 0 )
 mtext( "TN delivery ratio (tons/Mm3 per year)", side = 1, line = 2, cex = 1 )
 axis( 1, at = seq(0,2,0.2) )
