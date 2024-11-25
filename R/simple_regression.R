@@ -19,7 +19,8 @@ chldat <- anlz_avedat(epcdata)$mos |>
   select(date, chla = val) |> 
   inner_join(lddat, by = 'date') |> 
   mutate(
-    tn_load_3mo = tn_load + lag(tn_load) + lag(tn_load, 2)
+    tn_load_3mo = tn_load + lag(tn_load) + lag(tn_load, 2),
+    qrt = factor(lubridate::quarter(date, with_year = F), levels = 1:4, labels = c('JFM', 'AMJ', 'JJA', 'OND'))
   ) |> 
   filter(date >= as.Date('2000-01-01'))
   
@@ -33,7 +34,7 @@ tn_load_3mo_9.3 <- (9.3 - mod$coefficients[1]) / mod$coefficients[2]
 tn_load_3mo_8.5 <- (8.5 - mod$coefficients[1]) / mod$coefficients[2]
 
 p1 <- ggplot(chldat, aes(x = tn_load_3mo, y = chla)) +
-  geom_point(size = 0.5) +
+  geom_point(size = 2, aes(color = qrt), alpha = 0.8) +
   geom_smooth(method = 'lm', se = T, formula = y ~ x, color = 'black') +
   geom_segment(
     x = tn_load_3mo_9.3, xend = tn_load_3mo_9.3, y = 0, yend = 9.3,
@@ -53,12 +54,14 @@ p1 <- ggplot(chldat, aes(x = tn_load_3mo, y = chla)) +
   ) +
   theme_minimal() +
   theme(
-    panel.grid.minor = element_blank()
+    panel.grid.minor = element_blank(), 
+    legend.position = 'bottom'
   ) + 
   labs(
     x = 'TN load (3 month rolling sum)',
     y = 'Monthly chlorophyll-a (ug/L)', 
     title = 'OTB data, 2000 to 2021',
+    color = 'Season',
     subtitle = paste0('9.3 ug/L chl estimated at ', round(tn_load_3mo_9.3, 1), ' tons TN, ', round(4 * tn_load_3mo_9.3, 1), ' tons TN annual\n8.5 ug/L chl estimated at ', round(tn_load_3mo_8.5, 1), ' tons TN, ', round(4 * tn_load_3mo_8.5, 1), ' tons TN annual'),
     caption = 'Source: EPCHC, Janicki Env.'
   )
@@ -125,6 +128,6 @@ p2 <- ggplot(toplo, aes(x = chla, y = tn_load)) +
 
 p <- p1 + p2 +  plot_layout(ncol = 2)
 
-png(here::here('figs/simple_regression.png'), height = 5, width = 10, units = 'in', res = 300)
+png(here::here('figs/simple_regression.png'), height = 5.5, width = 10, units = 'in', res = 300)
 print(p)
 dev.off()
