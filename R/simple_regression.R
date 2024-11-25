@@ -20,8 +20,8 @@ chldat <- anlz_avedat(epcdata)$mos |>
   inner_join(lddat, by = 'date') |> 
   mutate(
     tn_load_3mo = tn_load + lag(tn_load) + lag(tn_load, 2)
-  )# |> 
-  # filter(date >= as.Date('2000-01-01'))
+  ) |> 
+  filter(date >= as.Date('2000-01-01'))
   
 
 mod <- lm(chla ~ tn_load_3mo, data = chldat)
