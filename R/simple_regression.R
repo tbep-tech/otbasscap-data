@@ -30,7 +30,7 @@ tn_load_3mo_9.3 <- (9.3 - mod$coefficients[1]) / mod$coefficients[2]
 # TN at 8.5 chla
 tn_load_3mo_8.5 <- (8.5 - mod$coefficients[1]) / mod$coefficients[2]
 
-ggplot(chldat, aes(x = tn_load_3mo, y = chla)) +
+p <- ggplot(chldat, aes(x = tn_load_3mo, y = chla)) +
   geom_point(size = 0.5) +
   geom_smooth(method = 'lm', se = T, formula = y ~ x, color = 'black') +
   geom_segment(
@@ -61,3 +61,6 @@ ggplot(chldat, aes(x = tn_load_3mo, y = chla)) +
     caption = 'Source: EPCHC, Janicki Env.'
   )
 
+png(here::here('figs/simpl_regression.png'), height = 5, width = 5, units = 'in', res = 300)
+print(p)
+dev.off()
