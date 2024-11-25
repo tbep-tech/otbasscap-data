@@ -20,7 +20,7 @@ chldat <- anlz_avedat(epcdata)$mos |>
   inner_join(lddat, by = 'date') |> 
   mutate(
     tn_load_3mo = tn_load + lag(tn_load) + lag(tn_load, 2),
-    qrt = factor(lubridate::quarter(date, with_year = F), levels = 1:4, labels = c('JFM', 'AMJ', 'JJA', 'OND'))
+    qrt = factor(lubridate::quarter(date, with_year = F), levels = 1:4, labels = c('JFM', 'AMJ', 'JAS', 'OND'))
   ) |> 
   filter(date >= as.Date('2000-01-01'))
   
