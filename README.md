@@ -8,6 +8,8 @@
 
 * GLM of monthly chlorophyll attainment for sug-segments [link](https://tbep-tech.github.io/otbasscap-data/chlmoattain.html)
 
+* Explanation of monthly load data assignment to OTB subsegments [link](https://tbep-tech.github.io/otbasscap-data/otb_subbasin_loads.html)
+
 ----------------------
 
 ## ./data/winwq.RData

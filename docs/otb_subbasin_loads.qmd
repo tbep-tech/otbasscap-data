@@ -1,0 +1,191 @@
+---
+title: "Assigning OTB loadings to sub-segments"
+format: 
+  html:
+    code-fold: false
+editor: source
+lightbox: true
+
+execute: 
+  warning: false
+  message: false
+  echo: true
+---
+
+This document provides a brief explanation of load assignments to sub-segments of Old Tampa Bay based on likely sub-basins.  It address the problem of total loads assigned to Old Tampa Bay as a whole.  An interim dataset provided by Janicki Env. that assigns monthly loading to gaged and ungaged portions of Old Tampa Bay is used for the assignments. 
+
+First, the required libraries and loading dataset are loaded.
+
+```{r}
+library(haven)
+library(dplyr)
+library(sf)
+library(tibble)
+library(tidyr)
+library(leaflet)
+library(mapedit)
+
+# OTB sub-segments
+load(file = here::here('data/otbsub.RData'))
+
+# basin loading data
+# original here T:/03_BOARDS_COMMITTEES/05_TBNMC/TB_LOADS/2022_RA_Deliverables/2017-2021Annual&MonthlyLoadDatasets/NPS1721/Monthly
+dat <- read_sas(here::here('data-raw/allnuts1721monthbasin20221027.sas7bdat')) |> 
+  filter(BAY_SEG == 1)
+head(dat)
+```
+
+The `basin` column describes the gaged and ungaged basins for each loading estimate.  The basin `206-1` is ungaged.
+
+```{r}
+unique(dat$basin)
+```
+
+We can view a map of these basins using the `dbasin` shapefile.
+
+```{r}
+#| out-width: '100%'
+# dbasins shapefile
+# original here T:/05_GIS/BOUNDARIES
+shp <- st_read(here::here('data-raw/TBEP_dBasins_Correct_Projection.shp'), quiet = T) |>
+  filter(BAYSEGNAME == 'Old Tampa Bay') |>
+  st_transform(crs = 4326)
+
+tomap <- shp |> 
+  group_by(NEWGAGE) |> 
+  summarise()
+
+pal <- colorFactor(
+  palette = 'viridis', 
+  domain = tomap$NEWGAGE
+)
+
+leaflet() |> 
+  addProviderTiles('CartoDB.Positron') |>
+  addPolygons(data = tomap, weight =  0.5, fillColor = ~pal(NEWGAGE), fillOpacity = 0.9) |>
+  addPolygons(data = otbsub, label = ~paste(subseg)) |> 
+  addLegend(
+    pal = pal,
+    values = tomap$NEWGAGE,
+    opacity = 0.9,
+    title = "Basin",
+    position = "bottomright"
+  )
+```
+
+Loadings from the gaged portions (02307000, 02306647, 02307359, LTARPON) can be assigned to sub-segments based on drainage location (02307359, LTARPON drain to the NW subsegment; 02307000, 02306647 drain to the NE subsegment). The loadings for the ungaged portion (206-1) can be proportionately assigned based on the approximate area that likely drains to each sub-segment. The sub-basins in the `dbasin` area are interactively assigned to each sub-segment based on location in 206-1.
+
+```{r}
+#| eval: false
+# this is all done interactively, saved file is loaded below
+
+# gaged portion with sub-segment assignment
+gagebas <- shp |> 
+ mutate(
+   subsegment = case_when(
+     NEWGAGE %in% 'LTARPON' ~ 'NW', 
+     NEWGAGE %in% '02307359' ~ 'NW', 
+     NEWGAGE %in% c('02307000', '02306647') ~ 'NE', 
+     T ~ NA_character_   
+   )
+ ) |> 
+ filter(!is.na(subsegment))
+
+# create leaflet polygon map with ungage
+m <- leaflet() |> 
+ addProviderTiles('CartoDB.Positron') |> 
+ addPolygons(data = shp[shp$NEWGAGE == '206-1', ], weight =  0.5) |> 
+ addPolygons(data = otbsub) |> 
+ addDrawToolbar(
+   targetGroup = 'draw',
+   editOptions = editToolbarOptions()
+ )
+
+# use interactive selection
+NW <- selectFeatures(ungage, map = m)
+NE <- selectFeatures(ungage, map = m)
+CW <- selectFeatures(ungage, map = m)
+CE <- selectFeatures(ungage, map = m)
+SW <- selectFeatures(ungage, map = m)
+SE <- selectFeatures(ungage, map = m)
+
+ungagebas <- list(
+ NW = NW,  
+ NE = NE,
+ CW = CW,
+ CE = CE,
+ SW = SW,
+ SE = SE
+ ) |> 
+ enframe(name = 'subsegment', value = 'data') |> 
+ unnest('data') |> 
+ st_sf()
+
+allsubbas <- bind_rows(ungagebas, gagebas) 
+
+save(allsubbas, file = here::here('data/allsubbas.RData'))
+```
+
+The previously created file is loaded. This is how the assignment looks. The original gaged and ungaged areas are outlined in red.
+
+```{r}
+#| out-width: '100%'
+load(file = here::here('data/allsubbas.RData'))
+
+pal <- colorFactor(
+  palette = 'viridis', 
+  domain = allsubbas$subsegment
+)
+
+leaflet() |> 
+  addProviderTiles('CartoDB.Positron') |>
+  addPolygons(data = allsubbas, weight =  0.5, fillOpacity = 0.9, fillColor = ~pal(subsegment)) |>
+  addPolygons(data = otbsub, label = ~paste(subseg)) |> 
+  addPolygons(data = tomap, weight =  2, fillOpacity = 0, color = 'red') |>
+  addLegend(
+    pal = pal,
+    values = allsubbas$subsegment,
+    opacity = 0.9,
+    title = "Sub-segment",
+    position = "bottomright"
+  )
+```
+
+Next, a data object that shows how to proportionally assign the loads to each subsegment based on the gaged and ungaged portions is created.  The gaged portions are given a 1, meaning their loadings are used as is, and the ungaged portion is given a proportion based on the area attributed to each subsegment.
+
+```{r}
+# get tn load proportion multipliers based on basin area attributed to ungaged portions
+props <- allsubbas |> 
+  group_by(NEWGAGE, subsegment) |> 
+  summarise() |> 
+  ungroup()
+props$acres <- as.numeric(st_area(props) / 4047)
+props <- props |> 
+  mutate(
+    prop = case_when(
+      NEWGAGE != '206-1' ~ 1,
+      TRUE ~ acres / sum(acres[NEWGAGE == '206-1'])
+    )
+  ) |> 
+  st_set_geometry(NULL)
+props
+```
+
+The `props` object is joined to the original loading data using the gaged/ungaged column in each.  The load is proportioned for each year/month/location by multiplying the original by the `prop` column in `props`. 
+
+```{r}
+datprop <- dat |>
+  select(basin, source, year, month, tnload) |>
+  left_join(props, by = c('basin' = 'NEWGAGE'), relationship = 'many-to-many') |>
+  mutate(tnload = tnload * prop)
+datprop
+```
+
+The total loading is the same between the original dataset and the proportionally assigned dataset. 
+
+```{r}
+sum(datprop$tnload)
+sum(dat$tnload)
+```
+
+This example uses data only for the 2017 to 2021 RA period.  For use with CASM, the monthly data must be interpolated to a daily time step and previous years must be added.
