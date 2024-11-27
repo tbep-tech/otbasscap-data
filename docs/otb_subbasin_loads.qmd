@@ -177,9 +177,12 @@ The `props` object is joined to the original loading data using the gaged/ungage
 
 ```{r}
 datprop <- dat |>
-  select(basin, source, year, month, tnload) |>
+  select(basin, source, year, month, tnload, tpload) |>
   left_join(props, by = c('basin' = 'NEWGAGE'), relationship = 'many-to-many') |>
-  mutate(tnload = tnload * prop)
+  mutate(
+    tnload = tnload * prop, 
+    tpload = tpload * prop
+  )
 datprop
 ```
 
@@ -188,6 +191,8 @@ The total loading is the same between the original dataset and the proportionall
 ```{r}
 sum(datprop$tnload)
 sum(dat$tnload)
+sum(datprop$tpload)
+sum(dat$tpload)
 ```
 
 This example uses data only for the 2017 to 2021 RA period.  For use with CASM, the monthly data must be interpolated to a daily time step and previous years must be added.
