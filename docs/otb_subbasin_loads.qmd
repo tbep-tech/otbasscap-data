@@ -3,6 +3,8 @@ title: "Assigning OTB loadings to sub-segments"
 format: 
   html:
     code-fold: false
+    code-tools:
+      source: https://github.com/tbep-tech/otbasscap-data/blob/main/docs/otb_subbasin_loads.qmd
 editor: source
 lightbox: true
 
