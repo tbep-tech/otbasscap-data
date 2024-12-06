@@ -1,0 +1,88 @@
+---
+title: "Load projections"
+format: 
+  html:
+    code-fold: true
+editor: source
+lightbox: true
+
+execute: 
+  warning: false
+  message: false
+  echo: true
+---
+
+```{r}
+library(tidyverse)
+
+load(file = here::here("data-raw/totanndat.RData"))
+
+load(file = here::here('data/tnanndat.RData'))
+
+hydat <- totanndat |> 
+  filter(bay_segment == 'Old Tampa Bay') |> 
+  filter(year >= 2000 & year <= 2021) 
+
+lddat <- tnanndat |> 
+  filter(bay_segment == 'Old Tampa Bay') |>
+  filter(source == 'NPS') |> 
+  filter(year >= 2000 & year <= 2021)
+```
+
+This document shows a projection of hydrologic load and non-point source load increase to 2040 based on annual loading estimates from 2000 to 2021. 
+
+```{r}
+# regression model of tn_load and hy_load by year
+tnmod <- lm(tn_load ~ year, data = lddat)
+hymod <- lm(hy_load ~ year, data = hydat)
+
+# get predictions for years 1985:2040
+preds <- data.frame(year = 2000:2040)
+preds <- preds |> 
+  mutate(
+    nps_load = predict(tnmod, preds),
+    hy_load = predict(hymod, preds)
+  ) |> 
+  pivot_longer(cols = c(nps_load, hy_load), names_to = 'var', values_to = 'load')
+
+# combine lddat, hydat, and preds in a single data frame
+# make loading data and preds two columns and a single column showing whether its hy or tn
+lddat <- lddat |> 
+  mutate(load = tn_load) |> 
+  select(year, load) |> 
+  mutate(var = 'nps_load')
+hydat <- hydat |> 
+  mutate(load = hy_load) |> 
+  select(year, load) |> 
+  mutate(var = 'hy_load')
+dat <- bind_rows(lddat, hydat)
+
+# plot tn_load and hy_load as line plot by year
+# add regression predictions
+p <- ggplot(dat, aes(x = year, y = load, color = var)) +
+  geom_line() +
+  geom_line(data = preds) +
+  labs(title = 'Total Nitrogen and Hydrology Loads to Old Tampa Bay',
+       x = 'Year',
+       y = 'Load (tons)',
+       color = 'Load type') +
+  theme_minimal()
+p
+```
+
+```{r}
+# estimate means from 2000 to 2021 and 2022 to 2040
+means <- preds |> 
+  group_by(var) |> 
+  summarise(
+    mean_load_2000_2021 = mean(load[year >= 2000 & year <= 2021]),
+    mean_load_2022_2040 = mean(load[year >= 2022 & year <= 2040])
+  )
+
+# take percent increase from 2000 to 2021 to 2022 to 2040
+means |> 
+  mutate(
+    percent_increase = (mean_load_2022_2040 - mean_load_2000_2021) / mean_load_2000_2021 * 100
+  )
+```
+

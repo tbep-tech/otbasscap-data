@@ -10,6 +10,8 @@
 
 * Explanation of monthly load data assignment to OTB subsegments [link](https://tbep-tech.github.io/otbasscap-data/otb_subbasin_loads.html)
 
+* Load increase projection [link](https://tbep-tech.github.io/otbasscap-data/load_increase.html)
+
 ----------------------
 
 ## ./data/winwq.RData
