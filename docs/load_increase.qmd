@@ -80,9 +80,138 @@ means <- preds |>
   )
 
 # take percent increase from 2000 to 2021 to 2022 to 2040
-means |> 
+means <- means |> 
   mutate(
     percent_increase = (mean_load_2022_2040 - mean_load_2000_2021) / mean_load_2000_2021 * 100
   )
+means
 ```
 
+NPS is only a portion of the total TN load in a given year. The percentages each year are:
+
+```{r}
+npsper <- tnanndat |> 
+  filter(bay_segment == 'Old Tampa Bay') |> 
+  filter(year >= 2000 & year <= 2021) |> 
+  pivot_wider(names_from = source, values_from = tn_load) |> 
+  mutate(
+    nps_percent = NPS / (AD + DPS + GWS + IPS + NPS) * 100, 
+    tn_increase = NULL
+  ) |> 
+  select(year, nps_percent)
+npsper
+```
+
+The CASM input file is imported.
+
+```{r}
+casmdat <- read.fwf(
+  here::here('data-raw/OTB-DailyLoads2000-2021.dat'),
+  widths = c(5, 4, 4, 5, 5, 12, 12, 12),
+  header = F,
+  skip = 1,
+  stringsAsFactors = FALSE,
+  col.names = c("Year", "Yr", "Mo", "Day", "DOY", "TN tons/d", "TP tons/d", "TSS tons/d")
+)
+
+head(casmdat)
+```
+
+The NPS percent each year is joined to the CASM file and the proportion of the total TN load that is NPS is extracted and increased by the estimated percent increase from above. 
+
+```{r}
+npsinc <- means |> 
+  filter(var == 'nps_load') |> 
+  pull(percent_increase)
+casmdat <- casmdat |> 
+  left_join(npsper, by = c('Year' = 'year')) |> 
+  mutate(
+    nps_tn = TN.tons.d * nps_percent / 100,
+    tn_increase = TN.tons.d * nps_percent / 100 * npsinc / 100, 
+    TN.tons.d.inc = TN.tons.d + tn_increase
+  )
+head(casmdat)
+```
+
+For comparison, the original TN tons/d can be plotted relative to the increase.
+
+```{r}
+toplo <- casmdat |> 
+  mutate(
+    date = as.Date(paste(Year, Mo, Day, sep = '-'))
+  ) |> 
+  select(date, TN.tons.d, TN.tons.d.inc) |> 
+  pivot_longer(cols = c(TN.tons.d, TN.tons.d.inc), names_to = 'var', values_to = 'load')
+
+p <- ggplot(toplo, aes(x = date, y = load, color = var)) +
+  geom_line() +
+  theme_minimal() + 
+  labs(title = 'TN Load to Old Tampa Bay CASM original and increase',
+       x = 'Date',
+       y = 'Load (tons/day)',
+       color = 'Load type')
+p
+```
+
+Verify the percent increase is correct.
+
+```{r}
+casmdat |> 
+  mutate(
+    npsinc = tn_increase / (TN.tons.d * (nps_percent / 100))
+  ) |> 
+  select(Year, npsinc) |> 
+  pull(npsinc) |> 
+  unique()
+```
+
+View the total annual TN from before and with the increase.
+
+```{r}
+toplo <- casmdat |> 
+  summarise(
+    TN_tons_d = sum(TN.tons.d),
+    TN_tons_d_inc = sum(TN.tons.d.inc), 
+    .by = Year
+  ) |> 
+  pivot_longer(cols = c(TN_tons_d, TN_tons_d_inc), names_to = 'var', values_to = 'load')
+
+p <- ggplot(toplo, aes(x = Year, y = load, color = var)) +
+  geom_line() +
+  theme_minimal() + 
+  labs(title = 'Total TN Load to Old Tampa Bay CASM original and increase',
+       x = 'Year',
+       y = 'Load (tons/day)',
+       color = 'Load type')
+p
+```
+
+Write the updated CASM file to disk using the same column widths as the input file. 
+
+```{r}
+write_fixed_width <- function(df, file) {
+  
+  # Open file connection
+  con <- file(file, "w")
+  
+  # Write header with exact spacing
+  writeLines("Year  Yr  Mo  Day  DOY   TN tons/d   TP tons/d   TSS tons/d", con)
+  
+  # Write data rows
+  for(i in 1:nrow(df)) {
+    # Format each column with precise spacing and scientific notation
+    line <- sprintf("%5d %3d %3d %4d %4d  %10.4E  %10.4E  %10.4E",
+                    df$Year[i], df$Yr[i], df$Mo[i], df$Day[i], df$DOY[i],
+                    df$`TN tons/d`[i], df$`TP tons/d`[i], df$`TSS tons/d`[i])
+    writeLines(line, con)
+  }
+  
+  # Close file connection
+  close(con)
+  
+}
+
+casmdat <- casmdat |> 
+  select(Year, Yr, Mo, Day, DOY, `TN tons/d` = TN.tons.d.inc, `TP tons/d` = TP.tons.d, `TSS tons/d` = TSS.tons.d)
+write_fixed_width(casmdat, here::here('data-raw/OTB-DailyLoads2000-2021-inc.dat'))
+```
