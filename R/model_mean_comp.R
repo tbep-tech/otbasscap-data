@@ -22,7 +22,7 @@ toplo <- dat |>
 p1 <- ggplot(toplo, aes(x = group, y = mean, ymin = lower, ymax = upper, fill = group)) +
   geom_col() +
   geom_errorbar(width = 0.2) +
-  scale_fill_manual(values = c('#E86D2C', '#156082')) + 
+  scale_fill_manual(values = c('#156082', '#E86D2C')) + 
   theme_minimal() + 
   theme(
     panel.grid.minor = element_blank(), 
