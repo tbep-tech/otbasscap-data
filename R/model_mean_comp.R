@@ -19,13 +19,16 @@ toplo <- dat |>
     .by = group
   )
 
-p1 <- ggplot(toplo, aes(x = group, y = mean, ymin = lower, ymax = upper)) +
+p1 <- ggplot(toplo, aes(x = group, y = mean, ymin = lower, ymax = upper, fill = group)) +
   geom_col() +
   geom_errorbar(width = 0.2) +
+  scale_fill_manual(values = c('#E86D2C', '#156082')) + 
   theme_minimal() + 
   theme(
     panel.grid.minor = element_blank(), 
-    axis.text.x = element_text(size = 12)) +
+    axis.text.x = element_text(size = 12),
+    legend.position = 'none'
+  ) +
   labs(
     x = NULL,
     y = "ug/L +/- 95% CI", 
