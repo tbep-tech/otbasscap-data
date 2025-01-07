@@ -87,17 +87,17 @@ p
 ```
 
 ```{r}
-# estimate means from 2000 to 2021 and 2022 to 2040
+# estimate means from 2000 to 2021 and 2040
 means <- preds |> 
   summarise(
     mean_load_2000_2021 = mean(tn_load[year >= 2000 & year <= 2021]),
-    mean_load_2022_2040 = mean(tn_load[year >= 2022 & year <= 2040])
+    mean_load_2040 = mean(tn_load[year == 2040])
   )
 
-# take percent change from 2000 to 2021 to 2022 to 2040
+# take percent change from 2000 to 2021 to 2040
 means <- means |> 
   mutate(
-    percent_change = (mean_load_2022_2040 - mean_load_2000_2021) / mean_load_2000_2021 * 100
+    percent_change = (mean_load_2040 - mean_load_2000_2021) / mean_load_2000_2021 * 100
   )
 means
 ```
@@ -215,17 +215,17 @@ p
 ```
 
 ```{r}
-# estimate means from 2000 to 2021 and 2022 to 2040
+# estimate means from 2000 to 2021 and 2040
 means <- preds |> 
   summarise(
     mean_load_2000_2021 = mean(tp_load[year >= 2000 & year <= 2021]),
-    mean_load_2022_2040 = mean(tp_load[year >= 2022 & year <= 2040])
+    mean_load_2040 = mean(tp_load[year == 2040])
   )
 
-# take percent change from 2000 to 2021 to 2022 to 2040
+# take percent change from 2000 to 2021 to 2040
 means <- means |> 
   mutate(
-    percent_change = (mean_load_2022_2040 - mean_load_2000_2021) / mean_load_2000_2021 * 100
+    percent_change = (mean_load_2040 - mean_load_2000_2021) / mean_load_2000_2021 * 100
   )
 means
 ```
@@ -326,17 +326,17 @@ p
 ```
 
 ```{r}
-# estimate means from 2000 to 2021 and 2022 to 2040
+# estimate means from 2000 to 2021 and 2040
 means <- preds |> 
   summarise(
     mean_load_2000_2021 = mean(tss_load[year >= 2000 & year <= 2021]),
-    mean_load_2022_2040 = mean(tss_load[year >= 2022 & year <= 2040])
+    mean_load_2040 = mean(tss_load[year == 2040])
   )
 
-# take percent change from 2000 to 2021 to 2022 to 2040
+# take percent change from 2000 to 2021 to 2040
 means <- means |> 
   mutate(
-    percent_change = (mean_load_2022_2040 - mean_load_2000_2021) / mean_load_2000_2021 * 100
+    percent_change = (mean_load_2040 - mean_load_2000_2021) / mean_load_2000_2021 * 100
   )
 means
 ```
@@ -465,17 +465,17 @@ p
 ```
 
 ```{r}
-# estimate means from 2000 to 2021 and 2022 to 2040
+# estimate means from 2000 to 2021 and 2040
 means <- preds |> 
   summarise(
     mean_load_2000_2021 = mean(hy_load[year >= 2000 & year <= 2021]),
-    mean_load_2022_2040 = mean(hy_load[year >= 2022 & year <= 2040])
+    mean_load_2040 = mean(hy_load[year == 2040])
   )
 
-# take percent change from 2000 to 2021 to 2022 to 2040
+# take percent change from 2000 to 2021 to 2040
 means <- means |> 
   mutate(
-    percent_change = (mean_load_2022_2040 - mean_load_2000_2021) / mean_load_2000_2021 * 100
+    percent_change = (mean_load_2040 - mean_load_2000_2021) / mean_load_2000_2021 * 100
   )
 means
 ```
@@ -506,7 +506,7 @@ hydlydat <- hydlydat |>
 head(hydlydat)
 ```
 
-For comparison, the original linearly interpolatd hydrology load can be plotted relative to the change.
+For comparison, the original linearly interpolated hydrology load can be plotted relative to the change.
 
 ```{r}
 toplo <- hydlydat |> 

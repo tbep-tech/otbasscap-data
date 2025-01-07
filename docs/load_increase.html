@@ -198,23 +198,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate means from 2000 to 2021 and 2022 to 2040</span></span>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate means from 2000 to 2021 and 2040</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>means <span class="ot">&lt;-</span> preds <span class="sc">|&gt;</span> </span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_load_2000_2021 =</span> <span class="fu">mean</span>(tn_load[year <span class="sc">&gt;=</span> <span class="dv">2000</span> <span class="sc">&amp;</span> year <span class="sc">&lt;=</span> <span class="dv">2021</span>]),</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_load_2022_2040 =</span> <span class="fu">mean</span>(tn_load[year <span class="sc">&gt;=</span> <span class="dv">2022</span> <span class="sc">&amp;</span> year <span class="sc">&lt;=</span> <span class="dv">2040</span>])</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_load_2040 =</span> <span class="fu">mean</span>(tn_load[year <span class="sc">==</span> <span class="dv">2040</span>])</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># take percent change from 2000 to 2021 to 2022 to 2040</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># take percent change from 2000 to 2021 to 2040</span></span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>means <span class="ot">&lt;-</span> means <span class="sc">|&gt;</span> </span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">percent_change =</span> (mean_load_2022_2040 <span class="sc">-</span> mean_load_2000_2021) <span class="sc">/</span> mean_load_2000_2021 <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">percent_change =</span> (mean_load_2040 <span class="sc">-</span> mean_load_2000_2021) <span class="sc">/</span> mean_load_2000_2021 <span class="sc">*</span> <span class="dv">100</span></span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>means</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>  mean_load_2000_2021 mean_load_2022_2040 percent_change
-1            330.2616            378.5665       14.62625</code></pre>
+<pre><code>  mean_load_2000_2021 mean_load_2040 percent_change
+1            330.2616       399.7735       21.04753</code></pre>
 </div>
 </div>
 <p>NPS is only a portion of the TN load in a given year. The percentages each year are:</p>
@@ -273,12 +273,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 5 2000  1  1   5   5     0.519    0.2894      3.975    41.30117 0.2143531
 6 2000  1  1   6   6     0.519    0.2894      3.975    41.30117 0.2143531
    tn_change TN.tons.d.chg
-1 0.03135181     0.5503518
-2 0.03135181     0.5503518
-3 0.03135181     0.5503518
-4 0.03135181     0.5503518
-5 0.03135181     0.5503518
-6 0.03135181     0.5503518</code></pre>
+1 0.04511602      0.564116
+2 0.04511602      0.564116
+3 0.04511602      0.564116
+4 0.04511602      0.564116
+5 0.04511602      0.564116
+6 0.04511602      0.564116</code></pre>
 </div>
 </div>
 <p>For comparison, the original TN tons/d can be plotted relative to the change.</p>
@@ -323,7 +323,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.1462625</code></pre>
+<pre><code>[1] 0.2104753</code></pre>
 </div>
 </div>
 <p>View the total annual TN from before and with the change.</p>
@@ -395,23 +395,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate means from 2000 to 2021 and 2022 to 2040</span></span>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate means from 2000 to 2021 and 2040</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>means <span class="ot">&lt;-</span> preds <span class="sc">|&gt;</span> </span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_load_2000_2021 =</span> <span class="fu">mean</span>(tp_load[year <span class="sc">&gt;=</span> <span class="dv">2000</span> <span class="sc">&amp;</span> year <span class="sc">&lt;=</span> <span class="dv">2021</span>]),</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_load_2022_2040 =</span> <span class="fu">mean</span>(tp_load[year <span class="sc">&gt;=</span> <span class="dv">2022</span> <span class="sc">&amp;</span> year <span class="sc">&lt;=</span> <span class="dv">2040</span>])</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_load_2040 =</span> <span class="fu">mean</span>(tp_load[year <span class="sc">==</span> <span class="dv">2040</span>])</span>
 <span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="co"># take percent change from 2000 to 2021 to 2022 to 2040</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="co"># take percent change from 2000 to 2021 to 2040</span></span>
 <span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>means <span class="ot">&lt;-</span> means <span class="sc">|&gt;</span> </span>
 <span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">percent_change =</span> (mean_load_2022_2040 <span class="sc">-</span> mean_load_2000_2021) <span class="sc">/</span> mean_load_2000_2021 <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">percent_change =</span> (mean_load_2040 <span class="sc">-</span> mean_load_2000_2021) <span class="sc">/</span> mean_load_2000_2021 <span class="sc">*</span> <span class="dv">100</span></span>
 <span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>means</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>  mean_load_2000_2021 mean_load_2022_2040 percent_change
-1            106.7255            51.95186      -51.32197</code></pre>
+<pre><code>  mean_load_2000_2021 mean_load_2040 percent_change
+1            106.7255       27.90491      -73.85357</code></pre>
 </div>
 </div>
 <p>The TP load is changed by the estimated percent change from above.</p>
@@ -429,12 +429,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>  Year Yr Mo Day DOY TN.tons.d TP.tons.d TSS.tons.d TN.tons.d.chg TP.tons.d.chg
-1 2000  1  1   1   1     0.519    0.2894      3.975     0.5503518     0.1408742
-2 2000  1  1   2   2     0.519    0.2894      3.975     0.5503518     0.1408742
-3 2000  1  1   3   3     0.519    0.2894      3.975     0.5503518     0.1408742
-4 2000  1  1   4   4     0.519    0.2894      3.975     0.5503518     0.1408742
-5 2000  1  1   5   5     0.519    0.2894      3.975     0.5503518     0.1408742
-6 2000  1  1   6   6     0.519    0.2894      3.975     0.5503518     0.1408742</code></pre>
+1 2000  1  1   1   1     0.519    0.2894      3.975      0.564116    0.07566777
+2 2000  1  1   2   2     0.519    0.2894      3.975      0.564116    0.07566777
+3 2000  1  1   3   3     0.519    0.2894      3.975      0.564116    0.07566777
+4 2000  1  1   4   4     0.519    0.2894      3.975      0.564116    0.07566777
+5 2000  1  1   5   5     0.519    0.2894      3.975      0.564116    0.07566777
+6 2000  1  1   6   6     0.519    0.2894      3.975      0.564116    0.07566777</code></pre>
 </div>
 </div>
 <p>For comparison, the original TP tons/d can be plotted relative to the change.</p>
@@ -479,7 +479,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] -0.5132197</code></pre>
+<pre><code>[1] -0.7385357</code></pre>
 </div>
 </div>
 <p>View the total annual TP from before and with the change.</p>
@@ -551,23 +551,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate means from 2000 to 2021 and 2022 to 2040</span></span>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate means from 2000 to 2021 and 2040</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>means <span class="ot">&lt;-</span> preds <span class="sc">|&gt;</span> </span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
 <span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_load_2000_2021 =</span> <span class="fu">mean</span>(tss_load[year <span class="sc">&gt;=</span> <span class="dv">2000</span> <span class="sc">&amp;</span> year <span class="sc">&lt;=</span> <span class="dv">2021</span>]),</span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_load_2022_2040 =</span> <span class="fu">mean</span>(tss_load[year <span class="sc">&gt;=</span> <span class="dv">2022</span> <span class="sc">&amp;</span> year <span class="sc">&lt;=</span> <span class="dv">2040</span>])</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_load_2040 =</span> <span class="fu">mean</span>(tss_load[year <span class="sc">==</span> <span class="dv">2040</span>])</span>
 <span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="co"># take percent change from 2000 to 2021 to 2022 to 2040</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="co"># take percent change from 2000 to 2021 to 2040</span></span>
 <span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>means <span class="ot">&lt;-</span> means <span class="sc">|&gt;</span> </span>
 <span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">percent_change =</span> (mean_load_2022_2040 <span class="sc">-</span> mean_load_2000_2021) <span class="sc">/</span> mean_load_2000_2021 <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">percent_change =</span> (mean_load_2040 <span class="sc">-</span> mean_load_2000_2021) <span class="sc">/</span> mean_load_2000_2021 <span class="sc">*</span> <span class="dv">100</span></span>
 <span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>means</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>  mean_load_2000_2021 mean_load_2022_2040 percent_change
-1             9972.58            13335.24       33.71911</code></pre>
+<pre><code>  mean_load_2000_2021 mean_load_2040 percent_change
+1             9972.58       14811.54       48.52262</code></pre>
 </div>
 </div>
 <p>The TSS load is changed by the estimated percent change from above.</p>
@@ -584,19 +584,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>  Year Yr Mo Day DOY TN.tons.d TP.tons.d TSS.tons.d TN.tons.d.chg TP.tons.d.chg
-1 2000  1  1   1   1     0.519    0.2894      3.975     0.5503518     0.1408742
-2 2000  1  1   2   2     0.519    0.2894      3.975     0.5503518     0.1408742
-3 2000  1  1   3   3     0.519    0.2894      3.975     0.5503518     0.1408742
-4 2000  1  1   4   4     0.519    0.2894      3.975     0.5503518     0.1408742
-5 2000  1  1   5   5     0.519    0.2894      3.975     0.5503518     0.1408742
-6 2000  1  1   6   6     0.519    0.2894      3.975     0.5503518     0.1408742
+1 2000  1  1   1   1     0.519    0.2894      3.975      0.564116    0.07566777
+2 2000  1  1   2   2     0.519    0.2894      3.975      0.564116    0.07566777
+3 2000  1  1   3   3     0.519    0.2894      3.975      0.564116    0.07566777
+4 2000  1  1   4   4     0.519    0.2894      3.975      0.564116    0.07566777
+5 2000  1  1   5   5     0.519    0.2894      3.975      0.564116    0.07566777
+6 2000  1  1   6   6     0.519    0.2894      3.975      0.564116    0.07566777
   TSS.tons.d.chg
-1       5.315334
-2       5.315334
-3       5.315334
-4       5.315334
-5       5.315334
-6       5.315334</code></pre>
+1       5.903774
+2       5.903774
+3       5.903774
+4       5.903774
+5       5.903774
+6       5.903774</code></pre>
 </div>
 </div>
 <p>For comparison, the original TSS tons/d can be plotted relative to the change.</p>
@@ -641,7 +641,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.3371911</code></pre>
+<pre><code>[1] 0.4852262</code></pre>
 </div>
 </div>
 <p>View the total annual TSS from before and with the change.</p>
@@ -745,23 +745,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate means from 2000 to 2021 and 2022 to 2040</span></span>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate means from 2000 to 2021 and 2040</span></span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>means <span class="ot">&lt;-</span> preds <span class="sc">|&gt;</span> </span>
 <span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
 <span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_load_2000_2021 =</span> <span class="fu">mean</span>(hy_load[year <span class="sc">&gt;=</span> <span class="dv">2000</span> <span class="sc">&amp;</span> year <span class="sc">&lt;=</span> <span class="dv">2021</span>]),</span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_load_2022_2040 =</span> <span class="fu">mean</span>(hy_load[year <span class="sc">&gt;=</span> <span class="dv">2022</span> <span class="sc">&amp;</span> year <span class="sc">&lt;=</span> <span class="dv">2040</span>])</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_load_2040 =</span> <span class="fu">mean</span>(hy_load[year <span class="sc">==</span> <span class="dv">2040</span>])</span>
 <span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a><span class="co"># take percent change from 2000 to 2021 to 2022 to 2040</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a><span class="co"># take percent change from 2000 to 2021 to 2040</span></span>
 <span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>means <span class="ot">&lt;-</span> means <span class="sc">|&gt;</span> </span>
 <span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">percent_change =</span> (mean_load_2022_2040 <span class="sc">-</span> mean_load_2000_2021) <span class="sc">/</span> mean_load_2000_2021 <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">percent_change =</span> (mean_load_2040 <span class="sc">-</span> mean_load_2000_2021) <span class="sc">/</span> mean_load_2000_2021 <span class="sc">*</span> <span class="dv">100</span></span>
 <span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>means</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>  mean_load_2000_2021 mean_load_2022_2040 percent_change
-1            651.2472            758.4472       16.46072</code></pre>
+<pre><code>  mean_load_2000_2021 mean_load_2040 percent_change
+1            651.2472       805.5106       23.68737</code></pre>
 </div>
 </div>
 <p>Because hydrology is not in the CASM file, we create a daily time series using linear interpolation of the monthly data. This is done to apply the estimated percent change from above.</p>
@@ -794,15 +794,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code># A tibble: 6 × 3
   date       hy_load hy_load_chg
   &lt;date&gt;       &lt;dbl&gt;       &lt;dbl&gt;
-1 2000-01-01   0.673       0.784
-2 2000-01-02   0.665       0.774
-3 2000-01-03   0.656       0.764
-4 2000-01-04   0.648       0.755
-5 2000-01-05   0.639       0.745
-6 2000-01-06   0.631       0.735</code></pre>
+1 2000-01-01   0.673       0.833
+2 2000-01-02   0.665       0.822
+3 2000-01-03   0.656       0.812
+4 2000-01-04   0.648       0.801
+5 2000-01-05   0.639       0.791
+6 2000-01-06   0.631       0.780</code></pre>
 </div>
 </div>
-<p>For comparison, the original linearly interpolatd hydrology load can be plotted relative to the change.</p>
+<p>For comparison, the original linearly interpolated hydrology load can be plotted relative to the change.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -840,7 +840,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.1646072</code></pre>
+<pre><code>[1] 0.2368737</code></pre>
 </div>
 </div>
 <p>View the total annual hydrology load from before and with the change.</p>
@@ -1286,7 +1286,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","loop":false,"closeEffect":"zoom","descPosition":"bottom","openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","selector":".lightbox","closeEffect":"zoom","loop":false,"descPosition":"bottom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;
