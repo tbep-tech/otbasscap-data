@@ -61,6 +61,7 @@ casm <- list(
 
 # monthly
 mo <- casm |> 
+  filter(yr <= 2021) |> 
   inner_join(epc, by = c('yr', 'mo', 'date', 'subsegment')) |> 
   mutate(
     subsegment = factor(subsegment, levels = c('NW', 'NE', 'CW', 'CE', 'SW', 'SE'))

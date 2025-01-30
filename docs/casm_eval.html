@@ -148,19 +148,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="co"># monthly</span></span>
 <span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>mo <span class="ot">&lt;-</span> casm <span class="sc">|&gt;</span> </span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(epc, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">'yr'</span>, <span class="st">'mo'</span>, <span class="st">'date'</span>, <span class="st">'subsegment'</span>)) <span class="sc">|&gt;</span> </span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">subsegment =</span> <span class="fu">factor</span>(subsegment, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">'NW'</span>, <span class="st">'NE'</span>, <span class="st">'CW'</span>, <span class="st">'CE'</span>, <span class="st">'SW'</span>, <span class="st">'SE'</span>))</span>
-<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="co"># annual</span></span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>ann <span class="ot">&lt;-</span> mo <span class="sc">|&gt;</span> </span>
-<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">obs =</span> <span class="fu">mean</span>(obs, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>    <span class="at">prd486 =</span> <span class="fu">mean</span>(prd486, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>    <span class="at">prdhist =</span> <span class="fu">mean</span>(prdhist, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>    <span class="at">.by =</span> <span class="fu">c</span>(<span class="st">'subsegment'</span>, <span class="st">'yr'</span>)</span>
-<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(yr <span class="sc">&lt;=</span> <span class="dv">2021</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(epc, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">'yr'</span>, <span class="st">'mo'</span>, <span class="st">'date'</span>, <span class="st">'subsegment'</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>    <span class="at">subsegment =</span> <span class="fu">factor</span>(subsegment, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">'NW'</span>, <span class="st">'NE'</span>, <span class="st">'CW'</span>, <span class="st">'CE'</span>, <span class="st">'SW'</span>, <span class="st">'SE'</span>))</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="co"># annual</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>ann <span class="ot">&lt;-</span> mo <span class="sc">|&gt;</span> </span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>    <span class="at">obs =</span> <span class="fu">mean</span>(obs, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>    <span class="at">prd486 =</span> <span class="fu">mean</span>(prd486, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>    <span class="at">prdhist =</span> <span class="fu">mean</span>(prdhist, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>    <span class="at">.by =</span> <span class="fu">c</span>(<span class="st">'subsegment'</span>, <span class="st">'yr'</span>)</span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <section id="report-plot" class="level3">
@@ -255,7 +256,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>r2 <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">summary</span>(mod)<span class="sc">$</span>r.squared, <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>R2 = 0.07</p>
+<p>R2 = 0.48</p>
 </section>
 <section id="monthly-all" class="level3">
 <h3 class="anchored" data-anchor-id="monthly-all">Monthly all</h3>
@@ -315,7 +316,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>r2 <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">summary</span>(mod)<span class="sc">$</span>r.squared, <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>R2 = 0.1</p>
+<p>R2 = 0.16</p>
 </section>
 <section id="annual-by-subsegment" class="level3">
 <h3 class="anchored" data-anchor-id="annual-by-subsegment">Annual by subsegment</h3>
@@ -383,27 +384,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">NW</td>
-<td style="text-align: right;">0.24</td>
+<td style="text-align: right;">0.02</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">NE</td>
-<td style="text-align: right;">0.05</td>
+<td style="text-align: right;">0.10</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">CW</td>
-<td style="text-align: right;">0.09</td>
+<td style="text-align: right;">0.74</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">CE</td>
-<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.16</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">SW</td>
-<td style="text-align: right;">0.10</td>
+<td style="text-align: right;">0.63</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">SE</td>
-<td style="text-align: right;">0.06</td>
+<td style="text-align: right;">0.17</td>
 </tr>
 </tbody>
 </table>
@@ -476,19 +477,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">NW</td>
-<td style="text-align: right;">0.10</td>
+<td style="text-align: right;">0.17</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">NE</td>
-<td style="text-align: right;">0.05</td>
+<td style="text-align: right;">0.03</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">CW</td>
-<td style="text-align: right;">0.05</td>
+<td style="text-align: right;">0.08</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">CE</td>
-<td style="text-align: right;">0.12</td>
+<td style="text-align: right;">0.15</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">SW</td>
@@ -940,7 +941,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
-<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","closeEffect":"zoom","loop":false,"selector":".lightbox","openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","selector":".lightbox","loop":false,"descPosition":"bottom","openEffect":"zoom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;
