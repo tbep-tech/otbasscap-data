@@ -121,7 +121,12 @@ p2 <- ggplot(annall, aes(x = obs, y = prdhist)) +
   )
 
 p1 + p2 + plot_layout(ncol = 2, widths = c(1, 0.5))
+
+mod <- lm(prdhist ~ obs, annall)
+r2 <- round(summary(mod)$r.squared, 2)
 ```
+
+R2 = `r r2`
 
 ### Monthly all
 
@@ -168,7 +173,12 @@ p2 <- ggplot(moall, aes(x = obs, y = prdhist)) +
   )
 
 p1 + p2 + plot_layout(ncol = 2, widths = c(1, 0.5))
+
+mod <- lm(prdhist ~ obs, moall)
+r2 <- round(summary(mod)$r.squared, 2)
 ```
+
+R2 = `r r2`
 
 ### Annual by subsegment
 
@@ -209,6 +219,13 @@ p2 <- ggplot(ann, aes(x = obs, y = prdhist)) +
   )
 
 p1 + p2 + plot_layout(ncol = 2, widths = c(1, 0.5))
+
+mods <- ann |> 
+  summarise(
+    R2 = round(summary(lm(prdhist ~ obs))$r.squared, 2),
+    .by = subsegment
+  )
+knitr::kable(mods)
 ```
 
 ### Monthly by subsegment
@@ -250,4 +267,11 @@ p2 <- ggplot(mo, aes(x = obs, y = prdhist)) +
   )
 
 p1 + p2 + plot_layout(ncol = 2, widths = c(1, 0.5))
+
+mods <- mo |> 
+  summarise(
+    R2 = round(summary(lm(prdhist ~ obs))$r.squared, 2),
+    .by = subsegment
+  )
+knitr::kable(mods)
 ```
