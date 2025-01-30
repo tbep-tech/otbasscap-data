@@ -90,7 +90,7 @@ toplo <- casm |>
   )
 ggplot(toplo, aes(x = yr)) + 
   geom_line(aes(y = prdhist, color = 'Predicted historical and projected')) +
-  geom_line(aes(y = prd486, color = '486 tons N/yr or less')) + 
+  geom_line(aes(y = prd486, color = 'Predicted 486 tons N/yr or less')) + 
   theme_minimal() +
   theme(
     legend.position = 'top',
