@@ -12,6 +12,8 @@
 
 * Load increase projection [link](https://tbep-tech.github.io/otbasscap-data/load_increase.html)
 
+* CASM fit evaluation [link](https://tbep-tech.github.io/otbasscap-data/casm_eval.html)
+
 ----------------------
 
 ## ./data/winwq.RData

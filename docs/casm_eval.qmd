@@ -1,0 +1,253 @@
+---
+title: "CASM fit evaluation"
+format: 
+  html:
+    code-fold: true
+    code-tools:
+      source: https://github.com/tbep-tech/otbasscap-data/blob/main/docs/casm_eval.qmd
+editor: source
+lightbox: true
+
+execute: 
+  warning: false
+  message: false
+  echo: true
+---
+
+```{r}
+library(tidyverse)
+library(here)
+library(patchwork)
+
+# epc data by subsegment
+load(file = here('data-clean/epcwq_clean.RData'))
+
+epc <- epcwq3 |>
+  filter(param == 'Chla') |>
+  mutate(
+    date = ymd(date),
+    yr = year(date),
+    mo = month(date)
+  ) |> 
+  select(subsegment = subseg, mo, yr, obs = value, date) |> 
+  summarise(
+    obs = mean(obs, na.rm = TRUE),
+    .by = c('subsegment', 'mo', 'yr', 'date')
+  )
+  
+# casm data by subsegment
+casm <- list(
+    "prd486" = read.csv(here("data-raw/casm486.csv")),
+    "prdhist" = read.csv(here("data-raw/casmhistproj.csv"))
+  ) |> 
+  enframe('run', 'data') |> 
+  mutate(
+    data = map(data, function(x) x |> 
+                 pivot_longer(cols = -c(1:2), names_to = 'yr', values_to = 'prd') |> 
+                 rename(mo = Month) |> 
+                 mutate(
+                   yr = gsub('X', '', yr) |> as.numeric(),
+                   mo = factor(mo, levels = c('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'), 
+                               labels = c(1:12)) |> as.numeric(),
+                   date = as.Date(paste0(yr, '-', mo, '-01'))
+                 )
+    )
+  ) |> 
+  unnest('data') |> 
+  pivot_wider(names_from = 'run', values_from = 'prd')
+
+##
+# combine epc and casm data
+
+# monthly
+mo <- casm |> 
+  inner_join(epc, by = c('yr', 'mo', 'date', 'subsegment')) |> 
+  mutate(
+    subsegment = factor(subsegment, levels = c('NW', 'NE', 'CW', 'CE', 'SW', 'SE'))
+  )
+
+# annual
+ann <- mo |> 
+  summarise(
+    obs = mean(obs, na.rm = TRUE),
+    prd486 = mean(prd486, na.rm = TRUE),
+    prdhist = mean(prdhist, na.rm = TRUE),
+    .by = c('subsegment', 'yr')
+  )
+```
+
+### Annual all
+
+```{r}
+#| fig-height: 3
+#| out-width: 100%
+
+annall <- ann |> 
+  summarise(
+    obs = mean(obs, na.rm = TRUE),
+    prd486 = mean(prd486, na.rm = TRUE),
+    prdhist = mean(prdhist, na.rm = TRUE), 
+    .by = c('yr')
+  )
+
+p1 <- ggplot(annall, aes(x = yr)) + 
+  geom_line(aes(y = prdhist, color = 'Predicted')) +
+  geom_line(aes(y = obs, color = 'Observed')) + 
+  theme_minimal() +
+  theme(
+    legend.position = 'top',
+    panel.grid.minor = element_blank()
+  ) +
+  labs(
+    x = NULL,
+    y = 'Chlorophyll-a (µg/L)',
+    colour = NULL
+  )
+p2 <- ggplot(annall, aes(x = obs, y = prdhist)) + 
+  geom_point() + 
+  geom_abline(aes(linetype = '1:1', slope = 1, intercept = 0)) +
+  geom_smooth(se = F, method = 'lm', formula = y ~ x, aes(linetype = 'reg')) +
+  theme_minimal() +
+  scale_linetype_manual(values = c('1:1' = 'dashed', 'reg' = 'solid')) +
+  theme(
+    legend.position = 'top',
+    panel.grid.minor = element_blank()
+  ) +
+  # coord_equal() + 
+  labs(
+    x = 'Observed',
+    y = 'Predicted',
+    linetype = NULL
+  )
+
+p1 + p2 + plot_layout(ncol = 2, widths = c(1, 0.5))
+```
+
+### Monthly all
+
+```{r}
+#| fig-height: 3
+#| out-width: 100%
+
+moall <- mo |> 
+  summarise(
+    obs = mean(obs, na.rm = TRUE),
+    prd486 = mean(prd486, na.rm = TRUE),
+    prdhist = mean(prdhist, na.rm = TRUE), 
+    .by = c('yr', 'mo', 'date')
+  )
+
+p1 <- ggplot(moall, aes(x = date)) + 
+  geom_line(aes(y = prdhist, color = 'Predicted')) +
+  geom_line(aes(y = obs, color = 'Observed')) + 
+  theme_minimal() +
+  theme(
+    legend.position = 'top',
+    panel.grid.minor = element_blank()
+  ) +
+  labs(
+    x = NULL,
+    y = 'Chlorophyll-a (µg/L)',
+    colour = NULL
+  )
+p2 <- ggplot(moall, aes(x = obs, y = prdhist)) + 
+  geom_point() + 
+  geom_abline(aes(linetype = '1:1', slope = 1, intercept = 0)) +
+  geom_smooth(se = F, method = 'lm', formula = y ~ x, aes(linetype = 'reg')) +
+  theme_minimal() +
+  scale_linetype_manual(values = c('1:1' = 'dashed', 'reg' = 'solid')) +
+  # coord_equal() + 
+  theme(
+    legend.position = 'top',
+    panel.grid.minor = element_blank()
+  ) +
+  labs(
+    x = 'Observed',
+    y = 'Predicted',
+    linetype = NULL
+  )
+
+p1 + p2 + plot_layout(ncol = 2, widths = c(1, 0.5))
+```
+
+### Annual by subsegment
+
+```{r}
+#| fig-height: 7
+#| out-width: 100%
+
+p1 <- ggplot(ann, aes(x = yr)) + 
+  geom_line(aes(y = prdhist, color = 'Predicted')) +
+  geom_line(aes(y = obs, color = 'Observed')) + 
+  theme_minimal() +
+  facet_wrap(~subsegment, ncol = 1) + 
+  theme(
+    legend.position = 'top',
+    panel.grid.minor = element_blank()
+  ) +
+  labs(
+    x = NULL,
+    y = 'Chlorophyll-a (µg/L)',
+    colour = NULL
+  )
+p2 <- ggplot(ann, aes(x = obs, y = prdhist)) + 
+  geom_point() + 
+  geom_abline(aes(linetype = '1:1', slope = 1, intercept = 0)) +
+  geom_smooth(se = F, method = 'lm', formula = y ~ x, aes(linetype = 'reg')) +
+  facet_wrap(~subsegment, ncol = 1) + 
+  theme_minimal() +
+  scale_linetype_manual(values = c('1:1' = 'dashed', 'reg' = 'solid')) +
+  theme(
+    legend.position = 'top',
+    panel.grid.minor = element_blank()
+  ) +
+  # coord_equal() + 
+  labs(
+    x = 'Observed',
+    y = 'Predicted',
+    linetype = NULL
+  )
+
+p1 + p2 + plot_layout(ncol = 2, widths = c(1, 0.5))
+```
+
+### Monthly by subsegment
+
+```{r}
+#| fig-height: 7
+#| out-width: 100%
+
+p1 <- ggplot(mo, aes(x = date)) + 
+  geom_line(aes(y = prdhist, color = 'Predicted')) +
+  geom_line(aes(y = obs, color = 'Observed')) + 
+  theme_minimal() +
+  facet_wrap(~subsegment, ncol = 1) + 
+  theme(
+    legend.position = 'top',
+    panel.grid.minor = element_blank()
+  ) +
+  labs(
+    x = NULL,
+    y = 'Chlorophyll-a (µg/L)',
+    colour = NULL
+  )
+p2 <- ggplot(mo, aes(x = obs, y = prdhist)) + 
+  geom_point() + 
+  geom_abline(aes(linetype = '1:1', slope = 1, intercept = 0)) +
+  geom_smooth(se = F, method = 'lm', formula = y ~ x, aes(linetype = 'reg')) +
+  facet_wrap(~subsegment, ncol = 1) + 
+  theme_minimal() +
+  scale_linetype_manual(values = c('1:1' = 'dashed', 'reg' = 'solid')) +
+  theme(
+    legend.position = 'top',
+    panel.grid.minor = element_blank()
+  ) +
+  # coord_equal() + 
+  labs(
+    x = 'Observed',
+    y = 'Predicted',
+    linetype = NULL
+  )
+
+p1 + p2 + plot_layout(ncol = 2, widths = c(1, 0.5))
+```
