@@ -76,6 +76,33 @@ ann <- mo |>
   )
 ```
 
+### Report plot
+
+```{r}
+#| fig-height: 3
+#| out-width: 100%
+#| 
+toplo <- casm |> 
+  summarise(
+    prd486 = mean(prd486, na.rm = T),
+    prdhist = mean(prdhist, na.rm = T),
+    .by = yr
+  )
+ggplot(toplo, aes(x = yr)) + 
+  geom_line(aes(y = prdhist, color = 'Predicted historical and projected')) +
+  geom_line(aes(y = prd486, color = '486 tons N/yr or less')) + 
+  theme_minimal() +
+  theme(
+    legend.position = 'top',
+    panel.grid.minor = element_blank()
+  ) +
+  labs(
+    x = NULL,
+    y = 'Chlorophyll-a (µg/L)',
+    colour = NULL
+  )
+```
+
 ### Annual all
 
 ```{r}
