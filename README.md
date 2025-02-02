@@ -14,7 +14,7 @@
 
 * CASM fit evaluation [link](https://tbep-tech.github.io/otbasscap-data/casm_eval.html)
 
-* Load change projection [link](https://tbep-tech.github.io/otbasscap-data/load_increase_allseg.html)
+* Load change projection all segments for box model [link](https://tbep-tech.github.io/otbasscap-data/load_increase_allseg.html)
 
 ----------------------
 
