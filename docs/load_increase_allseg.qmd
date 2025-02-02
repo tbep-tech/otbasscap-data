@@ -4,6 +4,8 @@ format:
   html:
     toc: true
     code-fold: true
+    code-tools: 
+      source: https://github.com/tbep-tech/otbasscap-data/blob/main/docs/load_increase_allseg.qmd
 editor: source
 lightbox: true
 
@@ -17,10 +19,12 @@ execute:
 
 ```{r}
 library(tidyverse)
+library(sf)
 
 load(file = here::here('data-raw/mosdat.RData'))
 load(file = here::here('data-raw/mohydat.RData'))
 load(file = here::here('data-raw/tnanndat.RData'))
+load(file = here::here('data/allsubbas.RData'))
 
 segs <- c('Old Tampa Bay', 'Hillsborough Bay', 'Middle Tampa Bay')
 
@@ -60,6 +64,8 @@ lddatann <- lddatmo |>
 ```
 
 This document shows a projection of estimated load change to 2040 based on annual loading estimates from 2000 to 2021 for all bay segments, except LTB. 
+
+## Estimating projections
 
 A regression fit is first made from 2000 to 2021 for each parameter and bay segment, then projected to 2040.  Note that this is only done for NPS for TN.  All other parameters use the combined load sources for the projection.
 
@@ -133,7 +139,7 @@ p <- ggplot(lddatmochg, aes(x = date)) +
        x = NULL,
        y = 'Load (tons / mo)', 
        color = NULL,
-       caption = 'note: HY (hydrology) is million gallons per month)
+       caption = 'note: HY (hydrology) is million gallons per month'
   ) +
   theme_minimal() + 
   theme(legend.position = 'top')
@@ -207,5 +213,61 @@ p <- ggplot(projected, aes(x = date, y = val, color = period)) +
   theme_minimal() + 
   theme(legend.position = 'top')
 p
+```
+
+## Assigning to model segments
+
+There are three model segments for OTB, two for HB, and three for MTB.  The loads are apportioned in to equal amounts based on the number of model segments per segment, except OTB which uses amounts described [here](https://tbep-tech.github.io/otbasscap-data/otb_subbasin_loads.html).  The previous link assigns values to NW, NE, CW, CE, SW, and SE sub-segments as sixths, which are assigned to model segments 1, 2, and 3 as NW/NE, CW/CE, and SW/SE.  Here we simply apportion using the relative areas that drain to each OTB subsegment, whereas the previous example used a hydrologic basin dataset from 2017-2021 that had gaged and ungaged loading estimates.  
+
+```{r}
+otbprop <- allsubbas |> 
+  mutate(
+    acres = units::set_units(st_area(allsubbas), 'acres'), 
+    modelseg = case_when(
+      subsegment %in% c('NW', 'NE') ~ 1, 
+      subsegment %in% c('CW', 'CE') ~ 2, 
+      subsegment %in% c('SW', 'SE') ~ 3
+    )
+  ) |> 
+  st_set_geometry(NULL) |> 
+  group_by(modelseg) |> 
+  summarise(
+    acres = sum(acres)
+  ) |> 
+  mutate(
+    bay_segment = 'Old Tampa Bay',
+    prop = as.numeric(acres / sum(acres))
+  ) |> 
+  select(-acres)
+
+allprop <- tibble(
+    modelseg  = c(4:8),
+    bay_segment = c(rep('Hillsborough Bay', 2), rep('Middle Tampa Bay', 3)),
+    prop = c(rep(0.5, 2), rep(1/3, 3))
+  ) |> 
+  bind_rows(otbprop) |> 
+  mutate(bay_segment = factor(bay_segment, levels = segs)) |> 
+  arrange(bay_segment)
+allprop
+```
+
+The `allprop` object is joined to the observed and projected monthly loads by bay segment and then the loads are multiplied by the proportions.
+
+```{r}
+out <- allprop |> 
+  left_join(projected, by = 'bay_segment', relationship = c('many-to-many')) |> 
+  mutate(val = val * prop)
+out
+```
+
+Now verify that the totals are the same between the model segment assigned dataset and the original.
+
+```{r}
+summarise(out, val = sum(val), .by = c(bay_segment, var))
+summarise(projected, val = sum(val), .by = c(bay_segment, var))
+```
+
+```{r}
+write.csv(out, here::here('data-raw/boxmodproject.csv'), row.names = F)
 ```
 
