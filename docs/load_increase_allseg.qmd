@@ -1,0 +1,211 @@
+---
+title: "Load projections all bay segments"
+format: 
+  html:
+    toc: true
+    code-fold: true
+editor: source
+lightbox: true
+
+execute: 
+  warning: false
+  message: false
+  echo: true
+  fig-height: 8
+  fig-width: 8
+---
+
+```{r}
+library(tidyverse)
+
+load(file = here::here('data-raw/mosdat.RData'))
+load(file = here::here('data-raw/mohydat.RData'))
+load(file = here::here('data-raw/tnanndat.RData'))
+
+segs <- c('Old Tampa Bay', 'Hillsborough Bay', 'Middle Tampa Bay')
+
+# monthly data
+lddatmo <- mosdat |> 
+  filter(bay_segment %in% segs) |> 
+  filter(year >= 2000 & year <= 2021) |> 
+  select(-bod_load) |> 
+  summarise(
+    tp_load = sum(tp_load), 
+    tss_load = sum(tss_load),
+    .by = c('year', 'month', 'bay_segment')
+  ) |> 
+  left_join(mohydat, by = c('year', 'month', 'bay_segment')) |> 
+  pivot_longer(tp_load:hy_load_106_m3_mo, names_to = 'var', values_to = 'val')
+npstnlddatmo <- mosdat |> 
+  filter(bay_segment %in% segs) |> 
+  filter(year >= 2000 & year <= 2021) |> 
+  filter(source == 'NPS') |>
+  mutate(var = c('tn_load')) |> 
+  select(year, month, bay_segment, var, val = tn_load)
+lddatmo <- lddatmo |> 
+  bind_rows(npstnlddatmo) |> 
+  mutate(
+    bay_segment = factor(bay_segment, levels = segs),
+    var = factor(var, levels = c('tn_load', 'tp_load', 'tss_load', 'hy_load_106_m3_mo'), 
+                 labels = c('TN (NPS)', 'TP' ,'TSS', 'HY'))
+  ) |>   
+  arrange(year, month, bay_segment, var)
+
+# annual data
+lddatann <- lddatmo |> 
+  summarise(
+    val = sum(val), 
+    .by = c('year', 'bay_segment', 'var')
+  ) 
+```
+
+This document shows a projection of estimated load change to 2040 based on annual loading estimates from 2000 to 2021 for all bay segments, except LTB. 
+
+A regression fit is first made from 2000 to 2021 for each parameter and bay segment, then projected to 2040.  Note that this is only done for NPS for TN.  All other parameters use the combined load sources for the projection.
+
+```{r}
+# regression model of tn_load by year
+mod <- lm(val ~ year*bay_segment*var, data = lddatann)
+
+# get predictions for years 2000:2040
+preds <- data.frame(year = 2000:2040) |> 
+  crossing(
+    bay_segment = factor(segs, levels = segs), 
+    var = factor(levels(lddatann$var), levels = levels(lddatann$var))
+  )
+preds <- preds |> 
+  mutate(
+    val = predict(mod, preds)
+  ) 
+
+# plot tn_load as line plot by year
+# add regression predictions
+p <- ggplot(lddatann, aes(x = year, y = val)) +
+  geom_line() +
+  geom_line(data = preds, linetype = 'dashed') +
+  geom_smooth(method = 'lm', se = F, formula = y ~ x) + 
+  facet_wrap(var~bay_segment, ncol = 3, scales = 'free_y') + 
+  labs(title = 'Loads by bay segment',
+       x = 'Year',
+       y = 'Load (tons / yr)',
+       caption = 'note: HY (hydrology) is million gallons per year'
+  ) +
+  theme_minimal()
+p
+```
+
+The percent change is calculated as the average value from the regression fit for 2000 to 2021 to 2040.
+
+```{r}
+# estimate means from 2000 to 2021 and 2040
+means <- preds |> 
+  summarise(
+    mean_load_2000_2021 = mean(val[year >= 2000 & year <= 2021]),
+    mean_load_2040 = mean(val[year == 2040]), 
+    .by = c(bay_segment, var)
+  )
+
+# take percent change from 2000 to 2021 to 2040
+means <- means |> 
+  mutate(
+    percent_change = (mean_load_2040 - mean_load_2000_2021) / mean_load_2000_2021 * 100, 
+    .by = c(bay_segment, var)
+  )
+means
+```
+
+The estimated changes can then be projected onto to observed load values for 2000 to 2021.  Note that some have negative projections due to extrapolation of the regression to values less than zero.
+
+```{r}
+lddatmochg <- lddatmo |> 
+  left_join(means, by = c('bay_segment', 'var')) |> 
+  select(-mean_load_2000_2021, -mean_load_2040) |> 
+  mutate(
+    valchg = val + (val * (percent_change / 100)), 
+    date = make_date(year, month, '1')
+  )
+
+p <- ggplot(lddatmochg, aes(x = date)) +
+  geom_line(aes(y = val, color = 'original')) +
+  geom_line(aes(y = valchg, color = 'projected')) +
+  facet_wrap(var~bay_segment, ncol = 3, scales = 'free_y') + 
+  labs(title = 'Loads by bay segment',
+       x = NULL,
+       y = 'Load (tons / mo)', 
+       color = NULL,
+       caption = 'note: HY (hydrology) is million gallons per month)
+  ) +
+  theme_minimal() + 
+  theme(legend.position = 'top')
+p
+```
+
+Verify the percent change is correct.  This should be the same as the `means` object.
+
+```{r}
+lddatmochg |> 
+  summarize(
+    val = sum(val),
+    valchg = sum(valchg), 
+    .by = c(bay_segment, var)
+  ) |> 
+  mutate(
+    percent_change =  (valchg - val) / val * 100
+  )
+```
+
+The last step is to add the NPS change for TN to the total TN load and assign the projected values to the next twenty years. Projected values are also floored at zero.
+
+```{r}
+tnnpsmochg <- lddatmochg |> 
+  filter(var == 'TN (NPS)') |> 
+  select(year, month, bay_segment, valchg)
+tnmodat <- mosdat |> 
+  filter(year >= 2000 & year <= 2021) |> 
+  filter(bay_segment %in% segs) |> 
+  select(-tp_load, -tp_load, -tss_load, -bod_load) |> 
+  left_join(tnnpsmochg, by = c('year', 'month', 'bay_segment')) |> 
+  mutate(
+    valchg = case_when(
+      source == 'NPS' ~ valchg, 
+      T ~ tn_load
+    ),
+    var = 'TN',
+    bay_segment = factor(bay_segment, levels = segs)
+  ) |> 
+  summarise(
+    val = sum(tn_load),
+    valchg = sum(valchg),
+    .by = c(year, month, bay_segment, var)
+  )
+projected <- lddatmochg |> 
+  filter(var != 'TN (NPS)') |> 
+  select(year, month, bay_segment, var, val, valchg) |> 
+  bind_rows(tnmodat) |> 
+  mutate(var = factor(var, levels = c('TN', 'TP', 'TSS', 'HY'))) |> 
+  pivot_longer(c(val, valchg), names_to = 'period', values_to = 'val') |> 
+  mutate(
+    year = case_when(
+      period == 'valchg' ~ year + 22, 
+      T ~ year
+    ),
+    date = make_date(year, month, '1'), 
+    period = factor(period, levels = c('val', 'valchg'), labels = c('observed', 'projected')),
+    val = pmax(val, 0)
+  ) |> 
+  arrange(date, bay_segment, var)
+
+p <- ggplot(projected, aes(x = date, y = val, color = period)) +
+  geom_line() +
+  facet_wrap(var~bay_segment, ncol = 3, scales = 'free_y') + 
+  labs(title = 'Loads by bay segment',
+       x = NULL,
+       y = 'Load (tons / mo)', 
+       color = NULL,
+       caption = 'note: HY (hydrology) is million gallons per month)'
+  ) +
+  theme_minimal() + 
+  theme(legend.position = 'top')
+p
+```
+
