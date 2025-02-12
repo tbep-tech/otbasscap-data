@@ -70,3 +70,79 @@ mtext( "million m3", side = 2, line = 3.5, cex = 1.3 )  # ylab
 
 
 dev.off()
+
+# recreate with ggplot ------------------------------------------------------------------------
+
+library(tidyverse)
+library(here)
+
+load(url('https://github.com/tbep-tech/load-estimates/raw/refs/heads/main/data/totanndat.RData'))
+
+hy_ref <- 449
+tn_ref <- 468
+ptsz <- 2.5
+  
+otbdat <- totanndat |> 
+  filter(bay_segment == 'Old Tampa Bay') |> 
+  mutate(
+    tn_load_norm = tn_load * hy_ref / hy_load
+  )
+
+toplo1 <- otbdat |> 
+  select(year, tn_load, tn_load_norm) |> 
+  pivot_longer(cols = c(tn_load, tn_load_norm), names_to = 'load_type', values_to = 'load') |> 
+  mutate(
+    load_type = ifelse(load_type == 'tn_load', 'Actual', 'Normalized')
+  )
+
+# ggplot with transparent gray background from 1992 to 1994
+p1 <- ggplot() + 
+  geom_rect(data = data.frame(x = 0, y = 0), aes(xmin = 1991.5, xmax = 1994.5, ymin = -Inf, ymax = Inf, fill = 'Reference period'), color = NA, alpha = 0.6) +
+  geom_hline(aes(yintercept = tn_ref, linetype = paste0('Threshold (', tn_ref, ' tons / yr)')), color = 'black') +
+  geom_line(data = toplo1, aes(x = year, y = load, color = load_type), linewidth = 1) + 
+  geom_point(data = toplo1, aes(x = year, y = load, color = load_type), pch = 21, fill = 'white', size = ptsz, stroke = 2) + 
+  scale_color_manual(values = c(rgb(0,0.1,0.4,1), rgb(0.7,0.1,0.2,1))) +
+  scale_fill_manual(values = 'gray') +
+  scale_linetype_manual(values = 'dashed') +
+  theme_minimal() + 
+  theme(
+    legend.position = 'top',
+    panel.grid.minor = element_blank()
+  ) + 
+  labs(
+    x = NULL,
+    linetype = NULL, 
+    color = NULL, 
+    y = expression(paste('tons'~yr^{-1})),
+    title = 'Nitrogen loads',
+    fill = NULL
+  )
+
+p2 <- ggplot() + 
+  geom_rect(data = data.frame(x = 0, y = 0), aes(xmin = 1991.5, xmax = 1994.5, ymin = -Inf, ymax = Inf, fill = 'Reference period'), color = NA, alpha = 0.6) +
+  geom_hline(aes(yintercept = hy_ref, linetype = paste0('Reference hydrologic load (', hy_ref, ' million m3)')), color = 'black') +
+  geom_line(data = otbdat, aes(x = year, y = hy_load), linewidth = 1, color = rgb(0,0.4,0.7,1)) + 
+  geom_point(data = otbdat, aes(x = year, y = hy_load), pch = 21, fill = 'white', color = rgb(0,0.4,0.7,1), size = ptsz, stroke = 2) + 
+  scale_fill_manual(values = 'gray') +
+  scale_linetype_manual(values = 'dashed') +
+  theme_minimal() + 
+  theme(
+    legend.position = 'top',
+    panel.grid.minor = element_blank()
+  ) + 
+  labs(
+    x = NULL,
+    linetype = NULL, 
+    title = 'Hydrologic loads',
+    y = expression(paste(10^6~m^3~yr^{-1})),
+    fill = NULL
+  )
+
+png(here('figs/loadnorm1withref.png'), width = 7, height = 3, units = 'in', res = 300)
+print(p1)
+dev.off()
+
+png(here('figs/loadnorm2withref.png'), width = 7, height = 3, units = 'in', res = 300)
+print(p2)
+dev.off()
+
