@@ -142,7 +142,16 @@ png(here('figs/loadnorm1withref.png'), width = 7, height = 3, units = 'in', res 
 print(p1)
 dev.off()
 
+svg(here('figs/loadnorm1withref.svg'), width = 7, height = 3, bg = 'transparent')
+print(p1)
+dev.off()
+
 png(here('figs/loadnorm2withref.png'), width = 7, height = 3, units = 'in', res = 300)
 print(p2)
 dev.off()
+
+svg(here('figs/loadnorm2withref.svg'), width = 7, height = 3, bg = 'transparent')
+print(p2)
+dev.off()
+
 

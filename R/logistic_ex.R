@@ -78,3 +78,8 @@ p <- ggplot(toplo, aes(x = value, y = prd, group = Turbidity)) +
 png(here::here('figs/logisticex.png'), width = 4.5, height = 4, units = 'in', res = 300, bg = 'transparent')
 print(p)
 dev.off()
+
+svg(here::here('figs/logisticex.svg'), width = 4.5, height = 4, bg = 'transparent')
+print(p)
+dev.off()
+
