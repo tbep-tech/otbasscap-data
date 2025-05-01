@@ -13,16 +13,16 @@ dat <- datraw |>
   select(yr = CompletionDate, ProjectCompleted, SegmentName, TN_lbs_yr) |> 
   filter(ProjectCompleted == 1) |> 
   filter(yr != 0) |> 
-  filter(yr >= 2002) |> 
+  filter(yr >= 2002 & yr <= 2026) |> 
   mutate(
     raperiod = case_when(
-      yr <= 2027 & yr >= 2022 ~ '2022-2027',
+      yr <= 2026 & yr >= 2022 ~ '2022-2026',
       yr <= 2021 & yr >= 2017 ~ '2017-2021',
-      yr <= 2017 & yr >= 2012 ~ '2012-2017',
-      yr <= 2012 & yr >= 2007 ~ '2007-2012',
-      yr <= 2007 & yr >= 2002 ~ '2002-2007'
+      yr <= 2016 & yr >= 2012 ~ '2012-2016',
+      yr <= 2011 & yr >= 2007 ~ '2007-2011',
+      yr <= 2006 & yr >= 2002 ~ '2002-2006'
     ), 
-    raperiod = factor(raperiod, levels = rev(c('2022-2027', '2017-2021', '2012-2017', '2007-2012', '2002-2007')))
+    raperiod = factor(raperiod, levels = rev(c('2022-2026', '2017-2021', '2012-2016', '2007-2011', '2002-2006')))
   ) |> 
   filter(SegmentName %in% c('Old Tampa Bay', 'Hillsborough Bay', 'Middle Tampa Bay', 'Lower Tampa Bay', 'Boca Ciega Bay', 'Terra Ceia Bay', 'Manaee River')) |> 
   mutate(
