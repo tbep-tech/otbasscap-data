@@ -24,9 +24,9 @@ dat <- datraw |>
     ), 
     raperiod = factor(raperiod, levels = rev(c('2022-2026', '2017-2021', '2012-2016', '2007-2011', '2002-2006')))
   ) |> 
-  filter(SegmentName %in% c('Old Tampa Bay', 'Hillsborough Bay', 'Middle Tampa Bay', 'Lower Tampa Bay', 'Boca Ciega Bay', 'Terra Ceia Bay', 'Manaee River')) |> 
+  filter(SegmentName %in% c('Old Tampa Bay', 'Hillsborough Bay', 'Middle Tampa Bay', 'Lower Tampa Bay', 'Boca Ciega Bay', 'Terra Ceia Bay', 'Manatee River')) |> 
   mutate(
-    SegmentName = factor(SegmentName, levels = c('Old Tampa Bay', 'Hillsborough Bay', 'Middle Tampa Bay', 'Lower Tampa Bay', 'Boca Ciega Bay', 'Terra Ceia Bay', 'Manaee River'))
+    SegmentName = factor(SegmentName, levels = c('Old Tampa Bay', 'Hillsborough Bay', 'Middle Tampa Bay', 'Lower Tampa Bay', 'Boca Ciega Bay', 'Terra Ceia Bay', 'Manatee River'))
   )
 
 toplo <- dat |> 
@@ -51,7 +51,7 @@ p1 <- ggplot(toplo, aes(x = raperiod, y = cnt, fill = SegmentName)) +
     title = 'Reported Projects by Bay Segment and Reporting Period',
     subtitle = 'Number of Projects',
     x = NULL,
-    y = 'Count of Projects'
+    y = 'Count'
   ) +
   theme_minimal() +
   theme(
@@ -66,7 +66,7 @@ p2 <- ggplot(toplo, aes(x = raperiod, y = TNtons_period, fill = SegmentName)) +
   labs(
     subtitle = 'TN Tons Removed',
     x = 'RA Period',
-    y = 'TN Tons', 
+    y = 'Tons', 
     caption = 'Note: Includes projects with a completion year and reported TN load reduction'
   ) +
   theme_minimal() +
@@ -93,7 +93,7 @@ p1 <- ggplot(toplo2, aes(x = raperiod, y = cnt)) +
     title = 'Reported Projects and Reporting Period, Old Tampa Bay only',
     subtitle = 'Number of Projects',
     x = NULL,
-    y = 'Count of Projects'
+    y = 'Count'
   ) +
   theme_minimal() +
   theme(
@@ -107,7 +107,7 @@ p2 <- ggplot(toplo2, aes(x = raperiod, y = TNtons_period)) +
   labs(
     subtitle = 'TN Tons Removed',
     x = 'RA Period',
-    y = 'TN Tons', 
+    y = 'Tons', 
     caption = 'Note: Includes projects with a completion year and reported TN load reduction'
   ) +
   theme_minimal() +
