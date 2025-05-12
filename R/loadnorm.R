@@ -79,7 +79,7 @@ library(here)
 load(url('https://github.com/tbep-tech/load-estimates/raw/refs/heads/main/data/totanndat.RData'))
 
 hy_ref <- 449
-tn_ref <- 468
+tn_ref <- 486
 ptsz <- 2.5
   
 otbdat <- totanndat |> 
@@ -154,4 +154,80 @@ svg(here('figs/loadnorm2withref.svg'), width = 7, height = 3, bg = 'transparent'
 print(p2)
 dev.off()
 
+# loading v chlorophyll -----------------------------------------------------------------------
 
+library(tidyverse)
+library(here)
+library(tbeptools)
+library(patchwork)
+
+load(url('https://github.com/tbep-tech/load-estimates/raw/refs/heads/main/data/totanndat.RData'))
+
+hy_ref <- 449
+tn_ref <- 486
+tmdl <- 1.08
+ptsz <- 1
+chl_ref <- 9.3
+
+otbdat <- totanndat |> 
+  filter(bay_segment == 'Old Tampa Bay') |> 
+  mutate(
+    tn_load_rate = tn_load / hy_load,
+    tn_load_norm = hy_ref * tn_load_rate
+  )
+
+toplo1 <- otbdat |> 
+  select(year, tn_load, tn_load_rate, tn_load_norm)
+
+# ggplot with transparent gray background from 1992 to 1994
+p1 <- ggplot() + 
+  geom_rect(data = data.frame(x = 0, y = 0), aes(xmin = 1991.5, xmax = 1994.5, ymin = -Inf, ymax = Inf, fill = 'Reference period'), color = NA, alpha = 0.6) +
+  geom_line(data = toplo1, aes(x = year, y = tn_load_rate), color = rgb(0.7,0.1,0.2,1), linewidth = 1) + 
+  geom_point(data = toplo1, aes(x = year, y = tn_load_rate), pch = 21, fill = 'white', color = rgb(0.7,0.1,0.2,1), size = ptsz, stroke = 2) + 
+  geom_hline(aes(yintercept = tmdl, linetype = 'TMDL'), color = 'black') +
+  scale_fill_manual(values = 'gray') +
+  scale_linetype_manual(values = 'dashed') +
+  theme_minimal() + 
+  theme(
+    legend.position = 'top',
+    panel.grid.minor = element_blank()
+  ) + 
+  coord_cartesian(xlim = c(1985, 2021)) +
+  labs(
+    x = NULL,
+    linetype = NULL, 
+    color = NULL, 
+    y = expression(paste('TN (tons per million'~m^{3}, ')')),
+    fill = NULL
+  )
+
+toplo2 <- anlz_avedat(epcdata)$ann |> 
+  filter(bay_segment == 'OTB') |> 
+  filter(var == 'mean_chla') |> 
+  filter(yr >= 1985 & yr <= 2021)
+
+p2 <- ggplot() + 
+  geom_rect(data = data.frame(x = 0, y = 0), aes(xmin = 2016.5, xmax = 2021.5, ymin = -Inf, ymax = Inf, fill = '2017 - 2021 RA period'), color = NA, alpha = 0.6) +
+  geom_line(data = toplo2, aes(x = yr, y = val), color = rgb(0,0.4,0.7,1), linewidth = 1) + 
+  geom_point(data = toplo2, aes(x = yr, y = val), pch = 21, fill = 'white', color = rgb(0,0.4,0.7,1), size = ptsz, stroke = 2) + 
+  geom_hline(aes(yintercept = chl_ref, linetype = 'Chl-a threshold'), color = 'black') +
+  scale_fill_manual(values = 'gray') +
+  scale_linetype_manual(values = 'dashed') +
+  theme_minimal() + 
+  theme(
+    legend.position = 'top',
+    panel.grid.minor = element_blank()
+  ) + 
+  labs(
+    x = NULL,
+    linetype = NULL, 
+    color = NULL, 
+    y = expression(paste('Chl-a',' (', mu*g~L^{-1}, ')')),
+    fill = NULL
+  )
+
+p <- p1 + p2 + plot_layout(ncol = 1)
+
+png(here('figs/loadnormwithchl.png'), width = 9.5, height = 4.5, units = 'in', res = 300)
+print(p)
+dev.off()
