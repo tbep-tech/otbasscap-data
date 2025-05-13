@@ -172,6 +172,6 @@ png(here('figs/logisticmod93_revised.png'), height = 5, width = 10, units = 'in'
 print(p)
 dev.off()
 
-svg(here('figs/logisticmod93_revised..svg'), width = 5, height = 10, bg = 'transparent')
+svg(here('figs/logisticmod93_revised.svg'), width = 5, height = 10, bg = 'transparent')
 print(p)
 dev.off()
