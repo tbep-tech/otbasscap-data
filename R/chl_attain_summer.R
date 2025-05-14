@@ -114,3 +114,136 @@ dev.off()
 # Export probability tables
 write.csv( prob_50, "../data/chl_attain_summer_50.csv", row.names = TRUE )
 write.csv( prob_75, "../data/chl_attain_summer_75.csv", row.names = TRUE )
+
+# revised plot --------------------------------------------------------------------------------
+
+library(dplyr)
+library(tidyr)
+library(lubridate)
+library(here)
+library(ggplot2)
+library(purrr)
+
+load(here("data-clean/epcwq_clean.RData"))
+
+# specify subsegment and target or threshold value
+subsegment <- c("NW","CW")
+summer_months <- 6:10  
+critval <- 8.5 
+
+# compute annual mean chl conc and attainment
+dat <- epcwq3 |> 
+  filter(param == 'Chla') |> 
+  mutate(yr = year(date)) |> 
+  summarise(
+    chla = mean(value, na.rm = T), 
+    .by = c(yr)
+  ) |> 
+  mutate(
+    attain = ifelse(chla < critval, 1, 0)
+  ) |> 
+  select(yr, attain)
+
+# get summer mean chl conc by subsegment
+# join with annual attainment
+subdat <- epcwq3 |> 
+  filter(param == 'Chla') |> 
+  select(date, chla = value, subseg) |> 
+  filter(subseg %in% subsegment) |>
+  filter(month(date) %in% summer_months) |>
+  mutate(yr = year(date)) |> 
+  summarise(
+    chla = mean(chla, na.rm = T), 
+    .by = c(yr, subseg)
+  ) |> 
+  left_join(dat, by = "yr") |> 
+  mutate(
+    subseg = factor(subseg, levels = c('NW', 'CW'))
+  )
+
+# mods
+mods <- subdat |> 
+  group_nest(subseg) |>
+  mutate(
+    md = map(data, function(x){
+      glm(attain ~ chla, data = x, family = 'binomial')
+    }),
+    prd = map(md, function(x){
+      
+      toprd <- seq(5, 25, length.out = 500)
+      
+      predict(x, newdata = data.frame(chla = toprd), type = "response", se.fit = TRUE) |> 
+        data.frame() |> 
+        mutate(
+          chla = toprd,
+          lwr = fit - 1.96 * se.fit,
+          upr = fit + 1.96 * se.fit
+        )
+      
+    }), 
+    trgval = map(prd, function(x) x$chla[which.min(abs(x$lwr - 0.75))[1]])
+  )
+
+toplo <- mods |> 
+  select(subseg, prd) |> 
+  unnest('prd')
+
+trgs <- mods |> 
+  select(subseg, trgval) |> 
+  unnest('trgval') |> 
+  mutate(
+    trgval = round(trgval, 1)
+  )
+
+trgcol <- "#1A99FF"
+
+thm <- theme_minimal() +
+  theme(
+    panel.grid = element_blank(), 
+    axis.ticks = element_line(), 
+    legend.position = 'bottom', 
+    strip.text = element_text(size = 12, hjust = 0), 
+    panel.spacing = unit(1, "cm"),
+  )
+
+# normalized model plot
+p <- ggplot(toplo, aes(x = chla, y = fit, group = subseg)) +
+  geom_ribbon(aes(ymin = lwr, ymax = upr), fill = "lightblue", alpha = 0.3) +
+  geom_line(color = "#4DB8FF", linewidth = 1) +
+  geom_segment(
+    data = trgs, aes(x = 0, y = 0.75, xend = trgval, yend = 0.75),
+    linetype = 'solid', alpha = 1, linewidth = 1, color = trgcol, show.legend = FALSE
+  ) +
+  geom_segment(
+    data = trgs, aes(x = trgval, y = 0.75, xend = trgval, yend = 0),
+    arrow = arrow(length = unit(0.75,"cm"), type = 'closed', angle = 15),
+    linetype = 'solid', alpha = 1, linewidth = 1, color = trgcol, show.legend = FALSE
+  ) +
+  geom_text(
+    data = trgs, aes(x = trgval, y = 0, label = trgval), 
+    hjust = 1.25, vjust = 0, size = 6, color = trgcol
+  ) +
+  facet_wrap(~subseg, ncol = 2) +
+  coord_cartesian(
+    xlim = range(toplo$chla),
+    ylim = c(-0.01, 1.01)
+  ) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1), n.breaks = 10, expand = c(0,0)) +
+  scale_x_continuous(breaks = seq(5, 25, by = 2), expand = c(0.01, 0.01)) +
+  labs(
+    title = 'Probability of obtaining OTB management chlorophyll target',
+    # subtitle = "Hydrologically-normalized loading",
+    x = expression(paste("Chl-a"~"(", mu, "g/L)")),
+    y = "Probability"
+  ) +
+  thm
+
+png(here("figs/subsegtrg_revised.png"), width = 7.5, height = 6, res = 300, units = 'in')
+print(p)
+dev.off()
+
+svg(here("figs/subsegtrg_revised.svg"), width = 7.5, height = 6, bg = 'transparent')
+print(p)
+dev.off()
+
+

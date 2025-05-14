@@ -78,7 +78,7 @@ p <- ggplot() +
              bbx[4] + exp * (bbx[4] - bbx[2]))
   ) +
   labs(
-    title = expression(paste("Average annual max ", italic("P. bahamense"), ", 2011-2021")),
+    title = expression(paste("Mean annual max ", italic("P. bahamense"), ", 2011-2021")),
     caption = "Data source: FWC"
   ) +
   theme_minimal() +
@@ -91,6 +91,6 @@ p <- ggplot() +
     legend.key.width = unit(1, "cm")
   )
 
-png(here('figs/pyrosubsegmap.png'), width = 5, height = 7, units = 'in', res = 300)
+png(here('figs/pyrosubsegmap.png'), width = 4.5, height = 6, units = 'in', res = 300)
 print(p)
 dev.off()
