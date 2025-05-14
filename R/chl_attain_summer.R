@@ -181,7 +181,7 @@ mods <- subdat |>
         )
       
     }), 
-    trgval = map(prd, function(x) x$chla[which.min(abs(x$lwr - 0.75))[1]])
+    trgval = list(11.3, 13.8)#map(prd, function(x) x$chla[which.min(abs(x$lwr - 0.75))[1]])
   )
 
 toplo <- mods |> 
@@ -233,7 +233,7 @@ p <- ggplot(toplo, aes(x = chla, y = fit, group = subseg)) +
   labs(
     title = 'Probability of obtaining OTB management chlorophyll target',
     # subtitle = "Hydrologically-normalized loading",
-    x = expression(paste("Jun - Sep mean Chl-a"~"(", mu, "g/L)")),
+    x = expression(paste("Jun - Oct mean Chl-a"~"(", mu, "g/L)")),
     y = "Probability"
   ) +
   thm
