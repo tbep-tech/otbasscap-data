@@ -233,7 +233,7 @@ p <- ggplot(toplo, aes(x = chla, y = fit, group = subseg)) +
   labs(
     title = 'Probability of obtaining OTB management chlorophyll target',
     # subtitle = "Hydrologically-normalized loading",
-    x = expression(paste("Chl-a"~"(", mu, "g/L)")),
+    x = expression(paste("Jun - Sep mean Chl-a"~"(", mu, "g/L)")),
     y = "Probability"
   ) +
   thm
