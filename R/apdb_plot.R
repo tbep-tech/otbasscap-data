@@ -36,7 +36,7 @@ toplo <- dat |>
     .by = c('raperiod', 'SegmentName')
   ) |> 
   mutate(
-    TNtons_period = 5 * TN_lbs_yr / 2000,
+    TNtons_period = TN_lbs_yr / 2000,
   )
 
 # all bay segments ----------------------------------------------------------------------------
