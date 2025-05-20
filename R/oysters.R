@@ -140,6 +140,7 @@ p2 <- ggplot(toplo2, aes(x = yr, y = acre)) +
     x = glyr, y = 0, label = round(glyr, 0), 
     hjust = 1.2, vjust = 0, size = 6, color = trgcol
   ) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.1))) + 
   labs(
     x = NULL,
     y = 'Area (acres)'
