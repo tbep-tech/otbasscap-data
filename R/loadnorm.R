@@ -75,6 +75,7 @@ dev.off()
 
 library(tidyverse)
 library(here)
+library(patchwork)
 
 load(url('https://github.com/tbep-tech/load-estimates/raw/refs/heads/main/data/totanndat.RData'))
 
@@ -152,6 +153,15 @@ dev.off()
 
 svg(here('figs/loadnorm2withref.svg'), width = 7, height = 3, bg = 'transparent')
 print(p2)
+dev.off()
+
+# both together
+p1p <- p1 + labs(title = '(a) Nitrogen loads to OTB')
+p2p <- p2 + labs(title = '(b) Hydrologic loads to OTB')
+p <- p1p + p2p + plot_layout(ncol = 1)
+
+png(here('figs/loadnorm12withref.png'), width = 7, height = 6, units = 'in', res = 300)
+print(p)
 dev.off()
 
 # loading v chlorophyll -----------------------------------------------------------------------
