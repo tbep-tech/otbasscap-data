@@ -1,0 +1,213 @@
+---
+title: "Chlorophyll attainment"
+format: 
+  html:
+    code-fold: true
+editor: source
+lightbox: true
+
+execute: 
+  warning: false
+  message: false
+  echo: true
+---
+
+```{r}
+library(tidyverse)
+library(here)
+library(tbeptools)
+library(patchwork)
+
+data(epcdata)
+epcdata$epchc_station <- as.character(epcdata$epchc_station)
+
+pinchldat <- read.table(here('data-raw/_WIN_WAVES_GUEST_20250613105203_93062.txt'), sep = '|', header = TRUE, skip = 9) |> 
+  mutate(
+    date = as.Date(lubridate::mdy_hms(Activity.Start.Date.Time)),
+    yr = year(date),
+    mo = month(date),
+    bay_segment = 'OTB',
+    strata = gsub('(^E\\d)\\-.*$', '\\1', Monitoring.Location.ID), 
+    var = case_when(
+      DEP.Analyte.Name == 'Chlorophyll a- uncorrected' ~ 'chla_uncorr', 
+      DEP.Analyte.Name == 'Chlorophyll a- corrected' ~ 'chla_corr'
+    )
+  ) |> 
+  select(
+    date,
+    yr,
+    mo,
+    bay_segment,
+    strata,
+    station = Monitoring.Location.ID,
+    lat = DEP.Latitude,
+    lon = DEP.Longitude,
+    var,
+    val = DEP.Result.Value.Number
+  ) |> 
+  pivot_wider(names_from = var, values_from = val)
+```
+
+#### Chlorophyll target attainment
+
+```{r}
+#| fig-height: 4
+#| fig-width: 7
+
+trgattain <- targets |> 
+  mutate(chla_thresh = 8.5)
+
+# chlorophyll epc only target attainment
+
+p1 <- show_wqmatrix(epcdata, bay_segment = 'OTB', yrrng = c(2018, 2024), param = 'chla', trgs = trgattain) + 
+  labs(
+    subtitle = 'EPCHC'
+  )
+
+# chlorophyll target attainment, pinellas uncorrected
+
+tocmb <- pinchldat |>
+  select(-chla_corr) |>
+  rename(
+    chla = chla_uncorr,
+    epchc_station = station
+  ) |>
+  mutate(sd_m = 1)
+
+p2 <- show_wqmatrix(tocmb, bay_segment = 'OTB', yrrng = c(2018, 2024), param = 'chla', trgs = trgattain) +
+  labs(
+    subtitle = 'PDEM uncorrected'
+  )
+
+# chlorophyll target attainment, pinellas corrected
+
+tocmb <- pinchldat |>
+  select(-chla_uncorr) |>
+  rename(
+    chla = chla_corr,
+    epchc_station = station
+  ) |>
+  mutate(sd_m = 1)
+
+p3 <- show_wqmatrix(tocmb, bay_segment = 'OTB', yrrng = c(2018, 2024), param = 'chla', trgs = trgattain) +
+  labs(
+    subtitle = 'PDEM corrected'
+  )
+
+# chlorophyll target attainment, epc, pinellas uncorrected
+
+tocmb <- pinchldat |> 
+  select(-chla_corr) |> 
+  rename(
+    chla = chla_uncorr, 
+    epchc_station = station
+  ) |> 
+  mutate(sd_m = 1)
+
+cmbdat <- bind_rows(epcdata, tocmb)
+
+p4 <- show_wqmatrix(cmbdat, bay_segment = 'OTB', yrrng = c(2018, 2024), param = 'chla', trgs = trgattain) + 
+  labs(
+    subtitle = 'EPCHC,\nPDEM uncorrected'
+  )
+
+# chlorophyll target attainment, epc, pinellas corrected
+
+tocmb <- pinchldat |> 
+  select(-chla_uncorr) |> 
+  rename(
+    chla = chla_corr, 
+    epchc_station = station
+  ) |> 
+  mutate(sd_m = 1)
+
+cmbdat <- bind_rows(epcdata, tocmb)
+
+p5 <- show_wqmatrix(cmbdat, bay_segment = 'OTB', yrrng = c(2018, 2024), param = 'chla', trgs = trgattain) + 
+  labs(
+    subtitle = 'EPCHC,\nPDEM corrected'
+  )
+
+p <- p1 + p2 + p3 + p4 + p5 + plot_layout(ncol = 5) & theme(plot.subtitle = element_text(size = 10))
+p
+```
+
+#### Chlorophyll threshold attainment
+
+```{r}
+#| fig-height: 4
+#| fig-width: 7
+
+# chlorophyll epc only threshold attainment
+
+p1 <- show_wqmatrix(epcdata, bay_segment = 'OTB', yrrng = c(2018, 2024), param = 'chla') + 
+  labs(
+    subtitle = 'EPCHC'
+  )
+# chlorophyll threshold attainment, pinellas uncorrected
+
+tocmb <- pinchldat |> 
+  select(-chla_corr) |> 
+  rename(
+    chla = chla_uncorr, 
+    epchc_station = station
+  ) |> 
+  mutate(sd_m = 1)
+
+p2 <- show_wqmatrix(tocmb, bay_segment = 'OTB', yrrng = c(2018, 2024), param = 'chla') + 
+  labs(
+    subtitle = 'PDEM uncorrected'
+  )
+
+# chlorophyll thresold attainment, pinellas corrected
+
+tocmb <- pinchldat |> 
+  select(-chla_uncorr) |> 
+  rename(
+    chla = chla_corr, 
+    epchc_station = station
+  ) |> 
+  mutate(sd_m = 1)
+
+p3 <- show_wqmatrix(tocmb, bay_segment = 'OTB', yrrng = c(2018, 2024), param = 'chla') + 
+  labs(
+    subtitle = 'PDEM corrected'
+  )
+
+# chlorophyll threshold attainment, epc, pinellas uncorrected
+
+tocmb <- pinchldat |> 
+  select(-chla_corr) |> 
+  rename(
+    chla = chla_uncorr, 
+    epchc_station = station
+  ) |> 
+  mutate(sd_m = 1)
+
+cmbdat <- bind_rows(epcdata, tocmb)
+
+p4 <- show_wqmatrix(cmbdat, bay_segment = 'OTB', yrrng = c(2018, 2024), param = 'chla') + 
+  labs(
+    subtitle = 'EPCHC,\nPDEM uncorrected'
+  )
+
+# chlorophyll thresold attainment, epc, pinellas corrected
+
+tocmb <- pinchldat |> 
+  select(-chla_uncorr) |> 
+  rename(
+    chla = chla_corr, 
+    epchc_station = station
+  ) |> 
+  mutate(sd_m = 1)
+
+cmbdat <- bind_rows(epcdata, tocmb)
+
+p5 <- show_wqmatrix(cmbdat, bay_segment = 'OTB', yrrng = c(2018, 2024), param = 'chla') + 
+  labs(
+    subtitle = 'EPCHC,\nPDEM corrected'
+  )
+
+p <- p1 + p2 + p3 + p4 + p5 + plot_layout(ncol = 5) & theme(plot.subtitle = element_text(size = 10))
+p
+```
